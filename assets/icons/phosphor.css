@@ -1,0 +1,163 @@
+/* Phosphor Icons (MIT) - subset to the glyphs this site uses.
+   Upstream: https://phosphoricons.com (@phosphor-icons/web 2.1.1) */
+
+@font-face{font-family:"Phosphor";src:url("Phosphor-subset.woff2") format("woff2");font-weight:normal;font-style:normal;font-display:block}
+.ph{font-family:"Phosphor"!important;speak:never;font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1;display:inline-block;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.ph.ph-security-camera:before{content: "\eca4";}
+.ph.ph-bell-ringing:before{content: "\e5e8";}
+.ph.ph-fingerprint:before{content: "\e23e";}
+.ph.ph-fire-extinguisher:before{content: "\e9e8";}
+.ph.ph-door-open:before{content: "\e7e6";}
+.ph.ph-barricade:before{content: "\e948";}
+.ph.ph-house-line:before{content: "\e2c4";}
+.ph.ph-buildings:before{content: "\e102";}
+.ph.ph-factory:before{content: "\e760";}
+.ph.ph-clock-countdown:before{content: "\ed2c";}
+.ph.ph-graduation-cap:before{content: "\e62c";}
+.ph.ph-tag:before{content: "\e478";}
+.ph.ph-magnifying-glass:before{content: "\e30c";}
+.ph.ph-headset:before{content: "\e584";}
+.ph.ph-handshake:before{content: "\e582";}
+.ph.ph-target:before{content: "\e47c";}
+.ph.ph-compass:before{content: "\e1c8";}
+.ph.ph-shield-check:before{content: "\e40c";}
+.ph.ph-sun:before{content: "\e472";}
+.ph.ph-lightning:before{content: "\e2de";}
+.ph.ph-wrench:before{content: "\e5d4";}
+.ph.ph-solar-panel:before{content: "\ed7a";}
+.ph.ph-map-pin:before{content: "\e316";}
+.ph.ph-phone-call:before{content: "\e3ba";}
+.ph.ph-envelope-simple:before{content: "\e218";}
+.ph.ph-clock:before{content: "\e19a";}
+.ph.ph-whatsapp-logo:before{content: "\e5d0";}
+.ph.ph-facebook-logo:before{content: "\e226";}
+.ph.ph-linkedin-logo:before{content: "\e2ee";}
+.ph.ph-caret-double-right:before{content: "\e12a";}
+.ph.ph-arrow-right:before{content: "\e06c";}
+.ph.ph-arrow-up:before{content: "\e08e";}
+.ph.ph-check-circle:before{content: "\e184";}
+.ph.ph-star:before{content: "\e46a";}
+.ph.ph-asterisk:before{content: "\e0aa";}
+.ph.ph-eye:before{content: "\e220";}
+.ph.ph-scan-smiley:before{content: "\ebb4";}
+.ph.ph-identification-badge:before{content: "\e6f6";}
+
+@font-face{font-family:"Phosphor-Duotone";src:url("Phosphor-Duotone-subset.woff2") format("woff2");font-weight:normal;font-style:normal;font-display:block}
+.ph-duotone{font-family:"Phosphor-Duotone"!important;speak:never;font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1;display:inline-block;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.ph-duotone.ph-security-camera:before{content: "\eca4"; opacity: 0.2;}
+.ph-duotone.ph-security-camera:after{content: "\eca5"; margin-left: -1em;}
+.ph-duotone.ph-bell-ringing:before{content: "\e5e8"; opacity: 0.2;}
+.ph-duotone.ph-bell-ringing:after{content: "\e5e9"; margin-left: -1em;}
+.ph-duotone.ph-fingerprint:before{content: "\e23e"; opacity: 0.2;}
+.ph-duotone.ph-fingerprint:after{content: "\e23f"; margin-left: -1em;}
+.ph-duotone.ph-fire-extinguisher:before{content: "\e9e8"; opacity: 0.2;}
+.ph-duotone.ph-fire-extinguisher:after{content: "\e9e9"; margin-left: -1em;}
+.ph-duotone.ph-door-open:before{content: "\e7e6"; opacity: 0.2;}
+.ph-duotone.ph-door-open:after{content: "\e7e7"; margin-left: -1em;}
+.ph-duotone.ph-barricade:before{content: "\e948"; opacity: 0.2;}
+.ph-duotone.ph-barricade:after{content: "\e949"; margin-left: -1em;}
+.ph-duotone.ph-house-line:before{content: "\e2c4"; opacity: 0.2;}
+.ph-duotone.ph-house-line:after{content: "\e2c5"; margin-left: -1em;}
+.ph-duotone.ph-buildings:before{content: "\e102"; opacity: 0.2;}
+.ph-duotone.ph-buildings:after{content: "\e105"; margin-left: -1em;}
+.ph-duotone.ph-factory:before{content: "\e760"; opacity: 0.2;}
+.ph-duotone.ph-factory:after{content: "\e761"; margin-left: -1em;}
+.ph-duotone.ph-clock-countdown:before{content: "\ed2c"; opacity: 0.2;}
+.ph-duotone.ph-clock-countdown:after{content: "\ed2d"; margin-left: -1em;}
+.ph-duotone.ph-graduation-cap:before{content: "\e62c"; opacity: 0.2;}
+.ph-duotone.ph-graduation-cap:after{content: "\e62d"; margin-left: -1em;}
+.ph-duotone.ph-tag:before{content: "\e478"; opacity: 0.2;}
+.ph-duotone.ph-tag:after{content: "\e479"; margin-left: -1em;}
+.ph-duotone.ph-magnifying-glass:before{content: "\e30c"; opacity: 0.2;}
+.ph-duotone.ph-magnifying-glass:after{content: "\e30d"; margin-left: -1em;}
+.ph-duotone.ph-headset:before{content: "\e584"; opacity: 0.2;}
+.ph-duotone.ph-headset:after{content: "\e585"; margin-left: -1em;}
+.ph-duotone.ph-handshake:before{content: "\e582"; opacity: 0.2;}
+.ph-duotone.ph-handshake:after{content: "\e583"; margin-left: -1em;}
+.ph-duotone.ph-target:before{content: "\e47c"; opacity: 0.2;}
+.ph-duotone.ph-target:after{content: "\e47d"; margin-left: -1em;}
+.ph-duotone.ph-compass:before{content: "\e1c8"; opacity: 0.2;}
+.ph-duotone.ph-compass:after{content: "\e1c9"; margin-left: -1em;}
+.ph-duotone.ph-shield-check:before{content: "\e40c"; opacity: 0.2;}
+.ph-duotone.ph-shield-check:after{content: "\e40f"; margin-left: -1em;}
+.ph-duotone.ph-sun:before{content: "\e472"; opacity: 0.2;}
+.ph-duotone.ph-sun:after{content: "\e473"; margin-left: -1em;}
+.ph-duotone.ph-lightning:before{content: "\e2de"; opacity: 0.2;}
+.ph-duotone.ph-lightning:after{content: "\e2df"; margin-left: -1em;}
+.ph-duotone.ph-wrench:before{content: "\e5d4"; opacity: 0.2;}
+.ph-duotone.ph-wrench:after{content: "\e5d5"; margin-left: -1em;}
+.ph-duotone.ph-solar-panel:before{content: "\ed7a"; opacity: 0.2;}
+.ph-duotone.ph-solar-panel:after{content: "\ed7e"; margin-left: -1em;}
+.ph-duotone.ph-map-pin:before{content: "\e316"; opacity: 0.2;}
+.ph-duotone.ph-map-pin:after{content: "\e317"; margin-left: -1em;}
+.ph-duotone.ph-phone-call:before{content: "\e3ba"; opacity: 0.2;}
+.ph-duotone.ph-phone-call:after{content: "\e3bb"; margin-left: -1em;}
+.ph-duotone.ph-envelope-simple:before{content: "\e218"; opacity: 0.2;}
+.ph-duotone.ph-envelope-simple:after{content: "\e219"; margin-left: -1em;}
+.ph-duotone.ph-clock:before{content: "\e19a"; opacity: 0.2;}
+.ph-duotone.ph-clock:after{content: "\e19b"; margin-left: -1em;}
+.ph-duotone.ph-whatsapp-logo:before{content: "\e5d0"; opacity: 0.2;}
+.ph-duotone.ph-whatsapp-logo:after{content: "\e5d1"; margin-left: -1em;}
+.ph-duotone.ph-facebook-logo:before{content: "\e226"; opacity: 0.2;}
+.ph-duotone.ph-facebook-logo:after{content: "\e227"; margin-left: -1em;}
+.ph-duotone.ph-linkedin-logo:before{content: "\e2ee"; opacity: 0.2;}
+.ph-duotone.ph-linkedin-logo:after{content: "\e2ef"; margin-left: -1em;}
+.ph-duotone.ph-caret-double-right:before{content: "\e12a"; opacity: 0.2;}
+.ph-duotone.ph-caret-double-right:after{content: "\e12b"; margin-left: -1em;}
+.ph-duotone.ph-arrow-right:before{content: "\e06c"; opacity: 0.2;}
+.ph-duotone.ph-arrow-right:after{content: "\e06d"; margin-left: -1em;}
+.ph-duotone.ph-arrow-up:before{content: "\e08e"; opacity: 0.2;}
+.ph-duotone.ph-arrow-up:after{content: "\e08f"; margin-left: -1em;}
+.ph-duotone.ph-check-circle:before{content: "\e184"; opacity: 0.2;}
+.ph-duotone.ph-check-circle:after{content: "\e185"; margin-left: -1em;}
+.ph-duotone.ph-star:before{content: "\e46a"; opacity: 0.2;}
+.ph-duotone.ph-star:after{content: "\e46b"; margin-left: -1em;}
+.ph-duotone.ph-asterisk:before{content: "\e0aa"; opacity: 0.2;}
+.ph-duotone.ph-asterisk:after{content: "\e0ab"; margin-left: -1em;}
+.ph-duotone.ph-eye:before{content: "\e220"; opacity: 0.2;}
+.ph-duotone.ph-eye:after{content: "\e221"; margin-left: -1em;}
+.ph-duotone.ph-scan-smiley:before{content: "\ebb4"; opacity: 0.2;}
+.ph-duotone.ph-scan-smiley:after{content: "\ebb5"; margin-left: -1em;}
+.ph-duotone.ph-identification-badge:before{content: "\e6f6"; opacity: 0.2;}
+.ph-duotone.ph-identification-badge:after{content: "\e6f7"; margin-left: -1em;}
+
+@font-face{font-family:"Phosphor-Fill";src:url("Phosphor-Fill-subset.woff2") format("woff2");font-weight:normal;font-style:normal;font-display:block}
+.ph-fill{font-family:"Phosphor-Fill"!important;speak:never;font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1;display:inline-block;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.ph-fill.ph-security-camera:before{content: "\eca4";}
+.ph-fill.ph-bell-ringing:before{content: "\e5e8";}
+.ph-fill.ph-fingerprint:before{content: "\e23e";}
+.ph-fill.ph-fire-extinguisher:before{content: "\e9e8";}
+.ph-fill.ph-door-open:before{content: "\e7e6";}
+.ph-fill.ph-barricade:before{content: "\e948";}
+.ph-fill.ph-house-line:before{content: "\e2c4";}
+.ph-fill.ph-buildings:before{content: "\e102";}
+.ph-fill.ph-factory:before{content: "\e760";}
+.ph-fill.ph-clock-countdown:before{content: "\ed2c";}
+.ph-fill.ph-graduation-cap:before{content: "\e62c";}
+.ph-fill.ph-tag:before{content: "\e478";}
+.ph-fill.ph-magnifying-glass:before{content: "\e30c";}
+.ph-fill.ph-headset:before{content: "\e584";}
+.ph-fill.ph-handshake:before{content: "\e582";}
+.ph-fill.ph-target:before{content: "\e47c";}
+.ph-fill.ph-compass:before{content: "\e1c8";}
+.ph-fill.ph-shield-check:before{content: "\e40c";}
+.ph-fill.ph-sun:before{content: "\e472";}
+.ph-fill.ph-lightning:before{content: "\e2de";}
+.ph-fill.ph-wrench:before{content: "\e5d4";}
+.ph-fill.ph-solar-panel:before{content: "\ed7a";}
+.ph-fill.ph-map-pin:before{content: "\e316";}
+.ph-fill.ph-phone-call:before{content: "\e3ba";}
+.ph-fill.ph-envelope-simple:before{content: "\e218";}
+.ph-fill.ph-clock:before{content: "\e19a";}
+.ph-fill.ph-whatsapp-logo:before{content: "\e5d0";}
+.ph-fill.ph-facebook-logo:before{content: "\e226";}
+.ph-fill.ph-linkedin-logo:before{content: "\e2ee";}
+.ph-fill.ph-caret-double-right:before{content: "\e12a";}
+.ph-fill.ph-arrow-right:before{content: "\e06c";}
+.ph-fill.ph-arrow-up:before{content: "\e08e";}
+.ph-fill.ph-check-circle:before{content: "\e184";}
+.ph-fill.ph-star:before{content: "\e46a";}
+.ph-fill.ph-asterisk:before{content: "\e0aa";}
+.ph-fill.ph-eye:before{content: "\e220";}
+.ph-fill.ph-scan-smiley:before{content: "\ebb4";}
+.ph-fill.ph-identification-badge:before{content: "\e6f6";}
