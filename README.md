@@ -22,6 +22,21 @@ tools/subset_icons.py   Rebuilds the Phosphor subset when you need a new glyph
 WEB-DESIGN-PRINCIPLES.md  The design rules this build follows
 ```
 
+## Deployment
+
+| | |
+|---|---|
+| Live | https://sentinel-security-iwob.onrender.com |
+| Repository | https://github.com/Mutombe/sentinel-security-website |
+| Host | Render static site, `srv-dalh10u5vjqs73fcccc0` |
+
+Auto deploy is on: every push to `main` republishes. There is no build command
+and the publish path is the repository root, because the site is already static.
+
+To point `sentinel.co.zw` at it, add the domain under Settings, Custom Domains
+in the Render dashboard, then set the DNS records Render gives you. Render issues
+the TLS certificate automatically once DNS resolves.
+
 ## Design system
 
 Everything is driven by CSS custom properties at the top of `style.css`.
