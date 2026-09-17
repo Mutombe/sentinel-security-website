@@ -42,27 +42,33 @@
       // The poster frame carries the hero instead.
       heroVideo.remove();
     } else {
-      heroVideo.preload = 'auto';
-      heroVideo.load();
+      // Let the stylesheet, fonts and poster frame land first. The poster is
+      // already painted, so nothing is waiting on the clip.
+      var startVideo = function () {
+        heroVideo.preload = 'auto';
+        heroVideo.load();
+        if (heroVideo.readyState >= 2) tryPlay();
+        else heroVideo.addEventListener('loadeddata', tryPlay, { once: true });
+      };
       var tryPlay = function () {
         var p = heroVideo.play();
         // Autoplay can still be refused; the poster is already showing, so ignore.
         if (p && p.catch) p.catch(function () {});
       };
-      if (heroVideo.readyState >= 2) tryPlay();
-      else heroVideo.addEventListener('loadeddata', tryPlay, { once: true });
+      if (document.readyState === 'complete') startVideo();
+      else window.addEventListener('load', startVideo, { once: true });
 
       if ('IntersectionObserver' in window) {
         new IntersectionObserver(function (entries) {
           entries.forEach(function (e) {
-            if (e.isIntersecting) tryPlay();
+            if (e.isIntersecting) { if (heroVideo.readyState >= 2) tryPlay(); }
             else heroVideo.pause();
           });
         }, { threshold: 0.05 }).observe(heroVideo);
       }
       document.addEventListener('visibilitychange', function () {
         if (document.hidden) heroVideo.pause();
-        else if (heroVideo.getBoundingClientRect().bottom > 0) tryPlay();
+        else if (heroVideo.readyState >= 2 && heroVideo.getBoundingClientRect().bottom > 0) tryPlay();
       });
     }
   }
