@@ -17,6 +17,7 @@ assets/js/main.js       Header, drawer, reveals, accordion, form
 assets/fonts/           Manrope (body, headings, numbers), Grand Hotel (accents)
 assets/icons/           Phosphor, subset to the glyphs in use
 assets/img/             brand, clients, photos
+assets/video/           hero.mp4, the homepage hero clip
 tools/build.py          Optional page generator (see "Editing pages")
 tools/subset_icons.py   Rebuilds the Phosphor subset when you need a new glyph
 WEB-DESIGN-PRINCIPLES.md  The design rules this build follows
@@ -103,6 +104,37 @@ Everything is a soft capsule: 28px card radius, fully rounded pills.
   by a concave fillet. Colour variants rotate across a row.
 - **`.bento`** is the asymmetric image grid used in the About blocks.
 
+### Hero video
+
+The homepage hero plays `assets/video/hero.mp4` (768x432, 8s, 394 KB, H.264)
+behind the copy. It is graded into the palette rather than dropped in raw:
+
+1. `filter` pulls the saturation down and the contrast up on warm footage
+2. a `mix-blend-mode: color` layer replaces the hue while keeping the luminance,
+   so golden hour light survives as light but the frame reads brand green
+3. a small `screen` radial puts a controlled lime highlight where the sun is
+4. a `multiply` vignette, then the usual scrim and drafting grid on top
+
+The frame is panned with `transform: scale(1.32) translateX(-6%)` on desktop so
+the centre of the clip sits under the darkest part of the scrim. Portrait crops
+hard into the middle of a 16:9 frame, so mobile drops the pan and uses
+`object-position` to hold the walking figure in the top third instead.
+
+Loading is deliberate. The markup carries `preload="none"` and no `autoplay`
+attribute; `main.js` attaches and plays it only when motion is welcome and the
+connection is not metered:
+
+- `prefers-reduced-motion: reduce` removes the video and the CSS shows the
+  poster frame instead
+- `navigator.connection.saveData`, or a 2G class connection, does the same
+- an IntersectionObserver pauses it whenever the hero leaves the screen, and
+  `visibilitychange` pauses it in a background tab
+
+To swap the clip, replace `assets/video/hero.mp4` and regenerate
+`assets/img/photos/hero-poster.jpg` from a representative frame. The grade is
+tuned for warm backlit footage; cooler footage will want the `filter` and
+`.hero__tint` opacity adjusted.
+
 ### Hero
 
 The homepage hero is sized to `calc(100svh - var(--topbar-h))`, so everything in
@@ -114,10 +146,16 @@ allowed to grow rather than squash.
 
 ## Before it goes live
 
-**1. The stock photography is watermarked.** Every file in `assets/img/photos/`
-except `residential-electr-services.jpg` is an unlicensed iStock comp, and the
-watermark is visible on the page, most obviously in the homepage hero and on
-the About and Contact heroes. These must be replaced with licensed images, or
+**1. The stock photography and the hero video are watermarked.** Every file in
+`assets/img/photos/` except `residential-electr-services.jpg` is an unlicensed
+iStock comp, and so is `assets/video/hero.mp4`, which carries a baked in
+"iStock by Getty Images" mark across the middle of the frame.
+
+That watermark is the reason the hero video is panned the way it is: the centre
+of the clip is parked under the darkest part of the scrim so the mark does not
+read. A licensed copy of the same clip would allow a much stronger composition,
+with the guard placed in the clear right hand side of the frame rather than
+hidden behind the headline. These must be replaced with licensed images, or
 better, with real photographs of Sentinel's own installations and team. Drop
 replacements in at the same filenames and the site picks them up with no code
 change. Each photo is referenced at two sizes: `name-640.jpg` and `name-1200.jpg`.

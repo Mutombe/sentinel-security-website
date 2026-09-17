@@ -29,6 +29,44 @@
     });
   }
 
+  /* ---- Hero video ----
+     Held back until it is wanted: no autoplay attribute, preload="none" in the
+     markup, and the source only attaches when motion is welcome and the
+     connection is not metered. Paused whenever the hero leaves the screen. */
+  var heroVideo = document.querySelector('[data-hero-video]');
+  if (heroVideo) {
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    var saveData = !!(conn && (conn.saveData || /^(slow-)?2g$/.test(conn.effectiveType || '')));
+
+    if (reduceMotion || saveData) {
+      // The poster frame carries the hero instead.
+      heroVideo.remove();
+    } else {
+      heroVideo.preload = 'auto';
+      heroVideo.load();
+      var tryPlay = function () {
+        var p = heroVideo.play();
+        // Autoplay can still be refused; the poster is already showing, so ignore.
+        if (p && p.catch) p.catch(function () {});
+      };
+      if (heroVideo.readyState >= 2) tryPlay();
+      else heroVideo.addEventListener('loadeddata', tryPlay, { once: true });
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) tryPlay();
+            else heroVideo.pause();
+          });
+        }, { threshold: 0.05 }).observe(heroVideo);
+      }
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) heroVideo.pause();
+        else if (heroVideo.getBoundingClientRect().bottom > 0) tryPlay();
+      });
+    }
+  }
+
   /* ---- Mobile drawer ---- */
   var toggle = document.querySelector('.nav-toggle');
   var drawer = document.querySelector('.drawer');

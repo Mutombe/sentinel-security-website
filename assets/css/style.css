@@ -474,24 +474,64 @@ p:last-child { margin-bottom: 0; }
 }
 .hero__media {
   position: absolute;
-  inset: 0 0 0 auto;
-  width: min(72%, 1180px);
-  z-index: -2;
+  inset: 0;
+  z-index: -3;
+  overflow: hidden;
+  background: var(--g-dark);
 }
-.hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%; }
+.hero__media img,
+.hero__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 42%;
+  /* The source is warm golden hour footage. Pull the saturation and lift the
+     contrast so the tint layer below has something neutral to work on. */
+  filter: saturate(.48) contrast(1.22) brightness(.58);
+  transform: scale(1.32) translateX(-6%);
+  transform-origin: 50% 46%;
+}
+.hero__video { display: block; }
+
+/* Duotone. `color` blending keeps the footage's luminance and replaces its hue,
+   so the golden light survives as light while the frame reads brand green. */
+.hero__tint {
+  position: absolute; inset: 0; z-index: -2;
+  pointer-events: none;
+  background: var(--g-dark);
+  opacity: .78;
+  mix-blend-mode: color;
+}
+
+/* One warm highlight kept deliberately, recoloured to lime, where the sun sits. */
+.hero__glow {
+  position: absolute; inset: 0; z-index: -2;
+  pointer-events: none;
+  /* One controlled highlight where the sun sits, nothing more. */
+  background:
+    radial-gradient(26% 30% at 72% 36%, rgba(199, 245, 162, .34) 0%, rgba(169, 238, 110, 0) 74%),
+    radial-gradient(60% 56% at 78% 42%, rgba(63, 181, 111, .20) 0%, rgba(63, 181, 111, 0) 76%);
+  mix-blend-mode: screen;
+}
+.hero__glow::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(110% 92% at 52% 46%, transparent 34%, rgba(2, 14, 8, .82) 100%);
+  mix-blend-mode: multiply;
+}
 .hero__grid {
   position: absolute; inset: 0; z-index: -1;
   pointer-events: none;
   background-image: var(--pat-grid-lt);
   background-size: var(--cell) var(--cell);
-  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 34%, transparent 62%);
-          mask-image: linear-gradient(90deg, #000 0%, #000 34%, transparent 62%);
+  -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,.5) 0%, #000 38%, #000 100%);
+          mask-image: linear-gradient(90deg, rgba(0,0,0,.5) 0%, #000 38%, #000 100%);
 }
 .hero__scrim {
   position: absolute; inset: 0; z-index: -1;
   background:
-    linear-gradient(90deg, var(--ink) 0%, var(--ink) 30%, rgba(6,41,27,.78) 42%, rgba(6,41,27,.12) 60%, rgba(6,41,27,0) 72%),
-    linear-gradient(180deg, rgba(6,41,27,.5) 0%, rgba(6,41,27,0) 26%, rgba(6,41,27,0) 70%, rgba(6,41,27,.4) 100%);
+    linear-gradient(90deg, rgba(6,41,27,.96) 0%, rgba(6,41,27,.9) 28%, rgba(6,41,27,.66) 50%, rgba(6,41,27,.34) 72%, rgba(6,41,27,.22) 100%),
+    linear-gradient(180deg, rgba(6,41,27,.72) 0%, rgba(6,41,27,.14) 32%, rgba(6,41,27,.3) 64%, rgba(6,41,27,.9) 100%);
 }
 .hero__content { position: relative; max-width: 660px; }
 .hero h1 { color: #fff; margin-bottom: clamp(.7rem, 1.8vh, 1.2rem); }
@@ -989,6 +1029,12 @@ p:last-child { margin-bottom: 0; }
 }
 .js [data-reveal].is-in { opacity: 1; transform: none; }
 
+/* No motion preference: the poster frame stands in for the clip. */
+@media (prefers-reduced-motion: reduce) {
+  .hero__video { display: none; }
+  .hero__media { background: var(--g-dark) url("../img/photos/hero-poster.jpg") center 42% / cover no-repeat; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
@@ -1038,17 +1084,28 @@ p:last-child { margin-bottom: 0; }
   /* Keep the photograph's own colour. Dropping it to half opacity turned it into
      grey mush; a properly weighted scrim holds contrast and keeps the image. */
   .hero__media { width: 100%; opacity: 1; }
-  .hero__media img { object-position: 62% 24%; }
+  /* Portrait crops hard into the middle of a 16:9 frame, so the desktop pan is
+     dropped and the frame is positioned on the walking figure instead. */
+  .hero__media img, .hero__video {
+    transform: none;
+    object-position: 30% 34%;
+    filter: saturate(.48) contrast(1.2) brightness(.62);
+  }
+  .hero__glow {
+    background:
+      radial-gradient(76% 34% at 62% 26%, rgba(169, 238, 110, .24) 0%, rgba(169, 238, 110, 0) 68%),
+      radial-gradient(90% 70% at 50% 40%, rgba(0, 0, 0, 0) 45%, rgba(3, 20, 12, .5) 100%);
+  }
   .hero__scrim {
     background:
       linear-gradient(180deg,
-        rgba(6,41,27,.88) 0%,
-        rgba(6,41,27,.42) 13%,
-        rgba(6,41,27,.46) 27%,
-        rgba(6,41,27,.80) 44%,
-        rgba(6,41,27,.93) 60%,
-        var(--g-dark) 86%),
-      linear-gradient(90deg, rgba(6,41,27,.55) 0%, rgba(6,41,27,0) 72%);
+        rgba(6,41,27,.86) 0%,
+        rgba(6,41,27,.34) 14%,
+        rgba(6,41,27,.42) 30%,
+        rgba(6,41,27,.82) 46%,
+        rgba(6,41,27,.95) 62%,
+        var(--g-dark) 84%),
+      linear-gradient(90deg, rgba(6,41,27,.42) 0%, rgba(6,41,27,0) 78%);
   }
   .hero__grid {
     -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 78%);

@@ -89,11 +89,16 @@
 
   <!-- ===== Hero ===== -->
   <section class="hero">
-    <div class="hero__media">
-      <img src="assets/img/photos/control-room-monitoring-1200.jpg"
-           srcset="assets/img/photos/control-room-monitoring-640.jpg 640w, assets/img/photos/control-room-monitoring-1200.jpg 1200w"
-           sizes="72vw" alt="Sentinel operators watching a live camera wall" width="1200" height="608" fetchpriority="high">
+    <div class="hero__media" aria-hidden="true">
+      <video class="hero__video" data-hero-video
+             poster="assets/img/photos/hero-poster.jpg"
+             muted loop playsinline preload="none"
+             width="768" height="432">
+        <source src="assets/video/hero.mp4" type="video/mp4">
+      </video>
     </div>
+    <div class="hero__tint" aria-hidden="true"></div>
+    <div class="hero__glow" aria-hidden="true"></div>
     <div class="hero__grid" aria-hidden="true"></div>
     <div class="hero__scrim"></div>
 
