@@ -90,9 +90,33 @@ Sizes run `i-xs` 14px through `i-2xl` 44px. To use an icon that is not in the
 subset, add its name to the `ICONS` list in `tools/subset_icons.py` and rerun it,
 or link the full upstream stylesheet from a CDN while you are working.
 
+### Corners
+
+The shield in the logo is square across the top and cut away at 45 degrees at
+the bottom. Every surface on the site follows that shape, so the geometry is the
+brand's rather than arbitrary:
+
+| Kind of thing | Corners | Why |
+|---|---|---|
+| Surfaces: cards, panels, images, inputs, icon chips | square top, rounded bottom (`--corner-xl` / `-lg` / `-md`) | the flat shoulder lines up with the grid and with its neighbours |
+| Accents: the stat tiles, the service photographs | a real 45 degree chamfer (`.cut-shield`, `.cut-corner`) | the literal shield silhouette, used sparingly |
+| Anything you can click: buttons, tags, eyebrows, badges | fully round (`--r-pill`) | maximum contrast against the square shoulders |
+| Icon buttons, avatars, step numbers | circles | same family as the pills |
+
+The contrast between the flat tops and the fully round interactive elements is
+the point: it tells you what is a surface and what is a control without any
+other signal. A row of cards reads as one crisp horizontal line across the top
+while the feet stay soft.
+
+`.cut-shield` and `.cut-corner` use `clip-path`, which discards borders and
+shadows, so they only go on solid tiles and photographs that want neither.
+
+The flat top edge also gives cards something to do on hover: a 3px rule draws
+itself left to right along the shoulder.
+
 ### Shape language
 
-Everything is a soft capsule: 28px card radius, fully rounded pills.
+Soft capsules for controls, flat shoulders for surfaces. See Corners above.
 
 - **`.pbtn`** is the pill in pill button, a coloured capsule holding a second
   capsule plus a double chevron. Variants `--light`, `--dark`, `--outline`.

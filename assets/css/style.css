@@ -57,10 +57,20 @@
   --ff-accent: 'Grand Hotel', 'Manrope', cursive;
 
   /* Shape */
-  --r-card: 28px;
-  --r-lg: 22px;
-  --r-md: 14px;
-  --r-pill: 999px;
+  /* Corner language. The shield in the logo is square across the top and cut
+     away at the bottom, so every surface follows it: a flat top edge that lines
+     up with the grid, and a bottom that releases. Interactive elements stay
+     fully round, and that contrast is the point. */
+  --r-card: 26px;   /* bottom radius, large surfaces */
+  --r-lg: 20px;     /* bottom radius, medium surfaces */
+  --r-md: 11px;     /* bottom radius, small surfaces */
+  --r-pill: 999px;  /* anything you can click */
+  --cut: 20px;      /* depth of the 45 degree chamfer, the literal shield cut */
+
+  /* Ready made corner sets */
+  --corner-xl: 0 0 var(--r-card) var(--r-card);
+  --corner-lg: 0 0 var(--r-lg) var(--r-lg);
+  --corner-md: 0 0 var(--r-md) var(--r-md);
   --notch: 18px;    /* concave joint radius */
   --gap-tab: 26px;  /* horizontal gutter: must clear the fillet */
   --tab-drop: 9px;  /* how far the CTA tab drops below the card body */
@@ -212,6 +222,34 @@ p:last-child { margin-bottom: 0; }
 .i-lg { font-size: 26px; }
 .i-xl { font-size: 34px; }
 .i-2xl { font-size: 44px; }
+
+/* The shield itself: square shoulders, two 45 degree cuts at the foot. Used on
+   solid tiles and images, where clip-path costs nothing. It takes no border or
+   shadow, so only apply it to surfaces that do not want either. */
+.cut-shield {
+  --cut-d: var(--cut);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--cut-d)),
+    calc(100% - var(--cut-d)) 100%,
+    var(--cut-d) 100%,
+    0 calc(100% - var(--cut-d))
+  );
+  border-radius: 0 !important;
+}
+/* A single cut, bottom right only. Quieter, for images sitting next to copy. */
+.cut-corner {
+  --cut-d: var(--cut);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--cut-d)),
+    calc(100% - var(--cut-d)) 100%,
+    0 100%
+  );
+  border-radius: 0 !important;
+}
 
 /* ---------- 4. Layout ---------- */
 .container { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter); }
@@ -570,7 +608,7 @@ p:last-child { margin-bottom: 0; }
   gap: 1px;
   background: rgba(255,255,255,.12);
   border: 1px solid rgba(255,255,255,.12);
-  border-radius: var(--r-lg);
+  border-radius: var(--corner-lg);
   overflow: hidden;
   max-width: 660px;
 }
@@ -626,13 +664,30 @@ p:last-child { margin-bottom: 0; }
 .ncard:hover { transform: translateY(-6px); }
 
 .ncard__main {
+  position: relative;
   flex: 1;
   background: var(--c);
-  border-radius: var(--r-card) var(--r-card) 0 var(--r-card);
+  border-radius: 0 0 0 var(--r-card);
   padding: clamp(1.8rem, 2.6vw, 2.4rem);
   padding-bottom: clamp(1.9rem, 2.8vw, 2.5rem);
   color: var(--fg);
 }
+/* A rule that draws itself along the flat top edge on hover. */
+.ncard__main::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--accent-rule, var(--lime));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .5s var(--ease);
+  z-index: 1;
+}
+.ncard:hover .ncard__main::before { transform: scaleX(1); }
+.ncard--lime { --accent-rule: var(--g-dark); }
+.ncard--green { --accent-rule: var(--lime); }
+
 .ncard__icon { display: block; margin-bottom: clamp(2.5rem, 5vw, 4rem); color: var(--fg); }
 .ncard__icon i { display: block; }
 .ncard__main h3 { color: var(--fg); margin-bottom: .6rem; max-width: 15ch; }
@@ -661,7 +716,7 @@ p:last-child { margin-bottom: 0; }
   position: relative;
   flex: 1;
   background: var(--c);
-  border-radius: 0 0 var(--r-card) 14px;
+  border-radius: 0 0 var(--r-card) var(--r-md);
 }
 /* …and this is the concave joint where the bite meets the card body */
 .ncard__fill::before {
@@ -702,7 +757,7 @@ p:last-child { margin-bottom: 0; }
   padding: clamp(1.5rem, 2.3vw, 2rem);
   background: var(--white);
   border: 1px solid var(--line);
-  border-radius: var(--r-lg);
+  border-radius: var(--corner-xl);
   transition: transform .4s var(--ease), box-shadow .4s var(--ease), background-color .4s var(--ease), border-color .4s var(--ease);
 }
 .card h3 { transition: color .4s var(--ease); }
@@ -712,12 +767,22 @@ p:last-child { margin-bottom: 0; }
   display: grid; place-items: center;
   margin-bottom: 1.3rem;
   background: var(--lime-4);
-  border-radius: var(--r-md);
+  border-radius: var(--corner-md);
   color: var(--green);
   transition: background-color .4s var(--ease), color .4s var(--ease), transform .4s var(--ease);
 }
 .card__icon i { display: block; }
 
+.card--hoverdark { position: relative; overflow: hidden; }
+.card--hoverdark::before {
+  content: "";
+  position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: var(--lime);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .5s var(--ease);
+  z-index: 1;
+}
+.card--hoverdark:hover::before { transform: scaleX(1); }
 .card--hoverdark:hover { background: var(--ink); border-color: var(--ink); transform: translateY(-6px); box-shadow: var(--sh-3); }
 .card--hoverdark:hover h3 { color: #fff; }
 .card--hoverdark:hover p { color: rgba(255,255,255,.66); }
@@ -761,11 +826,12 @@ p:last-child { margin-bottom: 0; }
   object-fit: contain;
   margin-bottom: 1.1rem;
   opacity: .95;
+  border-radius: 0;
 }
 
 /* ---------- 11. Bento (about) ---------- */
 .bento { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(.75rem, 1.2vw, 1rem); }
-.bento img { border-radius: var(--r-lg); width: 100%; height: 100%; object-fit: cover; }
+.bento img { border-radius: var(--corner-lg); width: 100%; height: 100%; object-fit: cover; }
 .bento__hero { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
 .bento__tile { aspect-ratio: 1 / 1; }
 .bento__stat {
@@ -774,7 +840,7 @@ p:last-child { margin-bottom: 0; }
   padding: 1.25rem;
   background-color: var(--lime);
   background-image: var(--pat-diag-ink);
-  border-radius: var(--r-lg);
+  border-radius: 0;
   text-align: center;
   color: var(--ink);
 }
@@ -798,7 +864,7 @@ p:last-child { margin-bottom: 0; }
 .byline__person span { font-size: .84rem; color: var(--body-2); }
 
 /* Mini stat cards */
-.ministat { background: var(--cream); border-radius: var(--r-lg); padding: clamp(1.25rem, 2vw, 1.75rem); }
+.ministat { background: var(--cream); border-radius: var(--corner-lg); padding: clamp(1.25rem, 2vw, 1.75rem); }
 .section--cream .ministat { background: var(--white); }
 .ministat__stars { display: flex; gap: 2px; color: var(--lime-2); margin-bottom: .9rem; }
 .ministat__num { font-size: clamp(2rem, 3.4vw, 2.7rem); font-weight: 800; color: var(--ink); line-height: 1; letter-spacing: -.035em; }
@@ -826,7 +892,7 @@ p:last-child { margin-bottom: 0; }
   background-image: var(--pat-dots-lt);
   background-size: 20px 20px;
   border: 1px solid var(--line-2);
-  border-radius: var(--r-lg);
+  border-radius: var(--corner-lg);
   transition: background-color .4s var(--ease), transform .4s var(--ease);
 }
 .step:hover { background: rgba(255,255,255,.08); transform: translateY(-5px); }
@@ -884,7 +950,7 @@ p:last-child { margin-bottom: 0; }
 
 /* ---------- 15. Accordion ---------- */
 .accordion { display: grid; gap: .75rem; }
-.acc__item { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; transition: border-color .3s var(--ease), box-shadow .3s var(--ease); }
+.acc__item { background: var(--white); border: 1px solid var(--line); border-radius: var(--corner-lg); overflow: hidden; transition: border-color .3s var(--ease), box-shadow .3s var(--ease); }
 .acc__item:has(.acc__btn[aria-expanded="true"]) { border-color: var(--lime-2); box-shadow: var(--sh-2); }
 .acc__btn {
   width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1.25rem;
@@ -907,7 +973,7 @@ p:last-child { margin-bottom: 0; }
 .acc__panel p { padding: 0 1.5rem 1.4rem; color: var(--body-2); max-width: 70ch; }
 
 /* ---------- 16. Forms ---------- */
-.formcard { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-card); padding: clamp(1.5rem, 3vw, 2.5rem); box-shadow: var(--sh-2); }
+.formcard { background: var(--white); border: 1px solid var(--line); border-radius: var(--corner-xl); padding: clamp(1.5rem, 3vw, 2.5rem); box-shadow: var(--sh-2); }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .field { display: flex; flex-direction: column; gap: .4rem; }
 .field--full { grid-column: 1 / -1; }
@@ -915,7 +981,7 @@ p:last-child { margin-bottom: 0; }
 .field input, .field select, .field textarea {
   width: 100%; padding: .85rem 1.1rem;
   font: inherit; font-size: .97rem; color: var(--ink);
-  background: var(--cream); border: 1px solid transparent; border-radius: var(--r-md);
+  background: var(--cream); border: 1px solid transparent; border-radius: var(--corner-md);
   transition: background-color .25s var(--ease), border-color .25s var(--ease), box-shadow .25s var(--ease);
 }
 .field textarea { resize: vertical; min-height: 130px; }
@@ -932,7 +998,7 @@ p:last-child { margin-bottom: 0; }
 .contact-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(2rem, 4vw, 3.5rem); align-items: start; }
 .cinfo { display: grid; grid-template-columns: 48px 1fr; gap: 1rem; padding: 1.2rem 0; border-bottom: 1px solid var(--line); }
 .cinfo:first-of-type { border-top: 1px solid var(--line); }
-.cinfo__icon { width: 48px; height: 48px; display: grid; place-items: center; background: var(--lime-4); border-radius: var(--r-md); color: var(--g-mid); }
+.cinfo__icon { width: 48px; height: 48px; display: grid; place-items: center; background: var(--lime-4); border-radius: var(--corner-md); color: var(--g-mid); }
 .cinfo__icon i { display: block; }
 .cinfo h3 { font-size: .76rem; letter-spacing: .12em; text-transform: uppercase; color: var(--body-2); margin-bottom: .3rem; }
 .cinfo a, .cinfo p { display: block; margin: 0; font-size: 1rem; font-weight: 600; color: var(--ink); }
@@ -945,7 +1011,7 @@ p:last-child { margin-bottom: 0; }
 .map-embed { position: relative; border: 0; width: 100%; height: clamp(320px, 40vw, 440px); filter: grayscale(.2) contrast(1.05); }
 
 /* Offices */
-.office { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-lg); padding: clamp(1.4rem, 2.2vw, 1.85rem); }
+.office { background: var(--white); border: 1px solid var(--line); border-radius: var(--corner-lg); padding: clamp(1.4rem, 2.2vw, 1.85rem); }
 .office h3 { font-size: 1.1rem; margin-bottom: .7rem; }
 .office p, .office a { display: block; margin: 0 0 .35rem; font-size: .96rem; color: var(--body); }
 .office a:hover { color: var(--green); }
@@ -957,7 +1023,7 @@ p:last-child { margin-bottom: 0; }
   background-image: var(--pat-grid-lt);
   background-size: var(--cell) var(--cell);
   color: var(--on-dark-soft);
-  border-radius: var(--r-card);
+  border-radius: var(--corner-xl);
   padding: clamp(2.25rem, 4.5vw, 3.75rem);
   overflow: hidden;
   isolation: isolate;
@@ -1120,7 +1186,10 @@ p:last-child { margin-bottom: 0; }
   :root {
     --header-h: 64px;
     --topbar-h: 34px;
-    --r-card: 22px;
+    --r-card: 20px;
+    --r-lg: 16px;
+    --r-md: 9px;
+    --cut: 15px;
     --notch: 14px;
     --gap-tab: 20px;
     --gutter: 1.15rem;
@@ -1181,7 +1250,7 @@ p:last-child { margin-bottom: 0; }
   .hero__call dd { margin: 0; font-size: .97rem; }
 
   /* Four across rather than two by two: half the height, and it reads as a strip. */
-  .hero__facts { grid-template-columns: repeat(4, 1fr); border-radius: var(--r-md); }
+  .hero__facts { grid-template-columns: repeat(4, 1fr); border-radius: var(--corner-md); }
   .hero__fact { padding: .62rem .35rem; text-align: center; }
   .hero__fact dt { font-size: 1.12rem; }
   .hero__fact dd { margin-top: .18rem; font-size: .57rem; letter-spacing: .04em; }
@@ -1226,7 +1295,7 @@ p:last-child { margin-bottom: 0; }
   .plink { padding: .55rem 1rem; }
 
   /* Forms */
-  .formcard { padding: 1.35rem 1.2rem; border-radius: var(--r-lg); }
+  .formcard { padding: 1.35rem 1.2rem; border-radius: var(--corner-lg); }
   .field input, .field select, .field textarea { padding: .8rem 1rem; font-size: 16px; }
   .field textarea { min-height: 110px; }
 
@@ -1234,7 +1303,7 @@ p:last-child { margin-bottom: 0; }
   .cinfo__icon { width: 40px; height: 40px; }
 
   /* CTA band */
-  .cta { border-radius: var(--r-lg); padding: 1.75rem 1.35rem; }
+  .cta { border-radius: var(--corner-lg); padding: 1.75rem 1.35rem; }
   .cta__inner { gap: 1.4rem; }
   .cta__actions { width: 100%; flex-direction: column; }
   .cta__actions .pbtn { justify-content: center; }

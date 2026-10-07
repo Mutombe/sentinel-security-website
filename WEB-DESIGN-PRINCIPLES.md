@@ -176,6 +176,44 @@ geometry on paper first.
 
 ---
 
+## 5b. Corners are a language; take it from the logo
+
+Uniform radius everywhere is the safe choice and it is why most sites look the
+same. Mixing sharp and round corners is what makes geometry feel authored, but
+only if the mix follows a rule somebody could state out loud.
+
+The best rule is usually already in the brand mark. Look at the logo and ask
+what its corners do. Sentinel's is a shield: square across the top, cut away at
+45 degrees at the bottom. That is a complete corner system sitting there unused.
+
+Turn it into three tiers:
+
+| Tier | Treatment | Reads as |
+|---|---|---|
+| Surfaces (cards, panels, images, inputs) | square top, rounded bottom | structure |
+| Accents (a few solid tiles, key photographs) | the literal shape, as a real chamfer | brand |
+| Controls (buttons, tags, chips, avatars) | fully round | affordance |
+
+Two things make this work:
+
+**The contrast carries meaning.** A flat shoulder means "this is a surface" and
+a capsule means "you can press this." The viewer never has to be told.
+
+**The flat edge aligns.** Three cards in a row with square tops draw one crisp
+horizontal line. Three cards with 28px radius draw nothing. That line is free
+structure, and it is why a mixed system usually looks tidier than a uniform one
+rather than busier.
+
+Implementation notes: store the corner sets as tokens
+(`--corner-xl: 0 0 var(--r) var(--r)`) so the rule is applied, not retyped. Use
+`clip-path` for true chamfers, but only on surfaces that want no border and no
+shadow, because it discards both. And give the new flat edge a job: a rule that
+draws along it on hover costs three lines and makes the geometry feel deliberate
+rather than decorative.
+
+The failure mode is using a sharp corner once, somewhere, for variety. One
+exception reads as a mistake. A system reads as a decision.
+
 ## 6. Texture is the difference between clean and premium
 
 A flat coloured rectangle is clean. A flat coloured rectangle with a drafting
@@ -463,6 +501,7 @@ launch.
 | Copy a reference's pixels | Copy its grammar |
 | Pick colours | Build a ramp |
 | Pick fonts | Assign roles |
+| Uniform radius everywhere | Take a corner language from the mark |
 | One background colour down the page | Alternate grounds |
 | Flat surfaces everywhere | Texture at 5 percent opacity |
 | Brand tint over photography | Scrim only for contrast |
