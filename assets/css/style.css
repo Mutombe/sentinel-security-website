@@ -483,6 +483,7 @@ p:last-child { margin-bottom: 0; }
   overflow-y: auto;
 }
 .drawer.is-open { opacity: 1; visibility: visible; transform: none; }
+body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .drawer__list a {
   display: flex; justify-content: space-between; align-items: center;
   padding: 1.05rem 0;
@@ -1075,17 +1076,180 @@ p:last-child { margin-bottom: 0; }
 .prose li { margin-bottom: .35rem; }
 .prose a { color: var(--green); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 
+/* ---------- 19b. Surfaces that are links ---------- */
+/* Everything that reads as a panel now goes somewhere, so every one of them
+   needs to say so on hover and take a focus ring. */
+a.step, a.ministat, a.bento__stat, a.bento__hero, a.bento__tile,
+a.byline__person, a.hero__badge, a.card {
+  cursor: pointer;
+  text-decoration: none;
+}
+a.step, a.ministat, a.bento__stat {
+  transition: transform .35s var(--ease), background-color .35s var(--ease), box-shadow .35s var(--ease);
+}
+a.ministat:hover { transform: translateY(-4px); box-shadow: var(--sh-2); }
+a.bento__stat:hover { transform: translateY(-4px); }
+a.byline__person:hover strong { color: var(--g-mid); }
+a.hero__badge { transition: background-color .3s var(--ease), border-color .3s var(--ease); }
+a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.34); }
+
+/* Bento photographs became links, so the anchor has to carry the tile geometry. */
+.bento__hero, .bento__tile {
+  display: block;
+  overflow: hidden;
+  border-radius: var(--corner-lg);
+}
+.bento__hero img, .bento__tile img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  transition: transform .6s var(--ease);
+}
+.bento__hero:hover img, .bento__tile:hover img { transform: scale(1.04); }
+
+/* Sector tags are links now */
+.tags a {
+  padding: .32rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--white);
+  font-size: .68rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-2);
+  transition: background-color .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease);
+}
+.tags a:hover { background: var(--g-dark); border-color: var(--g-dark); color: var(--lime); }
+.section--cream .tags a { background: var(--cream); }
+
+/* Client logos became links */
+.marquee__group a { display: block; flex: none; }
+
+/* Dark cards that are links get the lime treatment rather than the dark one */
+.card--hoverlime { position: relative; overflow: hidden; }
+.card--hoverlime::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: var(--lime); transform: scaleX(0); transform-origin: left;
+  transition: transform .5s var(--ease); z-index: 1;
+}
+.card--hoverlime:hover::before { transform: scaleX(1); }
+.card--hoverlime:hover { border-color: rgba(169,238,110,.45); background: rgba(255,255,255,.07); transform: translateY(-5px); }
+.card--dark .plink { background: rgba(255,255,255,.06); border-color: var(--line-2); color: #fff; }
+.card--hoverlime:hover .plink { background: var(--lime); border-color: var(--lime); color: var(--g-dark); }
+
+/* Step cards are links now */
+.step { display: block; color: inherit; }
+.step:hover h3 { color: var(--lime); }
+
 /* ---------- 20. Back to top ---------- */
+.fab-rail {
+  position: fixed;
+  right: clamp(1rem, 2.5vw, 2rem);
+  bottom: clamp(1rem, 2.5vw, 2rem);
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .7rem;
+}
+
 .to-top {
-  position: fixed; right: clamp(1rem, 2.5vw, 2rem); bottom: clamp(1rem, 2.5vw, 2rem); z-index: 90;
-  width: 48px; height: 48px; display: grid; place-items: center;
-  border: 0; border-radius: 50%; background: var(--lime); color: var(--ink);
+  width: 44px; height: 44px; display: grid; place-items: center;
+  border: 0; border-radius: 50%; background: var(--white); color: var(--g-dark);
+  border: 1px solid var(--line);
   cursor: pointer; box-shadow: var(--sh-2);
-  opacity: 0; visibility: hidden; transform: translateY(12px);
-  transition: opacity .3s var(--ease), transform .3s var(--ease), visibility .3s, background-color .3s var(--ease);
+  opacity: 0; visibility: hidden; transform: translateY(10px);
+  transition: opacity .3s var(--ease), transform .3s var(--ease), visibility .3s,
+              background-color .3s var(--ease), color .3s var(--ease);
 }
 .to-top.is-visible { opacity: 1; visibility: visible; transform: none; }
-.to-top:hover { background: var(--lime-2); }
+.to-top:hover { background: var(--g-dark); color: var(--lime); border-color: var(--g-dark); }
+
+/* ---- WhatsApp widget ---- */
+.wa { position: relative; display: flex; flex-direction: column; align-items: flex-end; gap: .65rem; }
+
+.wa__toggle {
+  position: relative;
+  width: 58px; height: 58px;
+  display: grid; place-items: center;
+  border: 0; border-radius: 50%;
+  background: #25D366;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(6, 41, 27, .28);
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease), background-color .3s var(--ease);
+}
+.wa__toggle:hover { transform: scale(1.06); box-shadow: 0 14px 34px rgba(6, 41, 27, .34); }
+.wa__toggle i { font-size: 31px; transition: transform .35s var(--ease), opacity .2s var(--ease); }
+.wa__toggle .wa__close { position: absolute; font-size: 24px; opacity: 0; transform: rotate(-45deg); }
+.wa__toggle[aria-expanded="true"] .wa__open { opacity: 0; transform: rotate(45deg); }
+.wa__toggle[aria-expanded="true"] .wa__close { opacity: 1; transform: rotate(0); }
+
+/* A quiet pulse, so the button is noticed once without nagging. */
+.wa__toggle::after {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 2px solid #25D366;
+  animation: wa-pulse 2.6s var(--ease) infinite;
+}
+.wa__toggle[aria-expanded="true"]::after { animation: none; opacity: 0; }
+@keyframes wa-pulse {
+  0%   { transform: scale(1);    opacity: .55; }
+  70%  { transform: scale(1.45); opacity: 0; }
+  100% { transform: scale(1.45); opacity: 0; }
+}
+
+.wa__panel {
+  width: min(304px, calc(100vw - 2.5rem));
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--corner-xl);
+  box-shadow: 0 20px 48px rgba(6, 41, 27, .22);
+  overflow: hidden;
+  transform-origin: bottom right;
+  opacity: 0; visibility: hidden;
+  transform: translateY(10px) scale(.96);
+  transition: opacity .25s var(--ease), transform .3s var(--ease), visibility .3s;
+}
+.wa.is-open .wa__panel { opacity: 1; visibility: visible; transform: none; }
+
+.wa__head {
+  display: flex; align-items: center; gap: .65rem;
+  padding: .9rem 1rem;
+  background: var(--g-dark);
+  color: #fff;
+}
+.wa__head i { color: #25D366; font-size: 22px; }
+.wa__head strong { display: block; font-size: .92rem; line-height: 1.2; }
+.wa__head span { font-size: .76rem; color: var(--on-dark-soft); }
+
+.wa__body { padding: .75rem; display: grid; gap: .5rem; }
+.wa__opt {
+  display: grid;
+  grid-template-columns: 38px 1fr 16px;
+  align-items: center;
+  gap: .7rem;
+  padding: .7rem .75rem;
+  border-radius: var(--corner-md);
+  background: var(--cream);
+  color: var(--ink);
+  transition: background-color .25s var(--ease), transform .25s var(--ease);
+}
+.wa__opt:hover { background: var(--lime-4); transform: translateX(2px); }
+.wa__opt i:first-child {
+  width: 38px; height: 38px;
+  display: grid; place-items: center;
+  border-radius: var(--corner-md);
+  background: var(--white);
+  color: var(--g-mid);
+  font-size: 19px;
+}
+.wa__opt strong { display: block; font-size: .88rem; line-height: 1.25; }
+.wa__opt small { display: block; margin-top: .12rem; font-size: .74rem; color: var(--body-2); line-height: 1.32; }
+.wa__opt > i:last-child { color: var(--g-light); font-size: 15px; }
+.wa__foot { padding: 0 .75rem .8rem; font-size: .7rem; color: var(--body-2); text-align: center; }
+
+@media (prefers-reduced-motion: reduce) { .wa__toggle::after { animation: none; } }
 
 /* ---------- 21. Reveal ---------- */
 .js [data-reveal] {
@@ -1134,7 +1298,9 @@ p:last-child { margin-bottom: 0; }
     min-height: 600px;
     max-height: none;
     padding-top: calc(var(--header-h) + clamp(.5rem, 2.2vh, 1.5rem));
-    padding-bottom: clamp(1rem, 2.6vh, 1.85rem);
+    /* Reserve the floating WhatsApp button's corner so it never sits on top of
+       the figures strip, which is the last thing the hero has to say. */
+    padding-bottom: calc(clamp(1rem, 2.6vh, 1.85rem) + 58px);
     align-items: stretch;
   }
   .hero > .container { display: flex; width: 100%; }
@@ -1324,7 +1490,10 @@ p:last-child { margin-bottom: 0; }
   .tags span { font-size: .64rem; padding: .28rem .6rem; }
 
   .drawer__list a { font-size: 1.2rem; padding: .9rem 0; }
-  .to-top { width: 44px; height: 44px; }
+  .to-top { width: 40px; height: 40px; }
+  .wa__toggle { width: 52px; height: 52px; }
+  .wa__toggle i { font-size: 27px; }
+  .fab-rail { gap: .55rem; }
 }
 
 /* Short phones (SE class). Shed the strip rather than squeeze everything. */

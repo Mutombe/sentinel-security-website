@@ -100,6 +100,53 @@
     });
   }
 
+  /* ---- WhatsApp widget ----
+     One button that asks which conversation you want before it hands you to
+     WhatsApp, rather than guessing. Closes on Escape, on an outside click and
+     once an option is taken. */
+  var wa = document.querySelector('[data-wa]');
+  var waToggle = document.querySelector('[data-wa-toggle]');
+
+  if (wa && waToggle) {
+    var setWa = function (open) {
+      wa.classList.toggle('is-open', open);
+      waToggle.setAttribute('aria-expanded', String(open));
+      waToggle.setAttribute('aria-label', open ? 'Close WhatsApp options' : 'Contact us on WhatsApp');
+      if (open) {
+        var first = wa.querySelector('.wa__opt');
+        if (first) first.focus();
+      }
+    };
+
+    waToggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setWa(waToggle.getAttribute('aria-expanded') !== 'true');
+    });
+
+    wa.addEventListener('click', function (e) {
+      if (e.target.closest('.wa__opt')) setWa(false);
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!wa.contains(e.target)) setWa(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' || waToggle.getAttribute('aria-expanded') !== 'true') return;
+      setWa(false);
+      waToggle.focus();
+    });
+
+    // Keep tabbing inside the panel while it is open.
+    wa.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab' || waToggle.getAttribute('aria-expanded') !== 'true') return;
+      var items = wa.querySelectorAll('.wa__opt, .wa__toggle');
+      var first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  }
+
   /* ---- Scroll reveal ---- */
   var revealables = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
   if (!('IntersectionObserver' in window) || reduceMotion) {

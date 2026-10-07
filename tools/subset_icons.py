@@ -1,7 +1,18 @@
 # Build a trimmed, subsetted Phosphor bundle: only the icons this site uses.
-import re, os
+import re, os, urllib.request
 from fontTools.ttLib import TTFont
 from fontTools import subset
+
+UPSTREAM = "https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src"
+
+
+def fetch(folder, remote, local):
+    """Pull an upstream file only if it is not already sitting here."""
+    if os.path.exists(local):
+        return
+    url = "%s/%s/%s" % (UPSTREAM, folder, remote)
+    print("fetching", url)
+    urllib.request.urlretrieve(url, local)
 
 os.chdir(r"C:\Users\PC\documents\sentinel\assets\icons")
 
@@ -9,7 +20,8 @@ ICONS = """security-camera bell-ringing fingerprint fire-extinguisher door-open 
 house-line buildings factory clock-countdown graduation-cap tag magnifying-glass headset
 handshake target compass shield-check sun lightning wrench solar-panel map-pin phone-call
 envelope-simple clock whatsapp-logo facebook-logo linkedin-logo caret-double-right
-arrow-right arrow-up check-circle star asterisk eye scan-smiley identification-badge""".split()
+arrow-right arrow-up check-circle star asterisk eye scan-smiley identification-badge
+chat-circle-dots users-three x""".split()
 
 STYLES = [
     ("regular", "regular.css", "Phosphor.woff2",         "Phosphor",         "ph"),
@@ -22,7 +34,11 @@ CONTENT_RE = re.compile(r'content:\s*"\\([0-9a-fA-F]+)"')
 out = ['/* Phosphor Icons (MIT) - subset to the glyphs this site uses.',
        '   Upstream: https://phosphoricons.com (@phosphor-icons/web 2.1.1) */', '']
 
+FOLDER = {"regular": "regular", "duotone": "duotone", "fill": "fill"}
+
 for style, css, woff, fam, cls in STYLES:
+    fetch(FOLDER[style], "style.css", css)   # upstream calls every stylesheet style.css
+    fetch(FOLDER[style], woff, woff)
     src = open(css, encoding='utf-8').read()
     codes, rules = set(), []
     for name in ICONS:

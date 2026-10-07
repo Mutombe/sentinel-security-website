@@ -36,9 +36,9 @@
     </ul>
     <div class="topbar__social">
       <span class="script">towards a #secure_world</span>
-      <a href="https://www.facebook.com/" aria-label="Facebook" rel="noopener"><i class="ph-fill ph-facebook-logo i-sm" aria-hidden="true"></i></a>
-      <a href="https://www.linkedin.com/" aria-label="LinkedIn" rel="noopener"><i class="ph-fill ph-linkedin-logo i-sm" aria-hidden="true"></i></a>
-      <a href="https://wa.me/263773589461" aria-label="WhatsApp" rel="noopener"><i class="ph-fill ph-whatsapp-logo i-sm" aria-hidden="true"></i></a>
+      <a href="https://wa.me/263773589461" aria-label="Message Sentinel on WhatsApp" rel="noopener"><i class="ph-fill ph-whatsapp-logo i-sm" aria-hidden="true"></i></a>
+      <a href="mailto:info@sentinel.co.zw" aria-label="Email Sentinel"><i class="ph-fill ph-envelope-simple i-sm" aria-hidden="true"></i></a>
+      <a href="tel:+263773589461" aria-label="Call Sentinel"><i class="ph-fill ph-phone-call i-sm" aria-hidden="true"></i></a>
     </div>
   </div>
 </div>
@@ -156,13 +156,15 @@
   <div class="container">
     <div class="footer__top">
       <div class="footer__brand">
-        <img src="assets/img/brand/sentinel-logo-white.png" alt="Sentinel Security Technology" width="300" height="104" loading="lazy">
+        <a href="index.html" aria-label="Sentinel Security Technology, home">
+          <img src="assets/img/brand/sentinel-logo-white.png" alt="Sentinel Security Technology" width="300" height="104" loading="lazy">
+        </a>
         <p class="script footer__tagline">towards a #secure_world</p>
         <p>Security specialists who protect and secure your assets through digital solutions. Harare, Zimbabwe.</p>
         <div class="socials">
-          <a href="https://www.facebook.com/" aria-label="Sentinel on Facebook" rel="noopener"><i class="ph-fill ph-facebook-logo i-sm" aria-hidden="true"></i></a>
-          <a href="https://www.linkedin.com/" aria-label="Sentinel on LinkedIn" rel="noopener"><i class="ph-fill ph-linkedin-logo i-sm" aria-hidden="true"></i></a>
-          <a href="https://wa.me/263773589461" aria-label="Sentinel on WhatsApp" rel="noopener"><i class="ph-fill ph-whatsapp-logo i-sm" aria-hidden="true"></i></a>
+          <a href="https://wa.me/263773589461" aria-label="Message Sentinel on WhatsApp" rel="noopener"><i class="ph-fill ph-whatsapp-logo i-sm" aria-hidden="true"></i></a>
+          <a href="mailto:info@sentinel.co.zw" aria-label="Email Sentinel"><i class="ph-fill ph-envelope-simple i-sm" aria-hidden="true"></i></a>
+          <a href="tel:+263773589461" aria-label="Call Sentinel"><i class="ph-fill ph-phone-call i-sm" aria-hidden="true"></i></a>
         </div>
       </div>
 
@@ -213,7 +215,47 @@
   </div>
 </footer>
 
-<button class="to-top" type="button" aria-label="Back to top"><i class="ph ph-arrow-up i-md" aria-hidden="true"></i></button>
+<!-- ===== Floating contact rail ===== -->
+<div class="fab-rail">
+  <button class="to-top" type="button" aria-label="Back to top"><i class="ph ph-arrow-up i-sm" aria-hidden="true"></i></button>
+
+  <div class="wa" data-wa>
+    <div class="wa__panel" id="wa-panel" role="dialog" aria-label="Contact Sentinel on WhatsApp">
+      <div class="wa__head">
+        <i class="ph-fill ph-whatsapp-logo i-md" aria-hidden="true"></i>
+        <span>
+          <strong>Sentinel on WhatsApp</strong>
+          <span>Usually replies within the hour</span>
+        </span>
+      </div>
+      <div class="wa__body">
+        <a class="wa__opt" href="https://wa.me/263773589461?text=Hello%20Sentinel%2C%20I%20would%20like%20to%20ask%20about%20a%20security%20system%20for%20my%20property." target="_blank" rel="noopener">
+          <i class="ph-duotone ph-chat-circle-dots i-md" aria-hidden="true"></i>
+          <span>
+            <strong>Make an enquiry</strong>
+            <small>Prices and site surveys</small>
+          </span>
+          <i class="ph ph-caret-double-right i-xs" aria-hidden="true"></i>
+        </a>
+        <a class="wa__opt" href="https://chat.whatsapp.com/" target="_blank" rel="noopener">
+          <i class="ph-duotone ph-users-three i-md" aria-hidden="true"></i>
+          <span>
+            <strong>Join the community</strong>
+            <small>Security tips from our team</small>
+          </span>
+          <i class="ph ph-caret-double-right i-xs" aria-hidden="true"></i>
+        </a>
+      </div>
+      <p class="wa__foot">Opens WhatsApp. Standard message rates apply.</p>
+    </div>
+
+    <button class="wa__toggle" type="button" data-wa-toggle
+            aria-expanded="false" aria-controls="wa-panel" aria-label="Contact us on WhatsApp">
+      <i class="ph-fill ph-whatsapp-logo i-md wa__open" aria-hidden="true"></i>
+      <i class="ph ph-x i-md wa__close" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
 
 <script src="assets/js/main.js" defer></script>
 </body>

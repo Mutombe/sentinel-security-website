@@ -168,6 +168,35 @@ a short laptop screen. Checked at 1440x900, 1366x768, 1280x720, 1280x640,
 1440x1080 and 390x844. Below 560px tall on desktop, and on phones, the hero is
 allowed to grow rather than squash.
 
+## The floating WhatsApp button
+
+Bottom right, above the back to top button. Tapping it opens a small panel that
+asks which conversation you want before handing you to WhatsApp:
+
+- **Make an enquiry** goes to `wa.me/263773589461` with a message prefilled
+- **Join the community** goes to the community invite link
+
+It closes on Escape, on a click outside, and once an option is taken. Tab is
+trapped inside the panel while it is open, and the whole rail hides when the
+mobile menu is open. Both links are in `tools/build.py` as `WA_ENQUIRY` and
+`WA_COMMUNITY`.
+
+The homepage hero reserves 58px of bottom padding on phones so the button never
+sits on top of the figures strip.
+
+## Everything goes somewhere
+
+Every surface that reads as a panel is now a link, because on this site a card
+shape means "clickable". Cards, process steps, stat tiles, bento photographs,
+sector tags, client logos, the credential chips, the award badges and the footer
+logo all have destinations. Audited at zero dead ends across all six pages:
+no empty `href`, no `href="#"`, and no card, tile or chip without a target.
+
+The sector rows carry ids (`#corporate`, `#banking`, `#government`,
+`#manufacturing`, `#construction`) so the "Where we work" tags can point at the
+matching row, and the clients strip and recognition section have `#clients` and
+`#recognition`.
+
 ## Before it goes live
 
 **1. The stock photography and the hero video are watermarked.** Every file in
@@ -189,7 +218,13 @@ use `24/7`, `3` awards, `5` sectors and `6` systems. All are drawn from the old
 site, but if Sentinel has stronger real figures (years trading, sites secured,
 cameras under management) those belong here instead.
 
-**3. The contact form has no backend.** It composes a `mailto:` to
+**3. The WhatsApp community link is a placeholder.** `WA_COMMUNITY` in
+`tools/build.py` currently points at `https://chat.whatsapp.com/` with no invite
+code, which lands on a generic page. Create the community in WhatsApp, copy its
+invite link, and paste it in. The enquiry option beside it is already live and
+goes to the real number.
+
+**4. The contact form has no backend.** It composes a `mailto:` to
 `info@sentinel.co.zw` and opens the visitor's email client. That works, but it
 loses anyone without a configured mail app. To take submissions properly, point
 the `<form>` at a form service (Formspree, Web3Forms, Netlify Forms) or a small
@@ -198,8 +233,11 @@ server endpoint, and delete the `data-contact-form` handler at the bottom of
 
 ## Also worth a look
 
-- **Social links** in the utility bar and footer point at `facebook.com` and
-  `linkedin.com` placeholders. Swap in the real profile URLs.
+- **Social icons** used to point at the `facebook.com` and `linkedin.com`
+  homepages, which are dead ends. They now carry WhatsApp, email and phone,
+  which all reach Sentinel. Put Facebook and LinkedIn back once you have the
+  real profile URLs: they go in the `topbar()` and `FOOTER` blocks of
+  `tools/build.py`.
 - **Copy.** Every page was swept for the tells of machine written text. There
   are no em dashes, en dashes or hyphenated compounds anywhere in the visible
   copy. If you edit a page, keep to commas, colons and full stops.

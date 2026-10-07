@@ -41,6 +41,9 @@
 .ph.ph-eye:before{content: "\e220";}
 .ph.ph-scan-smiley:before{content: "\ebb4";}
 .ph.ph-identification-badge:before{content: "\e6f6";}
+.ph.ph-chat-circle-dots:before{content: "\e16c";}
+.ph.ph-users-three:before{content: "\e68e";}
+.ph.ph-x:before{content: "\e4f6";}
 
 @font-face{font-family:"Phosphor-Duotone";src:url("Phosphor-Duotone-subset.woff2") format("woff2");font-weight:normal;font-style:normal;font-display:block}
 .ph-duotone{font-family:"Phosphor-Duotone"!important;speak:never;font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1;display:inline-block;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
@@ -120,6 +123,12 @@
 .ph-duotone.ph-scan-smiley:after{content: "\ebb5"; margin-left: -1em;}
 .ph-duotone.ph-identification-badge:before{content: "\e6f6"; opacity: 0.2;}
 .ph-duotone.ph-identification-badge:after{content: "\e6f7"; margin-left: -1em;}
+.ph-duotone.ph-chat-circle-dots:before{content: "\e16c"; opacity: 0.2;}
+.ph-duotone.ph-chat-circle-dots:after{content: "\e16d"; margin-left: -1em;}
+.ph-duotone.ph-users-three:before{content: "\e68e"; opacity: 0.2;}
+.ph-duotone.ph-users-three:after{content: "\e68f"; margin-left: -1em;}
+.ph-duotone.ph-x:before{content: "\e4f6"; opacity: 0.2;}
+.ph-duotone.ph-x:after{content: "\e4f7"; margin-left: -1em;}
 
 @font-face{font-family:"Phosphor-Fill";src:url("Phosphor-Fill-subset.woff2") format("woff2");font-weight:normal;font-style:normal;font-display:block}
 .ph-fill{font-family:"Phosphor-Fill"!important;speak:never;font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1;display:inline-block;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
@@ -161,3 +170,6 @@
 .ph-fill.ph-eye:before{content: "\e220";}
 .ph-fill.ph-scan-smiley:before{content: "\ebb4";}
 .ph-fill.ph-identification-badge:before{content: "\e6f6";}
+.ph-fill.ph-chat-circle-dots:before{content: "\e16c";}
+.ph-fill.ph-users-three:before{content: "\e68e";}
+.ph-fill.ph-x:before{content: "\e4f6";}

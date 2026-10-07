@@ -26,6 +26,11 @@ def icon(name, size="i-md", style="ph", cls=""):
 def duo(name, size="i-2xl"):
     return icon(name, size, "ph-duotone")
 
+WA_ENQUIRY = ("https://wa.me/263773589461?text="
+              "Hello%20Sentinel%2C%20I%20would%20like%20to%20ask%20about%20a%20security%20system%20for%20my%20property.")
+# Placeholder: swap for the real chat.whatsapp.com invite link once it exists.
+WA_COMMUNITY = "https://chat.whatsapp.com/"
+
 CHEV = '<span class="pbtn__chev">%s</span>' % icon("caret-double-right", "i-sm")
 CHEV_SM = icon("caret-double-right", "i-xs")
 ARROW = icon("arrow-right", "i-sm")
@@ -121,15 +126,15 @@ def topbar():
     </ul>
     <div class="topbar__social">
       <span class="script">towards a #secure_world</span>
-      <a href="https://www.facebook.com/" aria-label="Facebook" rel="noopener">%s</a>
-      <a href="https://www.linkedin.com/" aria-label="LinkedIn" rel="noopener">%s</a>
-      <a href="https://wa.me/263773589461" aria-label="WhatsApp" rel="noopener">%s</a>
+      <a href="https://wa.me/263773589461" aria-label="Message Sentinel on WhatsApp" rel="noopener">%s</a>
+      <a href="mailto:info@sentinel.co.zw" aria-label="Email Sentinel">%s</a>
+      <a href="tel:+263773589461" aria-label="Call Sentinel">%s</a>
     </div>
   </div>
 </div>
 """ % (icon("check-circle", "i-xs"), icon("envelope-simple", "i-xs"), icon("phone-call", "i-xs"),
-       icon("facebook-logo", "i-sm", "ph-fill"), icon("linkedin-logo", "i-sm", "ph-fill"),
-       icon("whatsapp-logo", "i-sm", "ph-fill"))
+       icon("whatsapp-logo", "i-sm", "ph-fill"), icon("envelope-simple", "i-sm", "ph-fill"),
+       icon("phone-call", "i-sm", "ph-fill"))
 
 
 def header(active):
@@ -211,13 +216,15 @@ FOOTER = """
   <div class="container">
     <div class="footer__top">
       <div class="footer__brand">
-        <img src="assets/img/brand/sentinel-logo-white.png" alt="Sentinel Security Technology" width="300" height="104" loading="lazy">
+        <a href="index.html" aria-label="Sentinel Security Technology, home">
+          <img src="assets/img/brand/sentinel-logo-white.png" alt="Sentinel Security Technology" width="300" height="104" loading="lazy">
+        </a>
         <p class="script footer__tagline">towards a #secure_world</p>
         <p>Security specialists who protect and secure your assets through digital solutions. Harare, Zimbabwe.</p>
         <div class="socials">
-          <a href="https://www.facebook.com/" aria-label="Sentinel on Facebook" rel="noopener">%s</a>
-          <a href="https://www.linkedin.com/" aria-label="Sentinel on LinkedIn" rel="noopener">%s</a>
-          <a href="https://wa.me/263773589461" aria-label="Sentinel on WhatsApp" rel="noopener">%s</a>
+          <a href="https://wa.me/263773589461" aria-label="Message Sentinel on WhatsApp" rel="noopener">%s</a>
+          <a href="mailto:info@sentinel.co.zw" aria-label="Email Sentinel">%s</a>
+          <a href="tel:+263773589461" aria-label="Call Sentinel">%s</a>
         </div>
       </div>
 
@@ -268,15 +275,59 @@ FOOTER = """
   </div>
 </footer>
 
-<button class="to-top" type="button" aria-label="Back to top">%s</button>
+<!-- ===== Floating contact rail ===== -->
+<div class="fab-rail">
+  <button class="to-top" type="button" aria-label="Back to top">%s</button>
+
+  <div class="wa" data-wa>
+    <div class="wa__panel" id="wa-panel" role="dialog" aria-label="Contact Sentinel on WhatsApp">
+      <div class="wa__head">
+        %s
+        <span>
+          <strong>Sentinel on WhatsApp</strong>
+          <span>Usually replies within the hour</span>
+        </span>
+      </div>
+      <div class="wa__body">
+        <a class="wa__opt" href="%s" target="_blank" rel="noopener">
+          %s
+          <span>
+            <strong>Make an enquiry</strong>
+            <small>Prices and site surveys</small>
+          </span>
+          %s
+        </a>
+        <a class="wa__opt" href="%s" target="_blank" rel="noopener">
+          %s
+          <span>
+            <strong>Join the community</strong>
+            <small>Security tips from our team</small>
+          </span>
+          %s
+        </a>
+      </div>
+      <p class="wa__foot">Opens WhatsApp. Standard message rates apply.</p>
+    </div>
+
+    <button class="wa__toggle" type="button" data-wa-toggle
+            aria-expanded="false" aria-controls="wa-panel" aria-label="Contact us on WhatsApp">
+      %s
+      %s
+    </button>
+  </div>
+</div>
 
 <script src="assets/js/main.js" defer></script>
 </body>
 </html>
-""" % (icon("facebook-logo", "i-sm", "ph-fill"), icon("linkedin-logo", "i-sm", "ph-fill"),
-       icon("whatsapp-logo", "i-sm", "ph-fill"),
+""" % (icon("whatsapp-logo", "i-sm", "ph-fill"), icon("envelope-simple", "i-sm", "ph-fill"),
+       icon("phone-call", "i-sm", "ph-fill"),
        icon("map-pin", "i-sm"), icon("phone-call", "i-sm"), icon("envelope-simple", "i-sm"),
-       icon("arrow-up", "i-md"))
+       icon("arrow-up", "i-sm"),
+       icon("whatsapp-logo", "i-md", "ph-fill"),
+       WA_ENQUIRY, icon("chat-circle-dots", "i-md", "ph-duotone"), icon("caret-double-right", "i-xs"),
+       WA_COMMUNITY, icon("users-three", "i-md", "ph-duotone"), icon("caret-double-right", "i-xs"),
+       icon("whatsapp-logo", "i-md", "ph-fill", "wa__open"), icon("x", "i-md", "ph", "wa__close"))
 
 
 def phero(label, title, lead, photo=None, alt=""):
@@ -311,22 +362,22 @@ def write(name, title, desc, body, cta=True):
 
 CLIENTS = """
   <!-- ===== Clients ===== -->
-  <section class="clients section--white" aria-label="Clients">
+  <section class="clients section--white" id="clients" aria-label="Clients">
     <div class="container">
       <p class="clients__label">Trusted across Zimbabwe</p>
       <div class="marquee">
         <div class="marquee__track">
           <div class="marquee__group">
-            <img src="assets/img/clients/ecobank.png" alt="Ecobank" loading="lazy">
-            <img src="assets/img/clients/green-fuel.png" alt="Green Fuel" loading="lazy">
-            <img src="assets/img/clients/probrands.png" alt="ProBrands" loading="lazy">
-            <img src="assets/img/clients/cottco.png" alt="Cottco Holdings Limited" loading="lazy">
+            <a href="about.html#clients" aria-label="Ecobank, a Sentinel client"><img src="assets/img/clients/ecobank.png" alt="Ecobank" loading="lazy"></a>
+            <a href="about.html#clients" aria-label="Green Fuel, a Sentinel client"><img src="assets/img/clients/green-fuel.png" alt="Green Fuel" loading="lazy"></a>
+            <a href="about.html#clients" aria-label="ProBrands, a Sentinel client"><img src="assets/img/clients/probrands.png" alt="ProBrands" loading="lazy"></a>
+            <a href="about.html#clients" aria-label="Cottco Holdings, a Sentinel client"><img src="assets/img/clients/cottco.png" alt="Cottco Holdings Limited" loading="lazy"></a>
           </div>
           <div class="marquee__group" aria-hidden="true">
-            <img src="assets/img/clients/ecobank.png" alt="" loading="lazy">
-            <img src="assets/img/clients/green-fuel.png" alt="" loading="lazy">
-            <img src="assets/img/clients/probrands.png" alt="" loading="lazy">
-            <img src="assets/img/clients/cottco.png" alt="" loading="lazy">
+            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/ecobank.png" alt="" loading="lazy"></a>
+            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/green-fuel.png" alt="" loading="lazy"></a>
+            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/probrands.png" alt="" loading="lazy"></a>
+            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/cottco.png" alt="" loading="lazy"></a>
           </div>
         </div>
       </div>
@@ -344,8 +395,9 @@ STEPS = [
 def steps_block():
     out = '      <div class="steps">\n'
     for n, t, p in STEPS:
-        out += ('        <div class="step" data-reveal><span class="step__n num">%s</span>'
-                '<h3>%s</h3><p>%s</p></div>\n' % (n, t, p))
+        out += ('        <a class="step" href="contact.html" data-reveal>'
+                '<span class="step__n num">%s</span>'
+                '<h3>%s</h3><p>%s</p></a>\n' % (n, t, p))
     return out + "      </div>\n"
 
 
@@ -368,10 +420,10 @@ home = """
 
     <div class="container">
       <div class="hero__content">
-        <span class="hero__badge">
+        <a class="hero__badge" href="about.html#recognition">
           <span class="stars">%s%s%s</span>
           Award winning in <b class="num">2014, 2015 and 2016</b>
-        </span>
+        </a>
 
         <h1 class="h-hero">Your <span class="accent-lime">security</span><br>is our business</h1>
 
@@ -427,17 +479,21 @@ home = """
   <section class="section section--white">
     <div class="container split">
       <div class="bento" data-reveal>
-        <img class="bento__hero" src="assets/img/photos/guards-briefing-1200.jpg"
-             srcset="assets/img/photos/guards-briefing-640.jpg 640w, assets/img/photos/guards-briefing-1200.jpg 1200w"
-             sizes="(max-width:980px) 100vw, 45vw"
-             alt="A Sentinel team briefing before going out to site" width="1200" height="600" loading="lazy">
-        <div class="bento__stat cut-shield">
+        <a class="bento__hero" href="about.html" aria-label="About Sentinel">
+          <img src="assets/img/photos/guards-briefing-1200.jpg"
+               srcset="assets/img/photos/guards-briefing-640.jpg 640w, assets/img/photos/guards-briefing-1200.jpg 1200w"
+               sizes="(max-width:980px) 100vw, 45vw"
+               alt="A Sentinel team briefing before going out to site" width="1200" height="600" loading="lazy">
+        </a>
+        <a class="bento__stat cut-shield" href="contact.html">
           %s
           <strong class="num">24/7</strong>
           <span>Someone on the phone<br>at any hour</span>
-        </div>
-        <img class="bento__tile" src="assets/img/photos/access-control-desk-640.jpg"
-             alt="Access control at a reception desk" width="640" height="640" loading="lazy">
+        </a>
+        <a class="bento__tile" href="services.html#access" aria-label="Access control">
+          <img src="assets/img/photos/access-control-desk-640.jpg"
+               alt="Access control at a reception desk" width="640" height="640" loading="lazy">
+        </a>
       </div>
 
       <div data-reveal>
@@ -454,26 +510,26 @@ home = """
 
         <div class="byline">
           %s
-          <div class="byline__person">
+          <a class="byline__person" href="about.html">
             <span class="byline__avatar">%s</span>
             <span>
               <strong>Accredited and insured</strong>
               <span>Based in Harare, working countrywide</span>
             </span>
-          </div>
+          </a>
         </div>
 
         <div class="grid g-2" style="margin-top:2.25rem">
-          <div class="ministat">
+          <a class="ministat" href="about.html#recognition">
             <div class="ministat__stars">%s%s%s%s%s</div>
             <div class="ministat__num num">3</div>
             <p class="ministat__label">Best Service Award<br><span class="muted num" style="font-weight:500">2014, 2015 and 2016</span></p>
-          </div>
+          </a>
           <div class="ministat">
             <h3>Where we work</h3>
             <div class="tags">
-              <span>Corporate</span><span>Banking</span><span>Government</span>
-              <span>Manufacturing</span><span>Construction</span>
+              <a href="#corporate">Corporate</a><a href="#banking">Banking</a><a href="#government">Government</a>
+              <a href="#manufacturing">Manufacturing</a><a href="#construction">Construction</a>
             </div>
           </div>
         </div>
@@ -538,7 +594,7 @@ home += """      </div>
   </section>
 
   <!-- ===== Sectors ===== -->
-  <section class="section section--white">
+  <section class="section section--white" id="sectors">
     <div class="container">
 """ + shead("Who we work for", "Where our systems run every day",
             "Banks, factories, government departments, building sites and homes. Most of "
@@ -546,6 +602,7 @@ home += """      </div>
       <div class="rows">
 """
 
+SECTOR_IDS = ["corporate", "banking", "government", "manufacturing", "construction"]
 SECTORS = [
  ("Corporate offices", "Reception access control, visitor passes, cover on boardrooms and server rooms, cameras across every floor."),
  ("Banking and financial services", "Man traps, strongroom interlocks, cameras over cash handling, and recordings kept long enough to satisfy an audit."),
@@ -554,12 +611,12 @@ SECTORS = [
  ("Construction", "Cameras up quickly on a new site, cover on plant and materials, and access control that moves as the build moves."),
 ]
 for i, (t, p) in enumerate(SECTORS, 1):
-    home += """        <a class="row" href="contact.html" data-reveal>
+    home += """        <a class="row" id="%s" href="contact.html" data-reveal>
           <span class="row__n num">%02d</span>
           <span class="row__body"><h3>%s</h3><p>%s</p></span>
           <span class="row__go" aria-hidden="true">%s</span>
         </a>
-""" % (i, t, p, ARROW)
+""" % (SECTOR_IDS[i - 1], i, t, p, ARROW)
 
 home += """      </div>
     </div>
@@ -579,26 +636,26 @@ home += """      </div>
         <div style="margin-top:2rem">%s</div>
       </div>
       <div class="grid g-2" data-reveal>
-        <div class="ministat" style="background:var(--g-dark);color:var(--on-dark-soft)">
+        <a class="ministat" href="renewable-energy.html" style="background:var(--g-dark);color:var(--on-dark-soft)">
           <span class="card__icon" style="background:rgba(255,255,255,.1);color:var(--lime)">%s</span>
           <h3 style="color:#fff">Durability</h3>
           <p style="color:var(--on-dark-soft);font-size:.93rem;margin:0">Built for dust, heat, storms and the load an actual Zimbabwean site puts on them.</p>
-        </div>
-        <div class="ministat" style="background:var(--white)">
+        </a>
+        <a class="ministat" href="renewable-energy.html" style="background:var(--white)">
           <span class="card__icon">%s</span>
           <h3>Reliability</h3>
           <p style="font-size:.93rem;margin:0">Panels that perform without compromise, backed by a service schedule.</p>
-        </div>
-        <div class="ministat" style="background:var(--white)">
+        </a>
+        <a class="ministat" href="renewable-energy.html" style="background:var(--white)">
           <span class="card__icon">%s</span>
           <h3>Output</h3>
           <p style="font-size:.93rem;margin:0">More energy over the life of the system, so the saving stays predictable.</p>
-        </div>
-        <div class="ministat" style="background:var(--g-mid);color:rgba(255,255,255,.78)">
+        </a>
+        <a class="ministat" href="renewable-energy.html" style="background:var(--g-mid);color:rgba(255,255,255,.78)">
           <span class="card__icon" style="background:rgba(255,255,255,.14);color:#fff">%s</span>
           <h3 style="color:#fff">Maintenance</h3>
           <p style="color:rgba(255,255,255,.78);font-size:.93rem;margin:0">Cleaning, string checks and battery health on a fixed schedule.</p>
-        </div>
+        </a>
       </div>
     </div>
   </section>
@@ -620,17 +677,21 @@ about = phero("About", "We take care of all your security needs",
   <section class="section section--white">
     <div class="container split">
       <div class="bento" data-reveal>
-        <img class="bento__hero" src="assets/img/photos/guards-briefing-1200.jpg"
-             srcset="assets/img/photos/guards-briefing-640.jpg 640w, assets/img/photos/guards-briefing-1200.jpg 1200w"
-             sizes="(max-width:980px) 100vw, 45vw"
-             alt="Sentinel team briefing" width="1200" height="600" loading="lazy">
-        <img class="bento__tile" src="assets/img/photos/operator-night-shift-640.jpg"
-             alt="Control room operator on night shift" width="640" height="640" loading="lazy">
-        <div class="bento__stat cut-shield">
+        <a class="bento__hero" href="services.html" aria-label="Our services">
+          <img src="assets/img/photos/guards-briefing-1200.jpg"
+               srcset="assets/img/photos/guards-briefing-640.jpg 640w, assets/img/photos/guards-briefing-1200.jpg 1200w"
+               sizes="(max-width:980px) 100vw, 45vw"
+               alt="Sentinel team briefing" width="1200" height="600" loading="lazy">
+        </a>
+        <a class="bento__tile" href="services.html#cctv" aria-label="CCTV surveillance">
+          <img src="assets/img/photos/operator-night-shift-640.jpg"
+               alt="Control room operator on night shift" width="640" height="640" loading="lazy">
+        </a>
+        <a class="bento__stat cut-shield" href="index.html#sectors">
           %s
           <strong class="num">5</strong>
           <span>Sectors we work in<br>every week</span>
-        </div>
+        </a>
       </div>
 
       <div data-reveal>
@@ -645,8 +706,8 @@ about = phero("About", "We take care of all your security needs",
           afford to get wrong. Six things done properly, not twenty done badly.
         </p>
         <div class="tags" style="margin-top:1.75rem">
-          <span>Accredited Zimbabwean firm</span><span>Based in Harare</span>
-          <span>Working countrywide</span><span>Support at any hour</span>
+          <a href="#recognition">Accredited Zimbabwean firm</a><a href="contact.html">Based in Harare</a>
+          <a href="contact.html">Working countrywide</a><a href="contact.html">Support at any hour</a>
         </div>
       </div>
     </div>
@@ -693,37 +754,38 @@ WHY = [
   "Design, supply, installation and maintenance all sit with us, so there is nobody to point at."),
 ]
 for ico, t, p in WHY:
-    about += """        <article class="card card--hoverdark" data-reveal>
+    about += """        <a class="card card--hoverdark" href="contact.html" data-reveal>
           <span class="card__icon">%s</span>
           <h3 class="h-4">%s</h3>
           <p>%s</p>
-        </article>
-""" % (duo(ico, "i-lg"), t, p)
+          <span class="plink">Talk to us %s</span>
+        </a>
+""" % (duo(ico, "i-lg"), t, p, ARROW)
 
 about += """      </div>
     </div>
   </section>
 
-  <section class="section section--dark">
+  <section class="section section--dark" id="recognition">
     <div class="container">
 """ + shead("Recognition", "Best Service Award, three years running",
             "Named Best Service Award in 2014, in 2015 and again in 2016.", kv="eyebrow--dark") + """
       <div class="grid g-3">
-        <div class="card card--dark" data-reveal>
+        <a class="card card--dark card--hoverlime" href="contact.html" data-reveal>
           <img class="award-mark" src="assets/img/brand/award-2014-white.png" alt="" aria-hidden="true"
                width="120" height="118" loading="lazy">
           <h3 class="h-4 num">2014</h3><p>Best Service Award</p>
-        </div>
-        <div class="card card--dark" data-reveal>
+        </a>
+        <a class="card card--dark card--hoverlime" href="contact.html" data-reveal>
           <img class="award-mark" src="assets/img/brand/award-2015-white.png" alt="" aria-hidden="true"
                width="120" height="118" loading="lazy">
           <h3 class="h-4 num">2015</h3><p>Best Service Award</p>
-        </div>
-        <div class="card card--dark" data-reveal>
+        </a>
+        <a class="card card--dark card--hoverlime" href="contact.html" data-reveal>
           <img class="award-mark" src="assets/img/brand/award-2016-white.png" alt="" aria-hidden="true"
                width="120" height="118" loading="lazy">
           <h3 class="h-4 num">2016</h3><p>Best Service Award</p>
-        </div>
+        </a>
       </div>
     </div>
   </section>
@@ -943,7 +1005,7 @@ solar = phero("Renewable Energy", "Solar PV for homes, businesses and power plan
 """ + shead("What we deliver", "Building it, then keeping it producing",
             "One contract for the build. One for everything after it.", kv="eyebrow--dark") + """
       <div class="grid g-2">
-        <article class="card card--dark" data-reveal>
+        <a class="card card--dark card--hoverlime" href="contact.html" data-reveal>
           <span class="card__icon">%s</span>
           <h3 class="h-3">Solar PV EPC</h3>
           <p>Everything under one contract: yield modelling, electrical design, installation, grid or hybrid integration, then commissioning.</p>
@@ -953,8 +1015,9 @@ solar = phero("Renewable Energy", "Solar PV for homes, businesses and power plan
             <li>Structural mounting and cabling</li>
             <li>Commissioning and training</li>
           </ul>
-        </article>
-        <article class="card card--dark" data-reveal>
+          <span class="plink">Ask for a quotation %s</span>
+        </a>
+        <a class="card card--dark card--hoverlime" href="contact.html" data-reveal>
           <span class="card__icon">%s</span>
           <h3 class="h-3">Operations and maintenance</h3>
           <p>The part most installers skip. Panels get dirty, strings drift and batteries age, so servicing is what keeps output up.</p>
@@ -964,14 +1027,15 @@ solar = phero("Renewable Energy", "Solar PV for homes, businesses and power plan
             <li>Inverter and battery health checks</li>
             <li>Fault response and spares</li>
           </ul>
-        </article>
+          <span class="plink">Ask for a quotation %s</span>
+        </a>
       </div>
     </div>
   </section>
 
   <section class="section section--white">
     <div class="container">
-""" % (duo("solar-panel", "i-lg"), duo("wrench", "i-lg")) + shead(
+""" % (duo("solar-panel", "i-lg"), ARROW, duo("wrench", "i-lg"), ARROW) + shead(
   "Who we power", "Three markets, the same engineering") + """
       <div class="rows">
 """
