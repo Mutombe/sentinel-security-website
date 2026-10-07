@@ -485,7 +485,7 @@ home = """
                sizes="(max-width:980px) 100vw, 45vw"
                alt="A Sentinel team briefing before going out to site" width="1200" height="600" loading="lazy">
         </a>
-        <a class="bento__stat cut-shield" href="contact.html">
+        <a class="bento__stat" href="contact.html">
           %s
           <strong class="num">24/7</strong>
           <span>Someone on the phone<br>at any hour</span>
@@ -687,7 +687,7 @@ about = phero("About", "We take care of all your security needs",
           <img src="assets/img/photos/operator-night-shift-640.jpg"
                alt="Control room operator on night shift" width="640" height="640" loading="lazy">
         </a>
-        <a class="bento__stat cut-shield" href="index.html#sectors">
+        <a class="bento__stat" href="index.html#sectors">
           %s
           <strong class="num">5</strong>
           <span>Sectors we work in<br>every week</span>
@@ -804,7 +804,7 @@ def detail(anchor, kicker, title, lead, bullets, photo, alt, flip):
           <img src="assets/img/photos/%s-1200.jpg"
                srcset="assets/img/photos/%s-640.jpg 640w, assets/img/photos/%s-1200.jpg 1200w"
                sizes="(max-width:980px) 100vw, 45vw"
-               class="cut-corner" style="aspect-ratio:4/3;object-fit:cover;width:100%%"
+               style="border-radius:var(--corner-xl);aspect-ratio:4/3;object-fit:cover;width:100%%"
                alt="%s" width="1200" height="900" loading="lazy">
         </div>
 """ % (photo, photo, photo, alt)
@@ -973,7 +973,7 @@ solar = phero("Renewable Energy", "Solar PV for homes, businesses and power plan
       </div>
       <div data-reveal>
         <img src="assets/img/photos/residential-electr-services.jpg"
-             class="cut-corner" style="aspect-ratio:4/3;object-fit:cover;width:100%%"
+             style="border-radius:var(--corner-xl);aspect-ratio:4/3;object-fit:cover;width:100%%"
              alt="An electrical distribution board being commissioned" width="600" height="450" loading="lazy">
       </div>
     </div>

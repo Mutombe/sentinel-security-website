@@ -57,15 +57,14 @@
   --ff-accent: 'Grand Hotel', 'Manrope', cursive;
 
   /* Shape */
-  /* Corner language. The shield in the logo is square across the top and cut
-     away at the bottom, so every surface follows it: a flat top edge that lines
-     up with the grid, and a bottom that releases. Interactive elements stay
-     fully round, and that contrast is the point. */
+  /* Corner language. Two states only, square or round, never an angled cut.
+     Surfaces get a flat top edge that lines up with the grid and a bottom that
+     releases; anything you can press is a full capsule. That contrast is the
+     point, and it stays readable because there is no third shape. */
   --r-card: 26px;   /* bottom radius, large surfaces */
   --r-lg: 20px;     /* bottom radius, medium surfaces */
   --r-md: 11px;     /* bottom radius, small surfaces */
   --r-pill: 999px;  /* anything you can click */
-  --cut: 20px;      /* depth of the 45 degree chamfer, the literal shield cut */
 
   /* Ready made corner sets */
   --corner-xl: 0 0 var(--r-card) var(--r-card);
@@ -222,34 +221,6 @@ p:last-child { margin-bottom: 0; }
 .i-lg { font-size: 26px; }
 .i-xl { font-size: 34px; }
 .i-2xl { font-size: 44px; }
-
-/* The shield itself: square shoulders, two 45 degree cuts at the foot. Used on
-   solid tiles and images, where clip-path costs nothing. It takes no border or
-   shadow, so only apply it to surfaces that do not want either. */
-.cut-shield {
-  --cut-d: var(--cut);
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    100% calc(100% - var(--cut-d)),
-    calc(100% - var(--cut-d)) 100%,
-    var(--cut-d) 100%,
-    0 calc(100% - var(--cut-d))
-  );
-  border-radius: 0 !important;
-}
-/* A single cut, bottom right only. Quieter, for images sitting next to copy. */
-.cut-corner {
-  --cut-d: var(--cut);
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    100% calc(100% - var(--cut-d)),
-    calc(100% - var(--cut-d)) 100%,
-    0 100%
-  );
-  border-radius: 0 !important;
-}
 
 /* ---------- 4. Layout ---------- */
 .container { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter); }
@@ -841,7 +812,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   padding: 1.25rem;
   background-color: var(--lime);
   background-image: var(--pat-diag-ink);
-  border-radius: 0;
+  border-radius: var(--corner-lg);
   text-align: center;
   color: var(--ink);
 }
@@ -1355,7 +1326,6 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
     --r-card: 20px;
     --r-lg: 16px;
     --r-md: 9px;
-    --cut: 15px;
     --notch: 14px;
     --gap-tab: 20px;
     --gutter: 1.15rem;

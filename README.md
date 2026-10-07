@@ -92,14 +92,13 @@ or link the full upstream stylesheet from a CDN while you are working.
 
 ### Corners
 
-The shield in the logo is square across the top and cut away at 45 degrees at
-the bottom. Every surface on the site follows that shape, so the geometry is the
-brand's rather than arbitrary:
+Two states only: **square or round**. No angled cuts, no chamfers, nothing in
+between, because a third shape makes the system read as inconsistent rather than
+deliberate.
 
 | Kind of thing | Corners | Why |
 |---|---|---|
-| Surfaces: cards, panels, images, inputs, icon chips | square top, rounded bottom (`--corner-xl` / `-lg` / `-md`) | the flat shoulder lines up with the grid and with its neighbours |
-| Accents: the stat tiles, the service photographs | a real 45 degree chamfer (`.cut-shield`, `.cut-corner`) | the literal shield silhouette, used sparingly |
+| Surfaces: cards, panels, images, tiles, inputs, icon chips | square top, rounded bottom (`--corner-xl` / `-lg` / `-md`) | the flat shoulder lines up with the grid and with its neighbours |
 | Anything you can click: buttons, tags, eyebrows, badges | fully round (`--r-pill`) | maximum contrast against the square shoulders |
 | Icon buttons, avatars, step numbers | circles | same family as the pills |
 
@@ -108,8 +107,9 @@ the point: it tells you what is a surface and what is a control without any
 other signal. A row of cards reads as one crisp horizontal line across the top
 while the feet stay soft.
 
-`.cut-shield` and `.cut-corner` use `clip-path`, which discards borders and
-shadows, so they only go on solid tiles and photographs that want neither.
+Every rendered corner on the site is either `0px` or a radius. The full set in
+use is `0 0 26 26`, `0 0 20 20`, `0 0 11 11`, `0 0 0 26` and `0 0 26 11` (the
+two halves of the notched card), plus `50%` and `999px` for controls.
 
 The flat top edge also gives cards something to do on hover: a 3px rule draws
 itself left to right along the shoulder.

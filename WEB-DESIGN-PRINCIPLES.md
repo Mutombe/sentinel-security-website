@@ -186,13 +186,22 @@ The best rule is usually already in the brand mark. Look at the logo and ask
 what its corners do. Sentinel's is a shield: square across the top, cut away at
 45 degrees at the bottom. That is a complete corner system sitting there unused.
 
-Turn it into three tiers:
+Turn it into tiers, but **keep it to two shapes: square and round.**
 
 | Tier | Treatment | Reads as |
 |---|---|---|
 | Surfaces (cards, panels, images, inputs) | square top, rounded bottom | structure |
-| Accents (a few solid tiles, key photographs) | the literal shape, as a real chamfer | brand |
 | Controls (buttons, tags, chips, avatars) | fully round | affordance |
+
+The temptation is to add a third shape, usually a 45 degree chamfer, because it
+looks striking in isolation. Resist it. I tried exactly that here, taking the
+shield's cut literally on a few tiles, and it was the first thing the client
+pulled out: an angled corner next to a square one and a round one does not read
+as a richer system, it reads as an inconsistency. A row where one tile is
+chamfered and its two neighbours are rounded stops being a row.
+
+Two shapes in a strict relationship beat three shapes in a loose one. Take the
+*logic* of the mark, not its literal geometry.
 
 Two things make this work:
 
@@ -201,15 +210,17 @@ a capsule means "you can press this." The viewer never has to be told.
 
 **The flat edge aligns.** Three cards in a row with square tops draw one crisp
 horizontal line. Three cards with 28px radius draw nothing. That line is free
-structure, and it is why a mixed system usually looks tidier than a uniform one
-rather than busier.
+structure, and it is why a two shape system usually looks tidier than a uniform
+one rather than busier. It only works if every card in the row obeys it.
 
 Implementation notes: store the corner sets as tokens
-(`--corner-xl: 0 0 var(--r) var(--r)`) so the rule is applied, not retyped. Use
-`clip-path` for true chamfers, but only on surfaces that want no border and no
-shadow, because it discards both. And give the new flat edge a job: a rule that
-draws along it on hover costs three lines and makes the geometry feel deliberate
-rather than decorative.
+(`--corner-xl: 0 0 var(--r) var(--r)`) so the rule is applied, not retyped. Then
+assert it: walk the rendered page, collect every computed `border-radius` and
+`clip-path`, and check that each value is either zero or a radius. If a polygon
+shows up, the system has sprung a third shape.
+
+And give the new flat edge a job: a rule that draws along it on hover costs
+three lines and makes the geometry feel deliberate rather than decorative.
 
 The failure mode is using a sharp corner once, somewhere, for variety. One
 exception reads as a mistake. A system reads as a decision.
