@@ -60,18 +60,50 @@ figures so columns of figures line up.
 
 Both faces are SIL OFL, so both are free to use commercially.
 
-### Colour: a four stop green ramp
+### Colour: the green ramp
 
-| Token | Value | Role |
+The dark end carries most of this site, so it is a real scale rather than one
+value. Seven steps whose hue drifts 158 to 147 as they lighten, meeting the
+brand green at 146:
+
+| Token | Value | Used for |
 |---|---|---|
-| `--g-dark` | `#06291B` | dark green: grounds, headings, the dark card |
-| `--g-mid` | `#0C6934` | mid green: the logo green, solid fills, links |
-| `--g-light` | `#3FB56F` | light green: small accents, row numbers |
-| `--lime` | `#A9EE6E` | lime: buttons, highlights, the lime card, the utility bar |
+| `--g-950` | `#03140E` | the footer, the foot of the hero scrim |
+| `--g-900` | `#051D14` | dark section grounds, the mobile drawer |
+| `--g-850` | `#06291B` | the default dark, and every dark heading |
+| `--g-800` | `#093522` | surfaces sitting **on** a dark ground, so they lift |
+| `--g-750` | `#0B4328` | those surfaces on hover |
+| `--g-700` | `#0C522E` | mid dark accents |
+| `--g-650` | `#0C5F31` | the step just below the brand green |
+| `--g-mid` | `#0C6934` | the logo green: solid fills, links, icons on light paper |
+| `--g-light` | `#3FB56F` | accents **on dark grounds only** |
+| `--lime` | `#A9EE6E` | the accent: buttons, highlights, one card in three |
 
-`--ramp` and `--ramp-soft` run all four in order, and are used on the interior
-page heroes. Paper is `--white` and `--cream` (`#F7F7EF`); sections alternate
-white, cream, dark and lime so the page has rhythm.
+Three rules keep it honest:
+
+**Depth comes from picking a different step, never from washing white over the
+same one.** A card on a dark section is `--g-800`, not `rgba(255,255,255,.04)`.
+White washes desaturate and the surface goes grey; a lighter green keeps the hue
+and still lifts.
+
+**`--g-light` is a dark-ground colour.** It is 6.8:1 on `--g-900` and only 2.6:1
+on white, so anything small sitting on light paper uses `--g-mid` instead. The
+sector row numbers and the eyebrow asterisks switch between the two.
+
+**Dark surfaces are gradients, not slabs.** Dark sections run `--g-900` to
+`--g-850` and back, with one soft pool of brand green in the upper left. The CTA
+band runs diagonally `--g-900` to `--g-800` with a small lime glow in the top
+right corner. Flat fills read as slabs; a shallow gradient gives the eye
+somewhere to rest.
+
+Paper is `--white` and `--cream` (`#F7F7EF`); sections alternate white, cream,
+dark and lime so the page has rhythm.
+
+**Contrast.** Every text and background pair on the site is audited in the
+browser: computed colours flattened against their real backgrounds, measured
+against WCAG AA (4.5:1 body, 3:1 large). Zero failures on all six pages. The
+muted text colour `--body-2` is pinned at `#647269` because anything lighter
+drops below 4.5:1 on cream.
 
 ### Icons
 

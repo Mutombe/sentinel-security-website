@@ -84,7 +84,12 @@ once, without touching a single component rule.
 A palette is a bag of colours. A **ramp** is an ordered progression, and ordered
 progressions are what make interfaces feel considered.
 
-Four steps is usually enough:
+Four named steps is the minimum. But whichever end of the ramp does the most
+work needs more than one value, or every surface at that end looks identical.
+On a dark site the dark end carries the hero, the sections, the cards, the CTA
+and the footer: give it six or seven steps, not one.
+
+Four steps to start:
 
 | Step | Role |
 |---|---|
@@ -102,8 +107,31 @@ Then **alternate section grounds** down the page: white, off white, dark, accent
 A page with one background colour reads flat no matter how good the components
 are. Rhythm is created by the grounds, not the content.
 
-One more rule: an accent that appears everywhere stops being an accent. If the
-lime is on every card, nothing pops. Use it on roughly one element in five.
+Three rules that make a ramp behave:
+
+**Depth comes from picking a different step, never from washing white over the
+same one.** A card on a dark section should be a lighter green, not
+`rgba(255,255,255,.04)`. A white wash desaturates whatever is under it, so the
+surface drifts grey and the whole palette goes muddy. A lighter step keeps the
+hue and still lifts off the ground.
+
+**A light accent is a dark-ground colour.** The step that reads beautifully on
+near-black will be 2.6:1 on white. Decide which ground each step belongs to and
+switch tokens at the boundary rather than using one value everywhere.
+
+**Dark surfaces are gradients, not slabs.** A shallow vertical gradient between
+two adjacent steps, plus one soft pool of light, gives the eye somewhere to rest.
+Keep the two steps adjacent: skip too far and you get visible banding, which
+reads as a rendering bug rather than as depth.
+
+And: an accent that appears everywhere stops being an accent. If the lime is on
+every card, nothing pops. Use it on roughly one element in five.
+
+Finally, **measure the contrast rather than trusting your eye.** Walk the
+rendered page, flatten each element's computed colour against its real
+background, and check it against AA. Muted greys are where this bites: the
+colour that looks "nicely secondary" is very often 3.8:1, and you cannot see the
+difference between that and 4.6:1 by looking.
 
 ---
 

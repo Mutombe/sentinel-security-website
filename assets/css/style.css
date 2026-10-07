@@ -17,11 +17,23 @@
 
 /* ---------- 1. Tokens ---------- */
 :root {
-  /* Green ramp: dark, mid, light, lime */
-  --g-dark:  #06291B;  /* 1. dark green - grounds, headings */
-  --g-mid:   #0C6934;  /* 2. mid green - the logo green */
-  --g-light: #3FB56F;  /* 3. light green */
-  --lime:    #A9EE6E;  /* 4. lime - the accent */
+  /* Green ramp.
+     The dark end carries most of this site, so it is a real scale rather than
+     one value: seven steps whose hue drifts 158 to 147 as they lighten, meeting
+     the brand mid at 146. Depth on dark surfaces comes from picking a different
+     step, never from washing white over the same one. */
+  --g-950:   #03140E;  /* deepest: the footer, the foot of the hero scrim */
+  --g-900:   #051D14;  /* dark section grounds, the mobile drawer */
+  --g-850:   #06291B;  /* the default dark, and every dark heading */
+  --g-800:   #093522;  /* surfaces sitting ON a dark ground, so they lift */
+  --g-750:   #0B4328;  /* those surfaces on hover */
+  --g-700:   #0C522E;  /* mid dark accents */
+  --g-650:   #0C5F31;  /* the step just below the brand green */
+
+  --g-dark:  var(--g-850);
+  --g-mid:   #0C6934;  /* the logo green */
+  --g-light: #3FB56F;
+  --lime:    #A9EE6E;  /* the accent */
 
   --lime-2:  #96E252;  /* lime hover */
   --lime-3:  #C7F5A2;  /* lime tint */
@@ -31,13 +43,13 @@
   --green:   var(--g-mid);
   --green-2: #0F8442;
   --green-3: var(--g-light);
-  --ink:     var(--g-dark);
-  --ink-2:   #0A3A26;
-  --ink-3:   #10513A;
+  --ink:     var(--g-850);
+  --ink-2:   var(--g-800);
+  --ink-3:   var(--g-700);
 
   /* The full ramp, for any surface that wants all four */
-  --ramp:      linear-gradient(118deg, var(--g-dark) 0%, var(--g-mid) 34%, var(--g-light) 68%, var(--lime) 100%);
-  --ramp-soft: linear-gradient(118deg, var(--g-dark) 0%, var(--g-mid) 46%, var(--g-light) 86%, var(--lime) 118%);
+  --ramp:      linear-gradient(118deg, var(--g-950) 0%, var(--g-800) 22%, var(--g-mid) 52%, var(--g-light) 78%, var(--lime) 100%);
+  --ramp-soft: linear-gradient(118deg, var(--g-950) 0%, var(--g-800) 26%, var(--g-mid) 60%, var(--g-light) 94%, var(--lime) 124%);
 
   /* Paper */
   --white:   #FFFFFF;
@@ -47,8 +59,8 @@
   --line-2:  rgba(255, 255, 255, .14);
 
   /* Text */
-  --body:    #55655B;
-  --body-2:  #76867C;
+  --body:    #55655B;  /* 5.7:1 on cream */
+  --body-2:  #647269;  /* muted, still 4.7:1 on cream. Anything lighter fails AA. */
   --on-dark:      rgba(255, 255, 255, .95);
   --on-dark-soft: rgba(255, 255, 255, .66);
 
@@ -205,7 +217,7 @@ p:last-child { margin-bottom: 0; }
   font-weight: 600;
   letter-spacing: .01em;
 }
-.eyebrow i { flex: none; color: var(--g-light); }
+.eyebrow i { flex: none; color: var(--g-mid); }
 .eyebrow--dark i, .eyebrow--lime i { color: var(--lime); }
 .eyebrow--dark { background: rgba(255,255,255,.08); border-color: var(--line-2); color: #fff; }
 .eyebrow--lime { background: var(--ink); border-color: var(--ink); color: var(--lime); }
@@ -236,9 +248,13 @@ p:last-child { margin-bottom: 0; }
 }
 .section--white { background: var(--white); }
 .section--dark {
-  background-color: var(--g-dark);
-  background-image: var(--pat-grid-lt);
-  background-size: var(--cell) var(--cell);
+  position: relative;
+  background-color: var(--g-900);
+  background-image:
+    var(--pat-grid-lt),
+    radial-gradient(90% 60% at 18% 0%, rgba(12, 105, 52, .28) 0%, rgba(12, 105, 52, 0) 60%),
+    linear-gradient(180deg, var(--g-900) 0%, var(--g-850) 46%, var(--g-900) 100%);
+  background-size: var(--cell) var(--cell), cover, cover;
   color: var(--on-dark-soft);
 }
 .section--dark h1, .section--dark h2, .section--dark h3, .section--dark h4 { color: #fff; }
@@ -446,7 +462,8 @@ p:last-child { margin-bottom: 0; }
 /* Mobile drawer */
 .drawer {
   position: fixed; inset: 0; z-index: 99;
-  background: var(--ink);
+  background-color: var(--g-900);
+  background-image: radial-gradient(80% 50% at 80% 0%, rgba(12, 105, 52, .32) 0%, rgba(12, 105, 52, 0) 62%);
   padding: calc(var(--header-h) + 2.5rem) var(--gutter) 2rem;
   display: flex; flex-direction: column; gap: 1.5rem;
   opacity: 0; visibility: hidden; transform: translateY(-10px);
@@ -584,7 +601,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   overflow: hidden;
   max-width: 660px;
 }
-.hero__fact { background: rgba(6, 41, 27, .55); backdrop-filter: blur(6px); padding: clamp(.65rem, 1.6vh, 1.05rem) 1rem; }
+.hero__fact { background: rgba(9, 53, 34, .62); backdrop-filter: blur(8px); padding: clamp(.65rem, 1.6vh, 1.05rem) 1rem; }
 .hero__fact dt { font-size: clamp(1.15rem, min(2.3vw, 3vh), 1.85rem); font-weight: 800; color: #fff; line-height: 1; letter-spacing: -.03em; }
 .hero__fact dd { margin: .3rem 0 0; font-size: .7rem; letter-spacing: .07em; text-transform: uppercase; color: rgba(255,255,255,.58); }
 
@@ -607,9 +624,12 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
     linear-gradient(180deg, rgba(6,41,27,.55) 0%, rgba(6,41,27,0) 30%, rgba(6,41,27,0) 72%, rgba(6,41,27,.35) 100%);
 }
 .phero--plain {
-  background-color: var(--g-dark);
-  background-image: var(--pat-grid-lt), var(--ramp-soft);
-  background-size: var(--cell) var(--cell), cover;
+  background-color: var(--g-900);
+  background-image:
+    var(--pat-grid-lt),
+    radial-gradient(60% 90% at 86% 24%, rgba(169, 238, 110, .16) 0%, rgba(169, 238, 110, 0) 64%),
+    var(--ramp-soft);
+  background-size: var(--cell) var(--cell), cover, cover;
 }
 .phero--plain::after {
   content: ""; position: absolute; right: -3%; bottom: -46%;
@@ -703,7 +723,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 
 /* Colour variants */
 .ncard--lime { --c: var(--lime); --fg: var(--ink); }
-.ncard--dark { --c: var(--ink); --fg: #fff; }
+.ncard--dark { --c: var(--g-850); --fg: #fff; }
 .ncard--green { --c: var(--green); --fg: #fff; }
 .ncard--white .ncard__main { box-shadow: var(--sh-1); }
 
@@ -780,7 +800,9 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .card .plink { margin-top: 1.5rem; }
 
 .card--flat { border: 0; background: var(--cream); }
-.card--dark { background: rgba(255,255,255,.04); border-color: var(--line-2); }
+/* A surface on a dark ground lifts by being a lighter green, not by having
+   white washed over it. White washes go grey and kill the hue. */
+.card--dark { background: var(--g-800); border-color: rgba(255, 255, 255, .09); }
 .card--dark h3 { color: #fff; }
 .card--dark p, .card--dark .card__list li { color: var(--on-dark-soft); }
 .card--dark .card__icon { background: rgba(255,255,255,.08); color: var(--lime); }
@@ -860,14 +882,14 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1rem, 1.6vw, 1.4rem); }
 .step {
   padding: clamp(1.4rem, 2.2vw, 1.9rem);
-  background-color: rgba(255,255,255,.04);
+  background-color: var(--g-800);
   background-image: var(--pat-dots-lt);
   background-size: 20px 20px;
-  border: 1px solid var(--line-2);
+  border: 1px solid rgba(255, 255, 255, .08);
   border-radius: var(--corner-lg);
   transition: background-color .4s var(--ease), transform .4s var(--ease);
 }
-.step:hover { background: rgba(255,255,255,.08); transform: translateY(-5px); }
+.step:hover { background-color: var(--g-750); transform: translateY(-5px); }
 .step__n {
   display: inline-grid; place-items: center;
   width: 46px; height: 46px;
@@ -893,8 +915,9 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 }
 .section--dark .row { border-color: var(--line-2); }
 .row:hover { background: var(--cream); padding-inline: clamp(.5rem, 1.5vw, 1.4rem); }
-.section--dark .row:hover { background: rgba(255,255,255,.04); }
-.row__n { font-size: .8rem; font-weight: 700; letter-spacing: .06em; color: var(--g-light); }
+.section--dark .row:hover { background: var(--g-800); }
+.row__n { font-size: .8rem; font-weight: 700; letter-spacing: .06em; color: var(--g-mid); }
+.section--dark .row__n { color: var(--g-light); }
 .row__body h3 { font-size: clamp(1.2rem, 2vw, 1.6rem); margin-bottom: .2rem; }
 .row__body p { margin: 0; font-size: .95rem; color: var(--body-2); max-width: 66ch; }
 .section--dark .row__body p { color: var(--on-dark-soft); }
@@ -991,9 +1014,12 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 /* ---------- 17. CTA band ---------- */
 .cta {
   position: relative;
-  background-color: var(--g-dark);
-  background-image: var(--pat-grid-lt);
-  background-size: var(--cell) var(--cell);
+  background-color: var(--g-850);
+  background-image:
+    var(--pat-grid-lt),
+    radial-gradient(36% 86% at 93% 6%, rgba(169, 238, 110, .13) 0%, rgba(169, 238, 110, 0) 72%),
+    linear-gradient(118deg, var(--g-900) 0%, var(--g-850) 58%, var(--g-800) 100%);
+  background-size: var(--cell) var(--cell), cover, cover;
   color: var(--on-dark-soft);
   border-radius: var(--corner-xl);
   padding: clamp(2.25rem, 4.5vw, 3.75rem);
@@ -1012,7 +1038,14 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .cta__actions { display: flex; flex-wrap: wrap; gap: .85rem; }
 
 /* ---------- 18. Footer ---------- */
-.footer { background: var(--ink); color: var(--on-dark-soft); padding-top: clamp(3.5rem, 6vw, 5rem); }
+/* Deepest step on the page, so the layout has a floor to sit on. The gradient
+   lets it meet whatever section precedes it instead of butting against it. */
+.footer {
+  background-color: var(--g-950);
+  background-image: linear-gradient(180deg, var(--g-900) 0%, var(--g-950) 42%);
+  color: var(--on-dark-soft);
+  padding-top: clamp(3.5rem, 6vw, 5rem);
+}
 .footer__top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.25fr; gap: clamp(2rem, 4vw, 3.25rem); padding-bottom: clamp(2.5rem, 4.5vw, 3.5rem); }
 /* width:auto or the HTML width attribute stretches these. */
 .footer__brand img { height: 40px; width: auto; margin-bottom: 1.25rem; }
@@ -1089,7 +1122,7 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
   color: var(--ink-2);
   transition: background-color .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease);
 }
-.tags a:hover { background: var(--g-dark); border-color: var(--g-dark); color: var(--lime); }
+.tags a:hover { background: var(--g-800); border-color: var(--g-800); color: var(--lime); }
 .section--cream .tags a { background: var(--cream); }
 
 /* Client logos became links */
@@ -1103,7 +1136,7 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
   transition: transform .5s var(--ease); z-index: 1;
 }
 .card--hoverlime:hover::before { transform: scaleX(1); }
-.card--hoverlime:hover { border-color: rgba(169,238,110,.45); background: rgba(255,255,255,.07); transform: translateY(-5px); }
+.card--hoverlime:hover { border-color: rgba(169,238,110,.45); background: var(--g-750); transform: translateY(-5px); }
 .card--dark .plink { background: rgba(255,255,255,.06); border-color: var(--line-2); color: #fff; }
 .card--hoverlime:hover .plink { background: var(--lime); border-color: var(--lime); color: var(--g-dark); }
 
@@ -1133,7 +1166,7 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
               background-color .3s var(--ease), color .3s var(--ease);
 }
 .to-top.is-visible { opacity: 1; visibility: visible; transform: none; }
-.to-top:hover { background: var(--g-dark); color: var(--lime); border-color: var(--g-dark); }
+.to-top:hover { background: var(--g-850); color: var(--lime); border-color: var(--g-850); }
 
 /* ---- WhatsApp widget ---- */
 .wa { position: relative; display: flex; flex-direction: column; align-items: flex-end; gap: .65rem; }
@@ -1187,7 +1220,7 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 .wa__head {
   display: flex; align-items: center; gap: .65rem;
   padding: .9rem 1rem;
-  background: var(--g-dark);
+  background: linear-gradient(118deg, var(--g-900), var(--g-750));
   color: #fff;
 }
 .wa__head i { color: #25D366; font-size: 22px; }
@@ -1217,7 +1250,7 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 }
 .wa__opt strong { display: block; font-size: .88rem; line-height: 1.25; }
 .wa__opt small { display: block; margin-top: .12rem; font-size: .74rem; color: var(--body-2); line-height: 1.32; }
-.wa__opt > i:last-child { color: var(--g-light); font-size: 15px; }
+.wa__opt > i:last-child { color: var(--g-mid); font-size: 15px; }
 .wa__foot { padding: 0 .75rem .8rem; font-size: .7rem; color: var(--body-2); text-align: center; }
 
 @media (prefers-reduced-motion: reduce) { .wa__toggle::after { animation: none; } }
@@ -1306,8 +1339,8 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
         rgba(6,41,27,.34) 14%,
         rgba(6,41,27,.42) 30%,
         rgba(6,41,27,.82) 46%,
-        rgba(6,41,27,.95) 62%,
-        var(--g-dark) 84%),
+        rgba(5,29,20,.95) 62%,
+        var(--g-950) 84%),
       linear-gradient(90deg, rgba(6,41,27,.42) 0%, rgba(6,41,27,0) 78%);
   }
   .hero__grid {
