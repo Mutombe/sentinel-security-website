@@ -17,7 +17,6 @@ assets/js/main.js       Header, drawer, reveals, accordion, form
 assets/fonts/           Manrope (body, headings, numbers), Grand Hotel (accents)
 assets/icons/           Phosphor, subset to the glyphs in use
 assets/img/             brand, clients, photos
-assets/video/           hero.mp4, the homepage hero clip
 tools/build.py          Optional page generator (see "Editing pages")
 tools/subset_icons.py   Rebuilds the Phosphor subset when you need a new glyph
 WEB-DESIGN-PRINCIPLES.md  The design rules this build follows
@@ -160,37 +159,55 @@ Soft capsules for controls, flat shoulders for surfaces. See Corners above.
   by a concave fillet. Colour variants rotate across a row.
 - **`.bento`** is the asymmetric image grid used in the About blocks.
 
-### Hero video
+### Hero carousel
 
-The homepage hero plays `assets/video/hero.mp4` (768x432, 8s, 394 KB, H.264)
-behind the copy. It is graded into the palette rather than dropped in raw:
+Four stills crossfade behind the copy, 6.2s each, with a slow drift on whichever
+slide is showing. The bars under the figures strip jump to a slide and reset the
+clock.
 
-1. `filter` pulls the saturation down and the contrast up on warm footage
-2. a `mix-blend-mode: color` layer replaces the hue while keeping the luminance,
-   so golden hour light survives as light but the frame reads brand green
-3. a small `screen` radial puts a controlled lime highlight where the sun is
-4. a `multiply` vignette, then the usual scrim and drafting grid on top
+Only the first slide ships a `src`. The rest carry `data-src` / `data-srcset`
+and are attached after `window.load`, so the first frame never competes with the
+stylesheet or the fonts. The carousel pauses when the hero scrolls out of view
+and in a background tab, and `prefers-reduced-motion` stops the auto advance and
+the drift while leaving the bars working.
 
-The frame is panned with `transform: scale(1.32) translateX(-6%)` on desktop so
-the centre of the clip sits under the darkest part of the scrim. Portrait crops
-hard into the middle of a 16:9 frame, so mobile drops the pan and uses
-`object-position` to hold the walking figure in the top third instead.
+**Balancing the set.** Stock photographs never match each other. Measured on the
+part of the frame the hero actually shows, the candidates ranged from 25 to 159
+mean luminance; dropping a bright one into three dark ones made the carousel look
+like a slideshow rather than a set. Each slide therefore carries two custom
+properties:
 
-Loading is deliberate. The markup carries `preload="none"` and no `autoplay`
-attribute; `main.js` attaches and plays it only when motion is welcome and the
-connection is not metered:
+```html
+<div class="hero__slide" style="--pos:72% 34%;--expo:2.45">
+```
 
-- `prefers-reduced-motion: reduce` removes the video and the CSS shows the
-  poster frame instead
-- `navigator.connection.saveData`, or a 2G class connection, does the same
-- an IntersectionObserver pauses it whenever the hero leaves the screen, and
-  `visibilitychange` pauses it in a background tab
+`--pos` is its `object-position`, so the subject stays clear of the headline
+whatever the crop. `--expo` multiplies the brightness filter. The four were tuned
+by rendering them, measuring the mean luminance of the uncovered right side, and
+adjusting until the set sat in a 20 point band instead of a 71 point one. Re-run
+that measurement if you swap a photograph in.
 
-To swap the clip, replace `assets/video/hero.mp4` and regenerate
-`assets/img/photos/hero-poster.jpg` from a representative frame. The grade is
-tuned for warm backlit footage; cooler footage will want the `filter` and
-`.hero__tint` opacity adjusted.
+### Hero overlays
 
+Four layers, each with exactly one job, and all of them deliberately light. The
+photograph is barely touched: `saturate(.9) contrast(1.04)` and a brightness
+multiplier. The scrim alone earns the legibility.
+
+1. **Unify** (`mix-blend-mode: color`, 24%) replaces hue while leaving luminance
+   alone, so four photographs shot by four people read as one set.
+2. **Vignette** (`multiply`) pulls the corners down a little.
+3. **Grid** at half strength: texture, not decoration.
+4. **Scrim**: a long horizontal ramp under the copy that clears completely by
+   78%, plus short fades at the head and foot so the hero meets the header and
+   the page below without an edge. On phones the copy stacks, so the ramp runs
+   down the frame instead of across it.
+
+The right side of the frame is left almost untouched. That restraint is checked
+rather than assumed: the hero type is measured against the real pixels behind the
+glyphs on every slide, and the headline sits at 10:1 or better against a 3:1
+requirement.
+
+### Hero
 ### Hero
 
 The homepage hero is sized to `calc(100svh - var(--topbar-h))`, so everything in

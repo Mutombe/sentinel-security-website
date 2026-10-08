@@ -29,47 +29,72 @@
     });
   }
 
-  /* ---- Hero video ----
-     Held back until it is wanted: no autoplay attribute, preload="none" in the
-     markup, and the source only attaches when motion is welcome and the
-     connection is not metered. Paused whenever the hero leaves the screen. */
-  var heroVideo = document.querySelector('[data-hero-video]');
-  if (heroVideo) {
-    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    var saveData = !!(conn && (conn.saveData || /^(slow-)?2g$/.test(conn.effectiveType || '')));
+  /* ---- Hero carousel ----
+     Crossfades a handful of stills. Slides after the first carry their source
+     on data attributes and are only attached once the page has loaded, so the
+     first frame never competes with the stylesheet or the fonts. */
+  var carousel = document.querySelector('[data-hero-carousel]');
 
-    if (reduceMotion || saveData) {
-      // The poster frame carries the hero instead.
-      heroVideo.remove();
-    } else {
-      // Let the stylesheet, fonts and poster frame land first. The poster is
-      // already painted, so nothing is waiting on the clip.
-      var startVideo = function () {
-        heroVideo.preload = 'auto';
-        heroVideo.load();
-        if (heroVideo.readyState >= 2) tryPlay();
-        else heroVideo.addEventListener('loadeddata', tryPlay, { once: true });
-      };
-      var tryPlay = function () {
-        var p = heroVideo.play();
-        // Autoplay can still be refused; the poster is already showing, so ignore.
-        if (p && p.catch) p.catch(function () {});
-      };
-      if (document.readyState === 'complete') startVideo();
-      else window.addEventListener('load', startVideo, { once: true });
+  if (carousel) {
+    var slides = Array.prototype.slice.call(carousel.querySelectorAll('.hero__slide'));
+    var dots = Array.prototype.slice.call(document.querySelectorAll('[data-hero-dot]'));
+    var index = 0;
+    var timer = null;
+    var HOLD = 6200;
+
+    var attachRest = function () {
+      carousel.querySelectorAll('img[data-src]').forEach(function (img) {
+        if (img.getAttribute('data-srcset')) img.srcset = img.getAttribute('data-srcset');
+        img.src = img.getAttribute('data-src');
+        img.removeAttribute('data-src');
+        img.removeAttribute('data-srcset');
+      });
+    };
+
+    var show = function (next) {
+      if (next === index) return;
+      slides[index].classList.remove('is-active');
+      if (dots[index]) dots[index].classList.remove('is-active');
+      index = (next + slides.length) % slides.length;
+      slides[index].classList.add('is-active');
+      if (dots[index]) dots[index].classList.add('is-active');
+      // Restart the drift on the slide that just became visible.
+      var img = slides[index].querySelector('img');
+      if (img) { img.style.animation = 'none'; void img.offsetWidth; img.style.animation = ''; }
+    };
+
+    var stop = function () { if (timer) { clearInterval(timer); timer = null; } };
+    var start = function () {
+      if (timer || reduceMotion || slides.length < 2) return;
+      timer = setInterval(function () { show(index + 1); }, HOLD);
+    };
+
+    dots.forEach(function (dot, i) {
+      dot.addEventListener('click', function () {
+        show(i);
+        stop();
+        start();   // reset the clock so a manual pick gets a full turn
+      });
+    });
+
+    if (!reduceMotion) {
+      if (document.readyState === 'complete') attachRest();
+      else window.addEventListener('load', attachRest, { once: true });
 
       if ('IntersectionObserver' in window) {
         new IntersectionObserver(function (entries) {
-          entries.forEach(function (e) {
-            if (e.isIntersecting) { if (heroVideo.readyState >= 2) tryPlay(); }
-            else heroVideo.pause();
-          });
-        }, { threshold: 0.05 }).observe(heroVideo);
+          entries.forEach(function (e) { e.isIntersecting ? start() : stop(); });
+        }, { threshold: 0.12 }).observe(carousel);
+      } else {
+        start();
       }
       document.addEventListener('visibilitychange', function () {
-        if (document.hidden) heroVideo.pause();
-        else if (heroVideo.readyState >= 2 && heroVideo.getBoundingClientRect().bottom > 0) tryPlay();
+        document.hidden ? stop() : start();
       });
+    } else {
+      // Still load the rest so the dots work if someone picks one by hand.
+      if (document.readyState === 'complete') attachRest();
+      else window.addEventListener('load', attachRest, { once: true });
     }
   }
 

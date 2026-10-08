@@ -89,16 +89,30 @@
 
   <!-- ===== Hero ===== -->
   <section class="hero">
-    <div class="hero__media" aria-hidden="true">
-      <video class="hero__video" data-hero-video
-             poster="assets/img/photos/hero-poster.jpg"
-             muted loop playsinline preload="none"
-             width="768" height="432">
-        <source src="assets/video/hero.mp4" type="video/mp4">
-      </video>
+    <div class="hero__media" aria-hidden="true" data-hero-carousel>
+      <div class="hero__slide is-active" style="--pos:72% 34%;--expo:2.45">
+        <img  src="assets/img/photos/control-room-monitoring-1200.jpg"
+             srcset="assets/img/photos/control-room-monitoring-640.jpg 640w, assets/img/photos/control-room-monitoring-1200.jpg 1200w"
+             sizes="100vw" alt="Sentinel operators watching a live camera wall" width="1200" height="608" fetchpriority="high">
+      </div>
+      <div class="hero__slide" style="--pos:58% 38%;--expo:0.95">
+        <img data-slide-src data-src="assets/img/photos/guards-briefing-1200.jpg"
+             data-srcset="assets/img/photos/guards-briefing-640.jpg 640w, assets/img/photos/guards-briefing-1200.jpg 1200w"
+             sizes="100vw" alt="A Sentinel team briefing before going out to site" width="1200" height="608">
+      </div>
+      <div class="hero__slide" style="--pos:70% 40%;--expo:0.64">
+        <img data-slide-src data-src="assets/img/photos/dispatch-tablet-1200.jpg"
+             data-srcset="assets/img/photos/dispatch-tablet-640.jpg 640w, assets/img/photos/dispatch-tablet-1200.jpg 1200w"
+             sizes="100vw" alt="A technician checking a site on a tablet" width="1200" height="608">
+      </div>
+      <div class="hero__slide" style="--pos:64% 34%;--expo:0.90">
+        <img data-slide-src data-src="assets/img/photos/operator-night-shift-1200.jpg"
+             data-srcset="assets/img/photos/operator-night-shift-640.jpg 640w, assets/img/photos/operator-night-shift-1200.jpg 1200w"
+             sizes="100vw" alt="A control room operator on night shift" width="1200" height="608">
+      </div>
     </div>
-    <div class="hero__tint" aria-hidden="true"></div>
-    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="hero__unify" aria-hidden="true"></div>
+    <div class="hero__vignette" aria-hidden="true"></div>
     <div class="hero__grid" aria-hidden="true"></div>
     <div class="hero__scrim"></div>
 
@@ -130,6 +144,13 @@
           <div class="hero__fact"><dt class="num">5</dt><dd>Sectors</dd></div>
           <div class="hero__fact"><dt class="num">6</dt><dd>Systems</dd></div>
         </dl>
+
+        <div class="hero__dots" data-hero-dots>
+          <button class="hero__dot is-active" type="button" data-hero-dot aria-label="Show image 1 of 4"></button>
+          <button class="hero__dot" type="button" data-hero-dot aria-label="Show image 2 of 4"></button>
+          <button class="hero__dot" type="button" data-hero-dot aria-label="Show image 3 of 4"></button>
+          <button class="hero__dot" type="button" data-hero-dot aria-label="Show image 4 of 4"></button>
+        </div>
       </div>
     </div>
   </section>

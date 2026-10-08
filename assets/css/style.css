@@ -499,66 +499,89 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   display: flex;
   align-items: center;
 }
+/* ---- Hero carousel ----
+   Slides are stacked and crossfaded. Each one carries its own object-position
+   so the subject stays clear of the headline, whatever the crop. */
 .hero__media {
   position: absolute;
   inset: 0;
-  z-index: -3;
+  z-index: -4;
   overflow: hidden;
-  background: var(--g-dark);
+  background: var(--g-900);
 }
-.hero__media img,
-.hero__video {
+.hero__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.4s var(--ease);
+  will-change: opacity;
+}
+.hero__slide.is-active { opacity: 1; }
+.hero__slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 42%;
-  /* The source is warm golden hour footage. Pull the saturation and lift the
-     contrast so the tint layer below has something neutral to work on. */
-  filter: saturate(.48) contrast(1.22) brightness(.58);
-  transform: scale(1.32) translateX(-6%);
-  transform-origin: 50% 46%;
+  object-position: var(--pos, 50% 40%);
+  /* A light hand. The unify layer below does the colour work, so the image only
+     needs its contrast held and its brightness brought down for the type. */
+  /* Per slide exposure. Stock frames never match each other, so each one gets a
+     handle and the set is balanced by measurement rather than by eye. */
+  filter: saturate(.9) contrast(1.04) brightness(calc(.94 * var(--expo, 1)));
 }
-.hero__video { display: block; }
+/* A slow drift on the visible slide only, so the hero is never quite static. */
+.hero__slide.is-active img { animation: hero-drift 9s var(--ease) forwards; }
+@keyframes hero-drift {
+  from { transform: scale(1.015); }
+  to   { transform: scale(1.075); }
+}
 
-/* Duotone. `color` blending keeps the footage's luminance and replaces its hue,
-   so the golden light survives as light while the frame reads brand green. */
-.hero__tint {
-  position: absolute; inset: 0; z-index: -2;
+/* 1. Unify. Four photographs shot by different people are four different colour
+   temperatures. Blending a single deep green over the hue, while leaving the
+   luminance alone, makes them read as one set instead of a slideshow. */
+.hero__unify {
+  position: absolute; inset: 0; z-index: -3;
   pointer-events: none;
-  background: var(--g-dark);
-  opacity: .78;
+  background: var(--g-850);
+  opacity: .24;
   mix-blend-mode: color;
 }
 
-/* One warm highlight kept deliberately, recoloured to lime, where the sun sits. */
-.hero__glow {
-  position: absolute; inset: 0; z-index: -2;
+/* 2. Vignette. Pulls the corners down so the eye lands in the middle. */
+.hero__vignette {
+  position: absolute; inset: 0; z-index: -3;
   pointer-events: none;
-  /* One controlled highlight where the sun sits, nothing more. */
-  background:
-    radial-gradient(26% 30% at 72% 36%, rgba(199, 245, 162, .34) 0%, rgba(169, 238, 110, 0) 74%),
-    radial-gradient(60% 56% at 78% 42%, rgba(63, 181, 111, .20) 0%, rgba(63, 181, 111, 0) 76%);
-  mix-blend-mode: screen;
-}
-.hero__glow::after {
-  content: "";
-  position: absolute; inset: 0;
-  background: radial-gradient(110% 92% at 52% 46%, transparent 34%, rgba(2, 14, 8, .82) 100%);
+  background: radial-gradient(124% 96% at 54% 44%, transparent 52%, rgba(3, 20, 14, .42) 100%);
   mix-blend-mode: multiply;
 }
+
+/* 3. Grid. Texture, not decoration. */
 .hero__grid {
-  position: absolute; inset: 0; z-index: -1;
+  position: absolute; inset: 0; z-index: -2;
   pointer-events: none;
   background-image: var(--pat-grid-lt);
   background-size: var(--cell) var(--cell);
+  opacity: .5;
   -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,.5) 0%, #000 38%, #000 100%);
           mask-image: linear-gradient(90deg, rgba(0,0,0,.5) 0%, #000 38%, #000 100%);
 }
 .hero__scrim {
   position: absolute; inset: 0; z-index: -1;
+  /* 4. Scrim. Legibility only: a long horizontal ramp under the copy, and a
+     short fade at the head and foot so the hero meets the header and the page
+     below it without an edge. */
   background:
-    linear-gradient(90deg, rgba(6,41,27,.96) 0%, rgba(6,41,27,.9) 28%, rgba(6,41,27,.66) 50%, rgba(6,41,27,.34) 72%, rgba(6,41,27,.22) 100%),
-    linear-gradient(180deg, rgba(6,41,27,.72) 0%, rgba(6,41,27,.14) 32%, rgba(6,41,27,.3) 64%, rgba(6,41,27,.9) 100%);
+    linear-gradient(95deg,
+      rgba(3, 20, 14, .95) 0%,
+      rgba(3, 20, 14, .90) 26%,
+      rgba(3, 20, 14, .64) 44%,
+      rgba(3, 20, 14, .24) 62%,
+      rgba(3, 20, 14, 0) 78%),
+    linear-gradient(180deg,
+      rgba(3, 20, 14, .58) 0%,
+      rgba(3, 20, 14, 0) 22%,
+      rgba(3, 20, 14, 0) 62%,
+      rgba(5, 29, 20, .72) 90%,
+      var(--g-950) 100%);
 }
 .hero__content { position: relative; max-width: 660px; }
 .hero h1 { color: #fff; margin-bottom: clamp(.7rem, 1.8vh, 1.2rem); }
@@ -604,6 +627,35 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .hero__fact { background: rgba(9, 53, 34, .62); backdrop-filter: blur(8px); padding: clamp(.65rem, 1.6vh, 1.05rem) 1rem; }
 .hero__fact dt { font-size: clamp(1.15rem, min(2.3vw, 3vh), 1.85rem); font-weight: 800; color: #fff; line-height: 1; letter-spacing: -.03em; }
 .hero__fact dd { margin: .3rem 0 0; font-size: .7rem; letter-spacing: .07em; text-transform: uppercase; color: rgba(255,255,255,.58); }
+
+/* Slide picker. Bars rather than dots: they read as progress, and they give a
+   wider target than a 10px circle. */
+.hero__dots {
+  display: flex;
+  gap: .45rem;
+  margin-top: clamp(.9rem, 2.2vh, 1.4rem);
+}
+.hero__dot {
+  width: 30px;
+  height: 4px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .26);
+  cursor: pointer;
+  transition: background-color .4s var(--ease), width .4s var(--ease);
+}
+.hero__dot:hover { background: rgba(255, 255, 255, .5); }
+.hero__dot.is-active { width: 44px; background: var(--lime); }
+/* The tap target is the full 44px even though the bar is 4px tall. */
+.hero__dot::after { content: ""; position: absolute; }
+.hero__dots { position: relative; }
+.hero__dot { position: relative; }
+.hero__dot::before {
+  content: "";
+  position: absolute;
+  inset: -16px -4px;
+}
 
 /* Interior page hero */
 .phero {
@@ -1263,10 +1315,10 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 }
 .js [data-reveal].is-in { opacity: 1; transform: none; }
 
-/* No motion preference: the poster frame stands in for the clip. */
+/* No motion preference: the first frame holds, with no drift and no advance. */
 @media (prefers-reduced-motion: reduce) {
-  .hero__video { display: none; }
-  .hero__media { background: var(--g-dark) url("../img/photos/hero-poster.jpg") center 42% / cover no-repeat; }
+  .hero__slide.is-active img { animation: none; transform: none; }
+  .hero__slide { transition: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1317,32 +1369,28 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
   }
   .hero__facts { margin-top: clamp(1.1rem, 3vh, 1.9rem); }
 
-  /* Keep the photograph's own colour. Dropping it to half opacity turned it into
-     grey mush; a properly weighted scrim holds contrast and keeps the image. */
-  .hero__media { width: 100%; opacity: 1; }
-  /* Portrait crops hard into the middle of a 16:9 frame, so the desktop pan is
-     dropped and the frame is positioned on the walking figure instead. */
-  .hero__media img, .hero__video {
-    transform: none;
-    object-position: 30% 34%;
-    filter: saturate(.48) contrast(1.2) brightness(.62);
+  /* A portrait viewport crops hard into the middle of a 16:9 frame, so each
+     slide keeps its own pan point and simply opens up a stop. */
+  .hero__slide img {
+    filter: saturate(.88) contrast(1.05) brightness(calc(1.04 * var(--expo, 1)));
   }
-  .hero__glow {
-    background:
-      radial-gradient(76% 34% at 62% 26%, rgba(169, 238, 110, .24) 0%, rgba(169, 238, 110, 0) 68%),
-      radial-gradient(90% 70% at 50% 40%, rgba(0, 0, 0, 0) 45%, rgba(3, 20, 12, .5) 100%);
-  }
+  .hero__unify { opacity: .22; }
+  .hero__vignette { background: radial-gradient(130% 74% at 50% 34%, transparent 50%, rgba(3, 20, 14, .45) 100%); }
+  /* Stacked content, so the ramp runs down the frame instead of across it. */
   .hero__scrim {
     background:
       linear-gradient(180deg,
-        rgba(6,41,27,.86) 0%,
-        rgba(6,41,27,.34) 14%,
-        rgba(6,41,27,.42) 30%,
-        rgba(6,41,27,.82) 46%,
-        rgba(5,29,20,.95) 62%,
-        var(--g-950) 84%),
-      linear-gradient(90deg, rgba(6,41,27,.42) 0%, rgba(6,41,27,0) 78%);
+        rgba(3, 20, 14, .80) 0%,
+        rgba(3, 20, 14, .30) 14%,
+        rgba(3, 20, 14, .38) 30%,
+        rgba(3, 20, 14, .80) 48%,
+        rgba(5, 29, 20, .94) 64%,
+        var(--g-950) 86%),
+      linear-gradient(90deg, rgba(3, 20, 14, .40) 0%, rgba(3, 20, 14, 0) 76%);
   }
+  .hero__dots { gap: .4rem; }
+  .hero__dot { width: 24px; }
+  .hero__dot.is-active { width: 36px; }
   .hero__grid {
     -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 78%);
             mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 78%);
