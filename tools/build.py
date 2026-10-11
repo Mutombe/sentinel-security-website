@@ -106,8 +106,11 @@ def pbtn(label, href, variant="", attrs=""):
 
 
 def eyebrow(text, variant=""):
-    cls = "eyebrow" + ((" " + variant) if variant else "")
-    return '<p class="%s">%s<span>%s</span></p>' % (cls, icon("asterisk", "i-xs"), text)
+    """A section overline. Kept under the old name so every call site still
+    reads naturally; the pill it used to render is gone."""
+    cls = "overline" + ((" " + variant.replace("eyebrow--", "overline--"))
+                        if variant else "")
+    return '<p class="%s">%s</p>' % (cls, text)
 
 
 def shead(kicker, title, aside="", cta="", variant="", kv=""):
@@ -124,7 +127,7 @@ def shead(kicker, title, aside="", cta="", variant="", kv=""):
 """ % (cls, eyebrow(kicker, kv), title, right)
 
 
-def ncard(variant, ico, title, text, bullets, href, cta="Explore more"):
+def ncard(variant, ico, title, text, bullets, href, cta="See the detail"):
     lis = ""
     if bullets:
         lis = ('<ul class="card__list" style="margin-top:1.25rem">'
@@ -146,50 +149,84 @@ def ncard(variant, ico, title, text, bullets, href, cta="Explore more"):
 
 
 # -------------------------------------------------- the group, as components
-def org_card(c, compact=False):
-    """One company in the structure. Compact drops the description."""
-    subs = ""
-    if c.get("units"):
-        # The units sit on the chart's second row, under the column that owns
-        # them, so they do not stretch the other companies' cards.
-        col = COMPANIES.index(c) + 1
-        subs = ('<span class="org__subs" style="grid-column:%d">%s</span>' % (col, "".join(
-            '<a class="org__sub" href="%s#%s">%s<small>%s</small></a>'
-            % (c["href"], u["id"], u["name"], u["strap"]) for u in c["units"])))
-    body = "" if compact else "<p>%s</p>" % c["line"]
-    return """        <div class="org__co">
-          <a class="org__card" href="%s">
-            <span class="org__logo">%s</span>
-            <span class="org__role">%s %s</span>
-            %s
-            <span class="org__caps">%s</span>
-            <span class="org__go">%s %s</span>
-          </a>
-          %s
-        </div>
-""" % (c["href"], company_logo(c), si(c["icon"], "i-sm"), c["role"], body,
-       "".join("<i>%s</i>" % x for x in c["chips"]),
-       "Open " + c["short"], CHEV_SM, subs)
+ORG_FIELD = {"technologies": "org--a", "guarding": "org--b", "circuitron": "org--c"}
 
 
-def org_chart(compact=False):
-    """The structure the Operations Director drew, made clickable."""
-    return """      <div class="org%s" data-reveal>
-        <a class="org__parent" href="group.html">
-          <span class="org__parent-mark">
-            <img src="assets/img/brand/mark.svg" alt="" width="44" height="42" loading="lazy">
-          </span>
-          <span class="org__parent-text">
-            <strong>%s</strong>
-            <small>%s</small>
-          </span>
-        </a>
-        <span class="org__trunk" aria-hidden="true"></span>
+def org_chart(compact=False):  # noqa: the flag is kept for call sites
+    """Three companies as a comparison, not a tree.
+
+    Rows line up across the columns so the eye reads across: what each one is,
+    what it does, who it serves, what it trades as. An empty cell is
+    information, which is why only Circuitron shows anything in the last row."""
+    heads = rows_role = rows_line = rows_serves = rows_trades = rows_go = ""
+    for c in COMPANIES:
+        f = ORG_FIELD[c["id"]]
+        mark = (c["logo"] if c["id"] == "circuitron"
+                else c.get("logo_small_white", c["logo_white"]))
+        heads += ('        <a class="org__col %s" href="%s" aria-label="%s">'
+                  '<span class="org__field"><img src="%s" alt="%s" width="%d" height="%d" '
+                  'loading="lazy"></span></a>\n'
+                  % (f, c["href"], c["name"], mark, c["name"],
+                     round(42 * c["logo_wh"][0] / c["logo_wh"][1]), 42))
+        rows_role += '        <span class="org__role">%s</span>\n' % c["role"]
+        rows_line += '        <p class="org__line">%s</p>\n' % c["chart_line"]
+        rows_serves += '        <p class="org__serves">%s</p>\n' % (
+            " &middot; ".join(c["sectors"][:3]))
+        rows_trades += '        <p class="org__trades">%s</p>\n' % (
+            " &middot; ".join(u["name"] for u in c["units"]) if c.get("units")
+            else '<span class="org__none">&mdash;</span>')
+        rows_go += ('        <a class="org__go" href="%s">%s %s</a>\n'
+                    % (c["href"], c["short"], CHEV_SM))
+
+    return """      <div class="org" data-reveal>
+        <div class="org__row org__row--head">
+%s        </div>
         <div class="org__row">
 %s        </div>
+        <div class="org__row org__row--line">
+%s        </div>
+        <div class="org__row org__row--label" aria-hidden="true">
+          <span>Serves</span><span>Serves</span><span>Serves</span>
+        </div>
+        <div class="org__row">
+%s        </div>
+        <div class="org__row org__row--label" aria-hidden="true">
+          <span>Trades as</span><span>Trades as</span><span>Trades as</span>
+        </div>
+        <div class="org__row">
+%s        </div>
+        <div class="org__row org__row--go">
+%s        </div>
       </div>
-""" % (" org--compact" if compact else "", PARENT["name"], PARENT["role"],
-       "".join(org_card(c, compact) for c in COMPANIES))
+""" % (heads, rows_role, rows_line, rows_serves, rows_trades, rows_go) + org_list()
+
+
+def org_list():
+    """The phone form. Three rows, a colour bar each, nothing else.
+
+    At thirty pixels the two Sentinel lockups are indistinguishable, so the
+    phone gets no logos at all: the bar does the distinguishing and the role
+    label orients before the name does."""
+    out = ""
+    for c in COMPANIES:
+        out += """        <a class="orgrow %s" href="%s">
+          <span class="orgrow__text">
+            <small>%s</small>
+            <strong>%s</strong>
+          </span>
+          <span class="orgrow__go" aria-hidden="true">%s</span>
+        </a>
+""" % (ORG_FIELD[c["id"]], c["href"], c["role"], c["short"], CHEV_SM)
+    return '      <div class="orglist" data-reveal>\n%s      </div>\n' % out
+
+
+
+
+def org_parent():
+    """The group itself, as a line in the section header rather than a node."""
+    return ('<a class="orgparent" href="group.html">'
+            '<img src="assets/img/brand/mark.svg" alt="" width="22" height="21" loading="lazy">'
+            '<span><b>%s</b> %s</span></a>' % (PARENT["name"], PARENT["role"].lower()))
 
 
 NUMBER_WORD = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six",
@@ -244,11 +281,10 @@ def division_card(c, d):
           <h3 class="h-3">%s</h3>
           <p>%s</p>
           <ul class="dcard__list">%s</ul>
-          <a class="dcard__cta" href="contact.html">Ask about this %s</a>
         </article>
 """ % (" dcard--photo" if media else "", d["id"], media, si(d["icon"], "i-xl"),
        d["name"], d["line"],
-       "".join("<li>%s</li>" % i for i in d["items"]), CHEV_SM)
+       "".join("<li>%s</li>" % i for i in d["items"]))
 
 
 UNIT_PHOTO = {
@@ -471,7 +507,7 @@ CTA = """
       </div>
     </div>
   </section>
-""" % (eyebrow("Next step", "eyebrow--dark"),
+""" % (eyebrow("Book it", "eyebrow--dark"),
        pbtn("Book a site survey", "contact.html", "pbtn--light"),
        pbtn("+263 77 358 9461", "tel:+263773589461", "pbtn--outline"))
 
@@ -542,6 +578,7 @@ FOOTER = """
       <nav aria-label="Legal">
         <a href="privacy.html">Privacy policy</a>
         <a href="contact.html">Contact</a>
+        <a href="about.html#recognition">Best Service Award 2014, 2015, 2016</a>
         <a href="https://unsplash.com/?utm_source=sentinel&amp;utm_medium=referral" rel="noopener">Photography: Unsplash</a>
       </nav>
     </div>
@@ -723,12 +760,8 @@ def hero_block():
           <div class="hero__panel%s" id="hp-%d" role="tabpanel" aria-labelledby="ht-%d">
             <div class="hero__id">
               <img class="hero__lockup" src="%s" alt="%s" width="%d" height="%d" loading="%s">
-              <a class="hero__award" href="about.html#recognition">
-                <span class="stars">%s%s%s</span>
-                Award winning in <b class="num">2014, 2015 and 2016</b>
-              </a>
             </div>
-            <h1 class="h-hero">%s<span class="accent-lime">%s</span>%s</h1>
+            <%s class="h-hero">%s<span class="accent-lime">%s</span>%s</%s>
             <p class="hero__lead">%s</p>
             <div class="hero__actions">
               %s
@@ -742,8 +775,10 @@ def hero_block():
 """ % (' is-active' if on else '', i + 1, i + 1,
        c.get('logo_small_white', c['logo_white']), c['name'],
        round(40 * c['logo_wh'][0] / c['logo_wh'][1]), 40,
-       'eager' if on else 'lazy', STAR, STAR, STAR,
-       h['h1'][0], h['h1'][1], h['h1'][2], h['lead'],
+       'eager' if on else 'lazy',
+       'h1' if on else 'h2',
+       h['h1'][0], h['h1'][1], h['h1'][2],
+       'h1' if on else 'h2', h['lead'],
        pbtn(h['cta'][0], h['cta'][1]),
        pbtn(h['cta2'][0], h['cta2'][1], 'pbtn--ghost'),
        icon('phone-call', 'i-md')))
@@ -784,37 +819,14 @@ def hero_block():
 home = hero_block() + CLIENTS + """
 
   <!-- ===== The group ===== -->
-  <section class="section section--cream ruled" id="group">
+  <section class="section section--open section--cream" id="group">
     <div class="container">
 """ + shead("One group, three companies",
             "Everything a site needs, under one roof",
-            cta=pbtn("See the structure", "group.html", "pbtn--dark"),
+            aside="Each company holds its own licence, its own staff and its own "
+                  "discipline. You deal with one number." + org_parent(),
             variant="shead--wide") + org_chart() + """    </div>
   </section>
-  <!-- ===== Approach ===== -->
-  <section class="section section--cream ruled">
-    <div class="container">
-""" + shead("Our approach",
-            "Residential, commercial and industrial",
-            "Every job starts with a site survey and ends with a maintenance plan, whether "
-            "it is three cameras on a house or a factory perimeter.") + """
-      <div class="grid g-3">
-""" + ncard("white", "house-line", "Residential",
-            "Alarms, cameras, gate motors and lighting for the house and the wall around it.",
-            ["Intruder alarm on call day and night", "CCTV you can check from your phone",
-             "Electric gate motors", "Driveway lighting"],
-            "services.html#residential") + ncard("lime", "buildings", "Commercial",
-            "Offices, shops and shared buildings where staff and visitors move through all day.",
-            ["Security design and installation", "Biometric and card access control",
-             "Turnstiles and boom gates", "Systems talking to each other"],
-            "services.html#commercial") + ncard("dark", "factory", "Industrial",
-            "Plant, yard and logistics sites that need cameras, plate readers and gate control working as one.",
-            ["Video management systems", "Number plate readers",
-             "Gate automation and parking", "Health monitoring on devices"],
-            "services.html#industrial") + """      </div>
-    </div>
-  </section>
-
   <!-- ===== Who we are ===== -->
   <section class="section section--white">
     <div class="container split">
@@ -825,7 +837,6 @@ home = hero_block() + CLIENTS + """
                sizes="(max-width:980px) 100vw, 45vw" alt="An officer working a gatehouse checkpoint by radio">
         </a>
         <a class="bento__stat" href="contact.html">
-          %s
           <strong class="num">24/7</strong>
           <span>Someone on the phone<br>at any hour</span>
         </a>
@@ -836,7 +847,7 @@ home = hero_block() + CLIENTS + """
       </div>
 
       <div data-reveal>
-        %s
+        <p class="overline">Who we are</p>
         <h2 class="h-2">One group, one number to call</h2>
         <p class="lead">
           An accredited Zimbabwean group covering electronic security, guarding
@@ -847,68 +858,19 @@ home = hero_block() + CLIENTS + """
           it. You call us, not four contractors.
         </p>
 
-        <div class="byline">
-          %s
-          <a class="byline__person" href="about.html">
-            <span class="byline__avatar">%s</span>
-            <span>
-              <strong>Accredited and insured</strong>
-              <span>Based in Harare, working countrywide</span>
-            </span>
-          </a>
-        </div>
+        <dl class="figures">
+          <div><dt class="num">10</dt><dd>provinces covered</dd></div>
+          <div><dt class="num">2016</dt><dd>trading since</dd></div>
+          <div><dt class="num">3</dt><dd>companies, one standard</dd></div>
+        </dl>
 
-        <div class="grid g-2" style="margin-top:2.25rem">
-          <a class="ministat" href="about.html#recognition">
-            <div class="ministat__stars">%s%s%s%s%s</div>
-            <div class="ministat__num num">3</div>
-            <p class="ministat__label">Best Service Award<br><span class="muted num" style="font-weight:500">2014, 2015 and 2016</span></p>
-          </a>
-          <div class="ministat">
-            <h3>Where we work</h3>
-            <div class="tags">
-              <a href="#corporate">Corporate</a><a href="#banking">Banking</a><a href="#government">Government</a>
-              <a href="#manufacturing">Manufacturing</a><a href="#construction">Construction</a>
-            </div>
-          </div>
-        </div>
+        <div style="margin-top:2rem">""" + pbtn("More about the group", "about.html", "pbtn--dark") + """</div>
       </div>
     </div>
   </section>
 
-  <!-- ===== Services ===== -->
-  <section class="section section--cream" id="services">
-    <div class="container">
-""" % (duo("check-circle", "i-xl"), eyebrow("Who we are"),
-       pbtn("More about us", "about.html"),
-       duo("shield-check", "i-md"), STAR, STAR, STAR, STAR, STAR) + shead(
-    "Our services",
-    "The systems we install and look after",
-    cta=pbtn("See all services", "services.html", "pbtn--dark")) + """
-      <div class="grid g-3">
-"""
-
-# The six cards on the home page are the six capabilities of the technologies
-# company, read straight from the group data so the anchors cannot drift.
-SERVICES = [(d["id"], d["icon"], d["name"], d["line"], d["items"][:3])
-            for d in by_id("technologies")["divisions"]]
-
-for anchor, ico, title, text, bullets in SERVICES:
-    home += """        <article class="card card--hoverdark" data-reveal>
-          <span class="card__icon">%s</span>
-          <h3 class="h-4">%s</h3>
-          <p>%s</p>
-          <ul class="card__list">%s</ul>
-          <a class="plink" href="services.html#%s">Read more %s</a>
-        </article>
-""" % (si(ico, "i-xl"), title, text, "".join("<li>%s</li>" % b for b in bullets), anchor, ARROW)
-
-home += """      </div>
-    </div>
-  </section>
-
   <!-- ===== Process ===== -->
-  <section class="section section--dark ruled">
+  <section class="section section--dark">
     <div class="container">
 """ + shead("How we work", "From the first call to the handover",
             "The same four stages on every job. You see the specification and the price "
@@ -944,47 +906,7 @@ for i, (t, p) in enumerate(SECTORS, 1):
 home += """      </div>
     </div>
   </section>
-
-  <!-- ===== Solar ===== -->
-  <section class="section section--lime ruled">
-    <div class="container split">
-      <div data-reveal>
-        %s
-        <h2 class="h-2">Solar PV for homes, businesses and power plants</h2>
-        <p class="script script--lg">keeping the cameras on when the grid is off</p>
-        <p class="lead" style="color:var(--ink-2)">
-          One of the leading solar PV companies in Zimbabwe. We handle the build, then the
-          maintenance that keeps the panels producing.
-        </p>
-        <div style="margin-top:2rem">%s</div>
-      </div>
-      <div class="grid g-2" data-reveal>
-        <a class="ministat" href="renewable-energy.html" style="background:var(--g-dark);color:var(--on-dark-soft)">
-          <span class="card__icon" style="background:rgba(255,255,255,.1);color:var(--lime)">%s</span>
-          <h3 style="color:#fff">Durability</h3>
-          <p style="color:var(--on-dark-soft);font-size:.93rem;margin:0">Built for dust, heat, storms and the load an actual Zimbabwean site puts on them.</p>
-        </a>
-        <a class="ministat" href="renewable-energy.html" style="background:var(--white)">
-          <span class="card__icon">%s</span>
-          <h3>Reliability</h3>
-          <p style="font-size:.93rem;margin:0">Panels that perform without compromise, backed by a service schedule.</p>
-        </a>
-        <a class="ministat" href="renewable-energy.html" style="background:var(--white)">
-          <span class="card__icon">%s</span>
-          <h3>Output</h3>
-          <p style="font-size:.93rem;margin:0">More energy over the life of the system, so the saving stays predictable.</p>
-        </a>
-        <a class="ministat" href="renewable-energy.html" style="background:var(--g-mid);color:rgba(255,255,255,.78)">
-          <span class="card__icon" style="background:rgba(255,255,255,.14);color:#fff">%s</span>
-          <h3 style="color:#fff">Maintenance</h3>
-          <p style="color:rgba(255,255,255,.78);font-size:.93rem;margin:0">Cleaning, string checks and battery health on a fixed schedule.</p>
-        </a>
-      </div>
-    </div>
-  </section>
-""" % (eyebrow("Renewable energy", "eyebrow--lime"),
-       pbtn("Look at solar", "renewable-energy.html", "pbtn--dark"),
-       duo("shield-check", "i-lg"), duo("sun", "i-lg"), duo("lightning", "i-lg"), duo("wrench", "i-lg"))
+"""
 
 write("index.html",
       "Sentinel Integrated Technologies | Electronic Security in Zimbabwe",
@@ -1041,7 +963,7 @@ about = phero("About", "A decade of guarding, turned into a group",
     </div>
   </section>
 
-  <section class="section section--cream ruled">
+  <section class="section section--cream">
     <div class="container">
 """ % (duo("scan-smiley", "i-xl"), eyebrow("Who we are")) + shead(
   "The structure", "Three companies, one standard",
@@ -1078,7 +1000,7 @@ about = phero("About", "A decade of guarding, turned into a group",
 """ + ncard("white", "target", "Mission",
             "Reliable, professional security within a legal and ethical framework, so clients "
             "have peace of mind. Scalable solutions, priced so they can actually be bought.",
-            [], "contact.html", "Talk to us") \
+            [], "contact.html", "What drives us") \
     + ncard("lime", "compass", "Vision",
             "A customer centred market leader in integrated security, and a smarter, safer, "
             "better connected future for the places we work in.",
@@ -1116,9 +1038,8 @@ for ico, t, p in WHY:
           <span class="card__icon">%s</span>
           <h3 class="h-4">%s</h3>
           <p>%s</p>
-          <span class="plink">Talk to us %s</span>
         </a>
-""" % (duo(ico, "i-lg"), t, p, ARROW)
+""" % (duo(ico, "i-lg"), t, p)
 
 about += """      </div>
     </div>
@@ -1172,10 +1093,8 @@ def detail(anchor, kicker, title, lead, bullets, photo, alt, flip):
           <h2 class="h-2" style="font-size:clamp(1.6rem,2.8vw,2.3rem)">%s</h2>
           <p class="lead">%s</p>
           <ul class="card__list" style="margin-top:1.4rem">%s</ul>
-          <div style="margin-top:2rem">%s</div>
         </div>
-""" % (si(DIV_ICON.get(anchor, "perimeter"), "i-2xl"), eyebrow(kicker), title, lead, lis,
-       pbtn("Ask for a quotation", "contact.html"))
+""" % (si(DIV_ICON.get(anchor, "perimeter"), "i-2xl"), eyebrow(kicker), title, lead, lis)
     inner = (media + text) if flip else (text + media)
     return """      <div class="split" id="%s" style="scroll-margin-top:calc(var(--header-h) + 28px);padding-block:clamp(2.5rem,5vw,4rem)">
 %s      </div>
@@ -1288,7 +1207,7 @@ for i, d in enumerate(DETAILS):
 services += """    </div>
   </section>
 
-  <section class="section section--dark ruled">
+  <section class="section section--dark">
     <div class="container">
 """ + shead("How we work", "From the first call to the handover",
             "Four stages, the same on every job whatever the scale.", kv="eyebrow--dark") + steps_block() + """    </div>
@@ -1377,15 +1296,15 @@ solar = phero("Renewable Energy", "Solar PV for homes, businesses and power plan
 """ + ncard("white", "shield-check", "Durability",
             "Built for real conditions: dust, heat, storms and the load profile of an "
             "actual Zimbabwean site.",
-            [], "contact.html", "Talk to us") \
+            [], "contact.html", "How we are built") \
     + ncard("lime", "sun", "Reliability",
             "Panels that perform without compromise, backed by a service schedule rather "
             "than a handshake.",
-            [], "contact.html", "Talk to us") \
+            [], "contact.html", "Work with us") \
     + ncard("dark", "lightning", "Output",
             "More energy over the life of the system, so the saving you were promised holds "
             "up.",
-            [], "contact.html", "Talk to us") + """      </div>
+            [], "contact.html", "Ask a question") + """      </div>
     </div>
   </section>
 
@@ -1404,7 +1323,7 @@ solar = phero("Renewable Energy", "Solar PV for homes, businesses and power plan
             <li>Structural mounting and cabling</li>
             <li>Commissioning and training</li>
           </ul>
-          <span class="plink">Ask for a quotation %s</span>
+          <span class="plink">What this covers %s</span>
         </a>
         <a class="card card--dark card--hoverlime" href="contact.html" data-reveal>
           <span class="card__icon">%s</span>
@@ -1416,7 +1335,7 @@ solar = phero("Renewable Energy", "Solar PV for homes, businesses and power plan
             <li>Inverter and battery health checks</li>
             <li>Fault response and spares</li>
           </ul>
-          <span class="plink">Ask for a quotation %s</span>
+          <span class="plink">What is included %s</span>
         </a>
       </div>
     </div>
@@ -1596,7 +1515,7 @@ def company_page(cid, hero_photo, hero_alt, title, desc):
     </div>
   </section>
 
-  <section class="section section--cream ruled">
+  <section class="section section--cream">
     <div class="container">
 """ % (eyebrow("What we carry"), c["headline"], c["strap"], c["blurb"],
        pbtn("Book a site survey", "contact.html", "pbtn--dark"),
@@ -1753,7 +1672,7 @@ sg = phero("Site signage", "The part of the system they actually read",
     </div>
   </section>
 
-  <section class="section section--cream ruled">
+  <section class="section section--cream">
     <div class="container">
 """ % (eyebrow("Why they look like this"),
        pbtn("Ask about signage", "contact.html", "pbtn--dark"),

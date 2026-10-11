@@ -206,24 +206,52 @@ p:last-child { margin-bottom: 0; }
 .section--lime .script--lg { color: var(--g-dark); opacity: .72; }
 
 /* Eyebrow — outlined capsule with a six-point asterisk */
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  padding: .42rem .95rem .42rem .8rem;
-  margin: 0 0 1.35rem;
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: var(--r-pill);
-  color: var(--ink);
-  font-size: .82rem;
-  font-weight: 600;
-  letter-spacing: .01em;
+/* Section overline: a rule and a label. The pill it replaces was the single
+   most recognisable component on a generated landing page. */
+.overline {
+  display: block;
+  margin: 0 0 1.1rem;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--g-mid);
 }
-.eyebrow i { flex: none; color: var(--g-mid); }
-.eyebrow--dark i, .eyebrow--lime i { color: var(--lime); }
-.eyebrow--dark { background: rgba(255,255,255,.08); border-color: var(--line-2); color: #fff; }
-.eyebrow--lime { background: var(--ink); border-color: var(--ink); color: var(--lime); }
+.overline::before {
+  content: "";
+  display: block;
+  width: 26px;
+  height: 2px;
+  margin-bottom: .7rem;
+  background: var(--g-mid);
+}
+.overline--dark { color: var(--lime); }
+.overline--dark::before { background: var(--lime); }
+.overline--lime { color: var(--g-850); }
+.overline--lime::before { background: var(--g-850); }
+
+/* The figures band: three numbers, no boxes. */
+.figures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 2.5vw, 2rem);
+  margin: 2rem 0 0;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--line);
+}
+.figures dt {
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.035em;
+  color: var(--ink);
+}
+.figures dd {
+  margin: .45rem 0 0;
+  font-size: .82rem;
+  line-height: 1.35;
+  color: var(--body-2);
+}
 
 .accent { color: var(--green); }
 .accent-lime { color: var(--lime); }
@@ -256,7 +284,9 @@ p:last-child { margin-bottom: 0; }
 .container--narrow { max-width: 880px; }
 
 .section { padding-block: var(--section-y); position: relative; }
-.section--tight { padding-block: clamp(3rem, 5.5vw, 4.75rem); }
+/* Three tiers, so the page has a rhythm rather than a metronome. */
+.section--tight { padding-block: calc(var(--section-y) * .62); }
+.section--open { padding-block: calc(var(--section-y) * 1.3); }
 .section--cream {
   background-color: var(--cream);
   background-image: var(--pat-dots-ink);
@@ -308,25 +338,6 @@ p:last-child { margin-bottom: 0; }
 
 /* Column rules. Hairlines dropped down the container edges and thirds, so a
    section reads as if it were set on a drawing sheet. Decorative only. */
-.ruled { position: relative; overflow: hidden; }
-.ruled > .container { position: relative; z-index: 1; }
-.ruled::before {
-  content: "";
-  position: absolute; inset: 0;
-  pointer-events: none;
-  width: min(var(--container), 100%);
-  margin-inline: auto;
-  left: 0; right: 0;
-  background-image: linear-gradient(90deg, var(--rule-c, rgba(6,41,27,.07)) 1px, transparent 1px);
-  background-size: calc((100% - 2 * var(--gutter)) / 3) 100%;
-  background-position: var(--gutter) 0;
-  background-repeat: repeat-x;
-  -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
-          mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
-}
-.section--dark.ruled { --rule-c: rgba(255,255,255,.07); }
-.section--lime.ruled { --rule-c: rgba(6,41,27,.09); }
-@media (max-width: 760px) { .ruled::before { display: none; } }
 
 /* ---------- 5. Buttons ---------- */
 
@@ -727,6 +738,9 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   transform: translateY(14px);
   /* Out first, in second. Crossfading two headlines over each other ghosts
      them together and neither is readable for a quarter of a second. */
+  transition: none;
+}
+.hero--ready .hero__panel {
   transition: opacity .26s var(--ease), transform .45s var(--ease), visibility .45s;
 }
 /* The incoming panel starts before the outgoing one has finished, so the two
@@ -736,6 +750,9 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   opacity: 1;
   visibility: visible;
   transform: none;
+  transition: none;
+}
+.hero--ready .hero__panel.is-active {
   transition: opacity .34s var(--ease) .16s, transform .5s var(--ease) .16s,
               visibility .5s .16s;
 }
@@ -752,19 +769,6 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   width: auto;
   display: block;
 }
-.hero__award {
-  display: inline-flex; align-items: center; gap: .55rem;
-  padding: .36rem .9rem .36rem .8rem;
-  background: rgba(255, 255, 255, .1);
-  border: 1px solid rgba(255, 255, 255, .18);
-  border-radius: var(--r-pill);
-  backdrop-filter: blur(8px);
-  color: #fff; font-size: .78rem; font-weight: 600;
-  transition: background-color .3s var(--ease), border-color .3s var(--ease);
-}
-.hero__award:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.34); }
-.hero__award b { color: var(--lime); font-weight: 800; }
-.hero__award .stars { display: inline-flex; gap: 1px; color: var(--lime); }
 
 .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.1rem; }
 .hero__call { display: flex; align-items: center; gap: .8rem; margin: 0; }
@@ -1178,8 +1182,10 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .marquee__track { display: flex; width: max-content; animation: marquee 34s linear infinite; }
 .marquee:hover .marquee__track { animation-play-state: paused; }
 .marquee__group { display: flex; align-items: center; gap: clamp(2.5rem, 6vw, 5rem); padding-right: clamp(2.5rem, 6vw, 5rem); }
-.marquee img { height: clamp(28px, 3.6vw, 40px); width: auto; object-fit: contain; filter: grayscale(1) opacity(.55) contrast(1.15); transition: filter .35s var(--ease); }
-.marquee img:hover { filter: none; }
+/* Full strength. A client logo at 55 percent grey reads as a placeholder,
+   and these are real clients who agreed to be named. */
+.marquee img { height: clamp(30px, 3.8vw, 42px); width: auto; object-fit: contain; filter: grayscale(1) contrast(1.05); opacity: .9; transition: opacity .3s var(--ease), filter .3s var(--ease); }
+.marquee img:hover { filter: none; opacity: 1; }
 @keyframes marquee { to { transform: translateX(-50%); } }
 
 /* ---------- 15. Accordion ---------- */
@@ -1385,161 +1391,109 @@ a.byline__person:hover strong { color: var(--g-mid); }
    grounds the white variant rather than a filter. */
 .clogo { width: auto; max-width: 100%; display: block; object-fit: contain; }
 
-/* ---------- 19c. The group structure ---------- */
-/* The chart the Operations Director drew: one parent, three companies, and in
-   one case two units below that. The connectors are drawn rather than drawn
-   in, so they stay put at any width. */
-/* The connectors are the diagram, so they are drawn a step stronger than an
-   ordinary hairline: a reader has to be able to follow them. */
-.org { --org-line: rgba(12, 105, 52, .26); }
-.section--dark .org { --org-line: rgba(169, 238, 110, .32); }
-
-.org__parent {
-  display: inline-flex; align-items: center; gap: 1rem;
-  padding: .95rem 1.75rem .95rem 1.05rem;
-  border-radius: var(--corner-lg);
-  background: var(--g-900);
-  color: #fff;
-  transition: background-color .3s var(--ease), transform .3s var(--ease);
-}
-.org__parent:hover { background: var(--g-800); transform: translateY(-2px); }
-.org__parent-mark {
-  display: grid; place-items: center;
-  width: 52px; height: 52px;
-  border-radius: var(--corner-md);
-  background: rgba(255, 255, 255, .08);
-}
-.org__parent-mark img { width: 28px; height: auto; }
-.org__parent-text strong { display: block; font-size: 1.3rem; line-height: 1.15; letter-spacing: -.01em; }
-.org__parent-text small { font-size: .8rem; color: var(--on-dark-soft); letter-spacing: .04em; text-transform: uppercase; }
-
-.org { display: flex; flex-direction: column; align-items: center; }
-.org__trunk {
-  display: block;
-  width: 2px; height: 34px;
-  background: var(--org-line);
-}
-.org__row {
+/* ---------- 19c. The group, as a comparison ---------- */
+/* Rows line up across three columns so the eye reads across. There are no
+   vertical rules: horizontal hairlines carry the alignment on their own, and
+   the client asked for the column rules to go. */
+.org {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: auto auto;
-  column-gap: clamp(1rem, 2vw, 1.6rem);
-  row-gap: 28px;
-  width: 100%;
-  position: relative;
-  padding-top: 34px;
-  align-items: stretch;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: clamp(1.4rem, 3vw, 3rem);
+  border-top: 1px solid var(--line);
 }
-/* The horizontal rail joining the three, and the drop into each one. */
-.org__row::before {
-  content: "";
-  position: absolute; top: 0;
-  left: calc(100% / 6); right: calc(100% / 6);
-  height: 2px;
-  background: var(--org-line);
-}
-.org__co { display: contents; }
+.org__row { display: contents; }
+.org__row > * { border-bottom: 1px solid var(--line); padding: 1rem 0; margin: 0; }
 
-.org__card {
-  position: relative;
-  grid-row: 1;
-  display: flex; flex-direction: column;
-  padding: clamp(1.2rem, 2vw, 1.6rem);
-  border: 1px solid var(--line);
-  border-radius: var(--corner-xl);
-  background: var(--white);
-  color: var(--ink);
-  transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease);
+/* The colour field is what distinguishes the three. Two of the marks are
+   nearly identical and the third belongs to another palette, so the field
+   does the work and the mark only confirms it. */
+.org__row--head > * { padding: 0 0 1.25rem; border-bottom: 0; }
+.org__col { display: block; }
+.org__field {
+  display: grid; place-items: center;
+  height: 96px;
+  border-radius: var(--corner-lg);
+  transition: transform .35s var(--ease);
 }
-.org__card::before {
-  content: "";
-  position: absolute; top: -34px; left: 50%;
-  width: 2px; height: 34px;
-  transform: translateX(-50%);
-  background: var(--org-line);
-}
-.org__card:hover { transform: translateY(-5px); box-shadow: var(--sh-2); border-color: var(--g-light); }
-.section--dark .org__card { background: var(--g-800); border-color: rgba(255,255,255,.1); color: #fff; }
-.section--dark .org__card:hover { background: var(--g-750); }
+.org__col:hover .org__field { transform: translateY(-3px); }
+.org__field img { height: 42px; width: auto; display: block; }
+.org--a .org__field { background: var(--g-850); }
+.org--b .org__field { background: var(--g-mid); }
+.org--c .org__field { background: var(--lime); }
 
-.org__logo {
-  display: flex; align-items: center;
-  min-height: 56px;
-  padding-bottom: 1.1rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--line);
-}
-.section--dark .org__logo { border-color: rgba(255, 255, 255, .14); }
 .org__role {
-  display: flex; align-items: center; gap: .4rem;
   font-size: .72rem; font-weight: 800;
   letter-spacing: .1em; text-transform: uppercase;
   color: var(--g-mid);
 }
-.section--dark .org__role { color: var(--lime); }
-.org__card p { font-size: .92rem; margin: .7rem 0 0; }
-.section--dark .org__card p { color: var(--on-dark-soft); }
-.org__caps { display: flex; flex-wrap: wrap; gap: .32rem; margin: 1rem 0 1.1rem; }
-.org__caps i {
-  font-style: normal;
-  font-size: .68rem; font-weight: 700;
-  letter-spacing: .05em; text-transform: uppercase;
-  padding: .24rem .55rem;
-  border-radius: var(--r-pill);
-  background: var(--cream);
-  border: 1px solid var(--line);
-  color: var(--ink-3);
+.org__line { font-size: 1.02rem; line-height: 1.4; color: var(--ink); max-width: 30ch; }
+.org__serves, .org__trades { font-size: .92rem; color: var(--body); }
+.org__none { color: var(--line); }
+.org__row--label > * {
+  padding: 1rem 0 .25rem;
+  border-bottom: 0;
+  font-size: .68rem; font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--body-2);
 }
-.section--dark .org__caps i { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.14); color: #fff; }
+.org__row--label + .org__row > * { padding-top: 0; }
+.org__row--go > * { border-bottom: 0; padding-bottom: 0; }
 .org__go {
-  margin-top: auto;
-  display: inline-flex; align-items: center; gap: .4rem;
-  font-size: .78rem; font-weight: 800;
-  letter-spacing: .07em; text-transform: uppercase;
-  color: var(--g-mid);
-}
-.section--dark .org__go { color: var(--lime); }
-
-/* The two units under Circuitron hang off the bottom of its card. */
-.org__subs { position: relative; grid-row: 2; display: flex; flex-wrap: wrap; gap: .5rem; }
-.org__subs::before {
-  content: "";
-  position: absolute; top: -28px; left: 50%;
-  width: 2px; height: 28px;
-  transform: translateX(-50%);
-  background: var(--org-line);
-}
-.org__sub {
-  flex: 1 1 auto;
-  display: flex; flex-direction: column; gap: .1rem;
-  padding: .6rem .85rem;
-  border: 1px dashed var(--line);
-  border-radius: var(--corner-md);
-  background: transparent;
+  display: inline-flex; align-items: center; gap: .45rem;
+  font-size: .9rem; font-weight: 800;
   color: var(--ink);
-  font-size: .88rem; font-weight: 700;
-  transition: background-color .3s var(--ease), border-color .3s var(--ease);
+  transition: color .25s var(--ease), gap .25s var(--ease);
 }
-.org__sub:hover { background: var(--white); border-style: solid; border-color: var(--g-light); }
-.org__sub small { font-weight: 500; font-size: .72rem; color: var(--body-2); }
-.section--dark .org__sub { color: #fff; border-color: rgba(255,255,255,.22); }
-.section--dark .org__sub small { color: var(--on-dark-soft); }
-.section--dark .org__sub:hover { background: rgba(255,255,255,.06); }
+.org__go:hover { color: var(--g-mid); gap: .7rem; }
 
-/* Compact: used where the chart is a reminder rather than the subject. */
-.org--compact .org__card { padding: 1rem 1.1rem; }
-.org--compact .org__name { font-size: 1.02rem; }
-
-/* A capability's glyph above its eyebrow, so the system reads before the words. */
-.dmark {
-  display: grid; place-items: center;
-  width: 68px; height: 68px;
-  margin-bottom: 1.1rem;
-  border-radius: var(--corner-xl);
-  background: var(--lime-4);
+/* The group itself, as a line in the section header rather than a node
+   floating in the middle of the canvas. */
+.orgparent {
+  display: inline-flex; align-items: center; gap: .55rem;
+  margin-top: 1rem;
+  padding: .45rem .95rem .45rem .6rem;
   border: 1px solid var(--line);
-  color: var(--g-mid);
+  border-radius: var(--r-pill);
+  background: var(--white);
+  color: var(--body);
+  font-size: .86rem;
+  transition: border-color .25s var(--ease);
 }
+.orgparent:hover { border-color: var(--g-light); }
+.orgparent b { color: var(--ink); font-weight: 800; }
+.section--dark .orgparent {
+  background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.16);
+  color: var(--on-dark-soft);
+}
+.section--dark .orgparent b { color: #fff; }
+
+/* The phone form: three rows, a colour bar each, nothing else. At 30px the
+   two Sentinel lockups are indistinguishable, so there are no logos here. */
+.orglist { display: none; }
+.orgrow {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1.15rem 0 1.15rem 1.1rem;
+  border-bottom: 1px solid var(--line);
+  border-left: 4px solid var(--g-850);
+  color: var(--ink);
+}
+.orgrow:first-child { border-top: 1px solid var(--line); }
+.orgrow.org--a { border-left-color: var(--g-850); }
+.orgrow.org--b { border-left-color: var(--g-mid); }
+.orgrow.org--c { border-left-color: var(--lime); }
+.orgrow__text small {
+  display: block;
+  font-size: .68rem; font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--g-mid);
+  margin-bottom: .15rem;
+}
+.orgrow__text strong { display: block; font-size: 1.05rem; line-height: 1.2; letter-spacing: -.015em; }
+.orgrow__go { margin-left: auto; color: var(--g-mid); }
+.section--dark .orgrow { color: #fff; border-bottom-color: rgba(255,255,255,.14); }
+.section--dark .orgrow:first-child { border-top-color: rgba(255,255,255,.14); }
+.section--dark .orgrow__text small { color: var(--lime); }
+.section--dark .orgrow__go { color: var(--lime); }
 
 /* ---------- 19d. Capabilities inside a company ---------- */
 .dgrid {
@@ -1615,14 +1569,6 @@ a.byline__person:hover strong { color: var(--g-mid); }
   border-radius: 2px;
   background: var(--g-light);
 }
-.dcard__cta {
-  margin-top: auto;
-  display: inline-flex; align-items: center; gap: .4rem;
-  font-size: .8rem; font-weight: 800;
-  letter-spacing: .06em; text-transform: uppercase;
-  color: var(--g-mid);
-}
-.dcard:hover .dcard__cta { color: var(--ink); }
 
 /* ---------- 19e. A business inside a business ---------- */
 .unit {
@@ -2067,6 +2013,8 @@ a.byline__person:hover strong { color: var(--g-mid); }
   .org__subs::before { top: 0; left: 0; height: 100%; width: 2px; transform: none; }
   .sibs { grid-template-columns: 1fr; }
   .mega__grid { grid-template-columns: 1fr; }
+  .org { display: none; }
+  .orglist { display: block; }
   .topbar__list li:nth-child(2) { display: none; }
   .g-3, .g-4 { grid-template-columns: repeat(2, 1fr); }
   .split, .contact-grid { grid-template-columns: 1fr; }
@@ -2075,53 +2023,85 @@ a.byline__person:hover strong { color: var(--g-mid); }
   .shead__cta { justify-content: flex-start; }
   /* The hero owns the screen here too. Content is a column: the copy sits at the
      top, the actions follow, and the figures strip is pinned to the bottom. */
+  /* Two zones. The photograph keeps the top of the screen and nothing is
+     drawn over it; the copy sits on a solid ground below. A hero that fills
+     the viewport only works when the picture can carry type, and a portrait
+     crop of a wide frame usually cannot. */
   .hero {
-    height: calc(100svh - var(--topbar-h));
-    min-height: 600px;
+    height: auto;
+    min-height: 0;
     max-height: none;
-    padding-top: calc(var(--header-h) + clamp(.5rem, 2.2vh, 1.5rem));
-    /* Reserve the floating WhatsApp button's corner so it never sits on top of
-       the figures strip, which is the last thing the hero has to say. */
-    padding-bottom: calc(clamp(1rem, 2.6vh, 1.85rem) + 58px);
-    align-items: stretch;
+    padding: 0;
+    display: block;
+    overflow: visible;
   }
-  .hero > .container { display: flex; width: 100%; }
-  .hero__content {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;   /* photograph above, the pitch beneath it */
-    width: 100%;
-    max-width: none;
+  .hero__media {
+    position: relative;
+    inset: auto;
+    height: 300px;
+    z-index: 0;
+    border-radius: 0;
   }
-  /* A portrait viewport crops hard into the middle of a 16:9 frame, so each
-     slide keeps its own pan point and simply opens up a stop. */
   .hero__slide img {
-    filter: saturate(.88) contrast(1.05) brightness(calc(1.04 * var(--expo, 1)));
+    filter: saturate(.94) contrast(1.03) brightness(calc(1.04 * var(--expo, 1)));
   }
-  .hero__unify { opacity: .22; }
-  .hero__vignette { background: radial-gradient(130% 74% at 50% 34%, transparent 50%, rgba(3, 20, 14, .45) 100%); }
-  /* Stacked content, so the ramp runs down the frame instead of across it. */
+  /* Only enough darkness at the join to carry the header and meet the block
+     below it. The rest of the frame is left alone. */
+  .hero__unify, .hero__vignette, .hero__grid { display: none; }
   .hero__scrim {
-    background:
-      linear-gradient(180deg,
-        rgba(3, 20, 14, .80) 0%,
-        rgba(3, 20, 14, .30) 14%,
-        rgba(3, 20, 14, .38) 30%,
-        rgba(3, 20, 14, .80) 48%,
-        rgba(5, 29, 20, .94) 64%,
-        var(--g-950) 86%),
-      linear-gradient(90deg, rgba(3, 20, 14, .40) 0%, rgba(3, 20, 14, 0) 76%);
+    /* Top aligned with the media. Anchored to the bottom it covered the copy
+       block instead, which quietly greyed the headline to 67% white. */
+    inset: 0 0 auto 0;
+    height: 300px;
+    background: linear-gradient(180deg,
+      rgba(3, 20, 14, .72) 0%,
+      rgba(3, 20, 14, .18) 26%,
+      rgba(3, 20, 14, 0) 46%,
+      rgba(3, 20, 14, .34) 84%,
+      var(--g-950) 100%);
   }
-  .hero__grid {
-    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 78%);
-            mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 78%);
+  .hero > .container {
+    display: block;
+    width: 100%;
+    background: var(--g-950);
+    padding-top: clamp(1.4rem, 4vw, 2rem);
+    padding-bottom: clamp(1.6rem, 5vw, 2.4rem);
   }
+  .hero__content { max-width: none; }
+  .hero__content::before { display: none; }
+
+  .hero__panels { min-height: 0; }
+  .hero__id { margin-bottom: .9rem; }
+  .hero__lockup { height: 32px; }
+
+  /* One pill. The other two actions are secondary, so they read as links. */
+  .hero__actions {
+    display: grid;
+    gap: .9rem;
+    margin-top: 1.3rem;
+  }
+  .hero__actions .pbtn--ghost {
+    background: none;
+    border: 0;
+    backdrop-filter: none;
+    padding: 0;
+    justify-self: start;
+  }
+  .hero__actions .pbtn--ghost .pbtn__label { padding: 0; color: var(--lime); font-size: .95rem; }
+  .hero__actions .pbtn--ghost .pbtn__chev { display: none; }
+  .hero__call { gap: .6rem; }
+  .hero__call .rbtn { width: 38px; height: 38px; }
+
+  .hero__tabs { margin-top: 1.5rem; }
+
   .phero__media { width: 100%; opacity: .42; }
   .phero__scrim { background: linear-gradient(180deg, rgba(6,41,27,.88), rgba(6,41,27,.72)); }
   .bento__hero { aspect-ratio: 2 / 1; }
 }
 
 @media (max-width: 640px) {
+  /* A 26px dot grid behind 16px body copy is noise on a phone. */
+  .section--cream { background-image: none; }
   .dgrid, .signgrid { grid-template-columns: 1fr; }
   .walkstep { grid-template-columns: auto 1fr; }
   .walkstep__sign { grid-column: 2; justify-self: start; margin-top: .6rem; }
@@ -2180,19 +2160,40 @@ a.byline__person:hover strong { color: var(--g-mid); }
   .hero__tab-text small { display: none; }
   .hero__id { gap: .5rem .8rem; margin-bottom: .7rem; }
   .hero__lockup { height: 30px; }
-  .hero__award { font-size: .72rem; padding: .3rem .7rem .3rem .62rem; }
-  .hero__actions { flex-direction: column; align-items: stretch; gap: .6rem; }
-  .hero__actions .pbtn { width: 100%; justify-content: center; padding: 5px 1rem 5px 5px; }
-  .hero__actions .pbtn .pbtn__label { flex: 1; text-align: center; padding: .85rem 1rem; }
+  .hero__actions {
+    display: grid;
+    justify-items: start;
+    gap: 1rem;
+  }
+  /* The primary action keeps the pill and the full width. */
+  .hero__actions .pbtn:not(.pbtn--ghost) {
+    width: 100%;
+    justify-content: center;
+    padding: 5px 1rem 5px 5px;
+  }
+  .hero__actions .pbtn:not(.pbtn--ghost) .pbtn__label {
+    flex: 1; text-align: center; padding: .85rem 1rem;
+  }
+  /* The second one is secondary by definition, so it reads as a link. */
+  .hero__actions .pbtn--ghost {
+    width: auto;
+    padding: 0;
+    background: none;
+    border: 0;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+  .hero__actions .pbtn--ghost .pbtn__label {
+    padding: 0;
+    color: var(--lime);
+    font-size: .95rem;
+    border-bottom: 1px solid rgba(169, 238, 110, .4);
+  }
+  .hero__actions .pbtn--ghost .pbtn__chev { display: none; }
 
   .hero__call {
-    width: 100%;
-    display: flex; align-items: center; justify-content: center; gap: .55rem;
-    padding: .72rem 1rem;
-    border: 1px solid rgba(255, 255, 255, .26);
-    border-radius: var(--r-pill);
-    background: rgba(255, 255, 255, .07);
-    backdrop-filter: blur(6px);
+    display: flex; align-items: center; gap: .5rem;
+    padding: 0; border: 0; background: none; backdrop-filter: none;
   }
   .hero__call .rbtn { width: 26px; height: 26px; background: none; color: var(--lime); }
   .hero__call .rbtn:hover { transform: none; background: none; }
@@ -2226,7 +2227,9 @@ a.byline__person:hover strong { color: var(--g-mid); }
 
   /* Sector rows */
   .row { grid-template-columns: 1fr auto; gap: 1rem; padding-block: 1.1rem; }
-  .row__n { display: none; }
+  /* The numerals are the only numeric texture on the page; without them
+     five rows of body copy is not a list. */
+  .row__n { display: block; font-size: .72rem; }
   .row__go { width: 38px; height: 38px; }
   .row:hover { padding-inline: 0; }
 

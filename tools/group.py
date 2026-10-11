@@ -28,6 +28,7 @@ COMPANIES = [
         "legal": "Sentinel Integrated Technologies (PVT) Ltd",
         "role": "Electronic security technology",
         "headline": "The systems that watch the site",
+        "chart_line": "Cameras, alarms, readers, gates and detectors, fitted as one system.",
         "hero": {
             "h1": ("The systems that ", "watch", " the site"),
             "lead": "CCTV, alarms, access control, gates and fire detection, "
@@ -133,6 +134,7 @@ COMPANIES = [
         "legal": "Sentinel Security Services",
         "role": "Security operations",
         "headline": "The people who hold the ground",
+        "chart_line": "Officers, dog units and armed response, in all ten provinces.",
         "hero": {
             "h1": ("The officers who ", "hold", " the ground"),
             "lead": "Guarding, dog units and armed response across all ten "
@@ -237,6 +239,7 @@ COMPANIES = [
         "legal": "Circuitron Systems (Private) Limited",
         "role": "Technology and systems",
         "headline": "The technology business, standing on its own",
+        "chart_line": "Radios, networks, automation, power, and a shop to buy them from.",
         "hero": {
             "h1": ("The technology that ", "connects", " both"),
             "lead": "Radios, networks, building automation and power, sold and "

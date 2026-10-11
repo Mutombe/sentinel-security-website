@@ -94,6 +94,11 @@
     var timer = null;
     var DWELL = 7000;
     hero.style.setProperty('--hero-dwell', (DWELL / 1000) + 's');
+    // Panels only animate once the first frame is on screen, so the panel that
+    // ships active never fades itself in.
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { hero.classList.add('hero--ready'); });
+    });
 
     var attachRest = function () {
       hero.querySelectorAll('img[data-src]').forEach(function (img) {
