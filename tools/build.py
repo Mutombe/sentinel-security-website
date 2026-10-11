@@ -187,6 +187,16 @@ def autolink(text, max_links=2, exclude=()):
     return "".join(out)
 
 
+def secbg(name, alt="", pos="50% 45%"):
+    """The photographic ground behind a section.
+
+    The picture is decorative here, so it takes an empty alt and the section's
+    own heading carries the meaning. It loads lazily: none of these are above
+    the fold."""
+    return ('    <div class="secbg" style="--pos:%s">%s</div>\n'
+            % (pos, photo_img(name, alt, "100vw", lazy=True)))
+
+
 def eyebrow(text, variant=""):
     """A section overline. Kept under the old name so every call site still
     reads naturally; the pill it used to render is gone."""
@@ -583,12 +593,12 @@ def header(active):
        pbtn("Book a site survey", "contact.html", "pbtn--block"))
 
 
-CTA = """
+CTA = ("""
   <!-- ===== CTA ===== -->
   <section class="section section--tight">
     <div class="container">
-      <div class="cta" data-reveal>
-        <div class="cta__inner">
+      <div class="cta cta--photo" data-reveal>
+%s        <div class="cta__inner">
           <div>
             %s
             <h2 class="h-2">Book a free site survey</h2>
@@ -602,9 +612,10 @@ CTA = """
       </div>
     </div>
   </section>
-""" % (eyebrow("Book it", "eyebrow--dark"),
+""" % (secbg("response-night", pos="54% 46%").rstrip(),
+       eyebrow("Book it", "eyebrow--dark"),
        pbtn("Book a site survey", "contact.html", "pbtn--light"),
-       pbtn("+263 77 358 9461", "tel:+263773589461", "pbtn--outline"))
+       pbtn("+263 77 358 9461", "tel:+263773589461", "pbtn--outline")))
 
 
 FOOTER = """
@@ -792,8 +803,93 @@ def drop_self_links(html, name):
     return SELF_LINK.sub(one, html)
 
 
+# ------------------------------------------------------------- photo bands
+# page -> list of (photograph, focal point), one per dark band on that page,
+# in document order. A band with None stays flat, so the alternation can be
+# tuned without unpicking the markup.
+PHOTO_BANDS = {
+    "index.html":            [("technician-panel", "58% 42%")],
+    "about.html":            [("officers-team", "50% 34%")],
+    "services.html":         [("sys-cctv", "54% 44%")],
+    "renewable-energy.html": [("power-solar", "50% 48%")],
+    "circuitron.html":       [("tech-retail", "52% 46%")],
+    "signage.html":          [("vehicle-checkpoint", "56% 44%")],
+    "group.html":            [("officers-warehouse", "52% 40%")],
+    "security-services.html": [],
+}
+
+# The closing call to action on every page, which is the other half of the
+# alternation: the last band a reader sees is photographic.
+CTA_BAND = ("response-night", "54% 46%")
+
+DARK_BAND = re.compile(r'<section class="section section--dark([^"]*)"([^>]*)>')
+
+
+def photo_bands(html, name):
+    """Turn the flat dark bands on this page into photographic ones."""
+    picks = list(PHOTO_BANDS.get(name, []))
+
+    def one(m):
+        if not picks:
+            return m.group(0)
+        pick = picks.pop(0)
+        if pick is None:
+            return m.group(0)
+        photo, pos = pick
+        return ('<section class="section section--dark section--photo%s"%s>\n%s'
+                % (m.group(1), m.group(2), secbg(photo, pos=pos).rstrip("\n")))
+
+    return DARK_BAND.sub(one, html)
+
+# --------------------------------------------------------- entrance gestures
+# A class on a container, and the gesture its children arrive with. The order
+# matters only in that each pattern is applied once.
+GESTURES = [
+    ("steps",   "zip"),     # the four process steps close in from both sides
+    ("figures", "count"),   # the numbers run up to their value
+    ("rows",    "slide"),   # sector rows arrive in sequence
+    ("dgrid",   "deal"),    # capability cards land like a dealt hand
+    ("g-3",     "deal"),
+    ("bento",   "scale"),   # the picture settles rather than fades
+    ("orglist", "slide"),
+    ("signgrid", "deal"),
+    ("gdetail__rows", "slide"),
+]
+
+GEST_RE = [(re.compile(r'(<(?:div|dl|ul|ol)\s+class="%s")(?![^>]*data-anim)' % re.escape(c)), g)
+           for c, g in GESTURES]
+
+SHEAD_TITLE = re.compile(r'<h2 class="([^"]*\bshead__title\b[^"]*)"(?![^>]*data-anim)')
+SECBG = re.compile(r'<div class="secbg"(?![^>]*data-reveal)')
+FIG_DT = re.compile(r'<dt([^>]*)>(\s*)(\d[\d,]*)(\s*)</dt>')
+
+
+def gestures(html):
+    """Give each kind of block the entrance that suits it."""
+    for rx, g in GEST_RE:
+        html = rx.sub(lambda m, g=g: '%s data-anim="%s"' % (m.group(1), g), html)
+
+    # A section heading is uncovered rather than moved: the type stays put and
+    # the clip travels, which keeps a long heading from sliding under its own
+    # overline.
+    html = SHEAD_TITLE.sub(
+        lambda m: '<h2 class="%s" data-reveal data-anim="wipe"' % m.group(1), html)
+
+    # The photographic ground settles from slightly over size.
+    html = SECBG.sub('<div class="secbg" data-reveal data-anim="scale"', html)
+
+    # The figure keeps its final value in the markup; the attribute only tells
+    # the script what to count to.
+    html = FIG_DT.sub(lambda m: m.group(0) if "data-count" in m.group(1)
+                      else '<dt%s data-count="%s">%s%s%s</dt>'
+                      % (m.group(1), m.group(3).replace(",", ""),
+                         m.group(2), m.group(3), m.group(4)), html)
+    return html
+
 def write(name, title, desc, body, cta=True):
     html = head(title, desc, name) + topbar() + header(name) + body + (CTA if cta else "") + FOOTER
+    html = photo_bands(html, name)
+    html = gestures(html)
     html = drop_self_links(html, name)
     html = size_images(html)
     with io.open(os.path.join(OUT, name), "w", encoding="utf-8", newline="\n") as f:

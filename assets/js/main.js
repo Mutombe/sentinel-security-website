@@ -299,6 +299,41 @@
       revealObserver.observe(el);
     });
 
+    /* ---- Figures that count up ----
+       The element already holds its final value, so this only animates the
+       text between zero and what is already there. Anything it cannot parse
+       is left exactly as authored. */
+    var counters = Array.prototype.slice.call(document.querySelectorAll('[data-count]'));
+    if (counters.length) {
+      var runCount = function (el) {
+        var target = parseFloat(String(el.getAttribute('data-count')).replace(/[^0-9.\-]/g, ''));
+        if (!isFinite(target)) return;
+        var final = el.textContent;
+        var prefix = (final.match(/^[^0-9]*/) || [''])[0];
+        var suffix = (final.match(/[^0-9]*$/) || [''])[0];
+        var dur = 1100, t0 = 0;
+        var step = function (ts) {
+          if (!t0) t0 = ts;
+          var p = Math.min((ts - t0) / dur, 1);
+          var eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = prefix + Math.round(target * eased) + suffix;
+          if (p < 1) requestAnimationFrame(step);
+          else el.textContent = final;
+        };
+        requestAnimationFrame(step);
+      };
+
+      var countObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          countObserver.unobserve(entry.target);
+          runCount(entry.target);
+        });
+      }, { threshold: 0.6 });
+
+      counters.forEach(function (el) { countObserver.observe(el); });
+    }
+
     // Safety net: a fast flick or End key can scroll past an element between two
     // IntersectionObserver deliveries, which would strand it invisible forever.
     var sweeping = false;
@@ -315,6 +350,13 @@
       sweeping = true;
       requestAnimationFrame(sweep);
     }, { passive: true });
+
+    // The same sweep on load and shortly after, so a visitor who never
+    // scrolls, or an observer delivery that never arrives, cannot leave
+    // content sitting invisible.
+    window.addEventListener('load', sweep);
+    setTimeout(sweep, 1200);
+    setTimeout(sweep, 3500);
   }
 
   /* ---- Accordion ---- */
