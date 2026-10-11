@@ -241,7 +241,7 @@ COMPANIES = [
         "headline": "The technology business, standing on its own",
         "chart_line": "Radios, networks, automation, power, and a shop to buy them from.",
         "hero": {
-            "h1": ("The technology that ", "connects", " both"),
+            "h1": ("The technology that ", "connects", " both"),
             "lead": "Radios, networks, building automation and power, sold and "
                     "supported as products in their own right, with a shop and "
                     "a recycling route attached.",

@@ -13,6 +13,7 @@
 @font-face { font-family: "Manrope"; src: url("../fonts/manrope-800.woff2") format("woff2"); font-weight: 800; font-style: normal; font-display: swap; }
 /* Caveat (SIL OFL) is a handwriting face, used only for short
    symbolic phrases. Upright rather than oblique so it sits level with the grid. */
+@font-face { font-family: "Marker"; src: url("../fonts/marker.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: "Caveat"; src: url("../fonts/caveat.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
 
 /* ---------- 1. Tokens ---------- */
@@ -166,11 +167,25 @@ h1, h2, h3, h4, h5 {
 }
 
 .h-hero {
-  font-size: clamp(2.05rem, min(6.1vw, 7.4vh), 4.7rem);
+  font-size: clamp(2.3rem, min(6.4vw, 7.6vh), 4.9rem);
   font-weight: 800;
-  line-height: .96;
+  line-height: .95;
   letter-spacing: -.035em;
   text-transform: uppercase;
+  /* pretty, not balance: balance equalises line lengths and will strand a
+     single word to do it, which is exactly what it did here. */
+  text-wrap: pretty;
+}
+
+/* The one drawn word per headline. Baseline aligned by metrics, six percent
+   up on size because an irregular stroke reads smaller than a solid one, and
+   tracked open because marker letterforms crowd. */
+.h-hero .accent-lime {
+  font-family: "Marker", "Caveat", cursive;
+  font-weight: 400;
+  font-size: 1.06em;
+  letter-spacing: .012em;
+  padding-right: .06em;
 }
 .h-1 { font-size: clamp(2.2rem, 5vw, 3.9rem); letter-spacing: -.032em; }
 .h-2 { font-size: clamp(1.9rem, 3.8vw, 3.05rem); }

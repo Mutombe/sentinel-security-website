@@ -446,6 +446,7 @@ def head(title, desc, canonical):
 
 <link rel="preload" href="assets/fonts/manrope-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/manrope-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/marker.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/icons/phosphor.css">
 <link rel="stylesheet" href="assets/css/style.css">
 <script>document.documentElement.classList.add('js');</script>
