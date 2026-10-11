@@ -1672,6 +1672,88 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 .section--dark .gunit svg { color: var(--lime); }
 .section--dark .gunit small { color: var(--on-dark-soft); }
 
+/* ---------- 19g2. Signage ---------- */
+.signgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: clamp(1rem, 1.6vw, 1.4rem);
+  align-items: start;
+}
+.signcard {
+  margin: 0;
+  padding: clamp(1.1rem, 1.8vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: var(--corner-xl);
+  background: var(--white);
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.signcard:hover { transform: translateY(-4px); box-shadow: var(--sh-2); }
+/* The plate is a neutral stage: a sign has to be judged against a wall, not
+   against the page it is being sold on. */
+.signcard__plate {
+  display: grid;
+  place-items: center;
+  min-height: 190px;
+  margin-bottom: 1.1rem;
+  padding: 1.1rem;
+  border-radius: var(--corner-lg);
+  background:
+    linear-gradient(180deg, rgba(6, 41, 27, .05), rgba(6, 41, 27, .09)),
+    var(--cream);
+}
+.signcard__plate img { height: auto; display: block; filter: drop-shadow(0 6px 14px rgba(6, 41, 27, .18)); }
+.signcard figcaption strong { display: block; font-size: 1rem; line-height: 1.2; }
+.signcard__meta {
+  display: block;
+  margin: .25rem 0 .55rem;
+  font-size: .68rem; font-weight: 800;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--g-mid);
+}
+.signcard--statutory .signcard__meta { color: #8A6D00; }
+.signcard figcaption small { display: block; font-size: .86rem; color: var(--body); line-height: 1.45; }
+
+.walk { display: grid; gap: .6rem; }
+.walkstep {
+  display: grid;
+  grid-template-columns: auto 1fr 96px;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.1rem 1.3rem;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: var(--corner-lg);
+  background: var(--g-800);
+}
+.walkstep__n { font-size: .82rem; font-weight: 800; color: var(--lime); }
+.walkstep__body h3 { margin: 0; font-size: 1.02rem; color: #fff; }
+.walkstep__body p { margin: .2rem 0 0; font-size: .9rem; color: var(--on-dark-soft); }
+.walkstep__sign {
+  display: grid; place-items: center;
+  padding: .5rem;
+  border-radius: var(--corner-md);
+  background: rgba(255, 255, 255, .06);
+  transition: background-color .3s var(--ease), transform .3s var(--ease);
+}
+.walkstep__sign:hover { background: rgba(255, 255, 255, .12); transform: translateY(-2px); }
+.walkstep__sign img { width: 100%; max-width: 68px; height: auto; display: block; }
+
+.spec { display: grid; gap: .5rem; }
+.spec__row {
+  display: grid;
+  grid-template-columns: minmax(0, .28fr) minmax(0, .72fr);
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+  padding: 1.1rem 1.3rem;
+  border: 1px solid var(--line);
+  border-radius: var(--corner-lg);
+  background: var(--cream);
+}
+.spec__row dt {
+  font-size: .74rem; font-weight: 800;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--g-mid);
+}
+.spec__row dd { margin: 0; font-size: .95rem; }
+
 /* ---------- 19h. Leadership ---------- */
 .leader {
   padding: clamp(1.4rem, 2.3vw, 2rem);
@@ -1971,7 +2053,10 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 }
 
 @media (max-width: 640px) {
-  .dgrid { grid-template-columns: 1fr; }
+  .dgrid, .signgrid { grid-template-columns: 1fr; }
+  .walkstep { grid-template-columns: auto 1fr; }
+  .walkstep__sign { grid-column: 2; justify-self: start; margin-top: .6rem; }
+  .spec__row { grid-template-columns: 1fr; gap: .4rem; }
   .drow { grid-template-columns: auto 1fr auto; }
   .drow__ico { display: none; }
   .gdetail__units { flex-direction: column; align-items: stretch; }

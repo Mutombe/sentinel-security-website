@@ -585,6 +585,47 @@ thing and fits.
 
 ---
 
+## 12e. When the artefact leaves the screen
+
+A sign, a vehicle livery, a uniform badge: the moment a design has to exist as
+an object, the screen habits stop helping.
+
+**Outline the type.** Live text in an SVG fails the moment the file is used as
+an `<img>` or opened by someone without the font, which is every sign maker.
+Pull the glyph contours out of the woff2 and emit one path. It is thirty lines
+with fontTools and it makes the file self sufficient.
+
+**Fit the type to the object, in code.** On screen a long word wraps. On a sign
+it runs off the edge and the sign is simply unreadable. Measure the line, and
+shrink it until it fits the plate. Never let a layout assume the copy is short.
+
+**Draw a second icon set.** A 1.5 stroke on a 24 grid is a screen idiom, read
+at arm's length. Thicken it for distance and the detail closes up: the dome
+camera became a blob and the card reader a smudge. Signage wants filled
+silhouettes. Same subjects, different medium, different file.
+
+**Keep the hazard code where there is a hazard.** Yellow and black is not a
+style choice, it is an international agreement, and a designer who improves on
+it has made a worse sign. Split the set instead: statutory objects keep the
+code exactly, and everything that is a declaration rather than a danger can
+carry the brand. That split is where the brand opportunity actually is, and it
+is defensible to a safety officer.
+
+**Work out what the object is competing against.** Every sign on every gate in
+that city is yellow. That is the argument for the deterrent signs being green,
+and it is a stronger argument than "it matches the website".
+
+**Say it in the languages of the people who have to understand it.** A warning
+that only works in English is not a warning on a site where English is a second
+or third language. Then have a native speaker check it before it is printed,
+and say in the handover that you have not.
+
+**An unconvincing drawing is worse than a simpler one.** Two attempts at a
+profile dog read as a donkey. A paw print reads instantly at any size, and the
+headline carries the word "guard". Cut the ambitious drawing.
+
+---
+
 ## 13. Degrade honestly
 
 - **Never gate content behind JavaScript.** Scroll reveal animations are the
@@ -637,6 +678,8 @@ Before calling anything done, prove these rather than assume them:
 - [ ] Every drawn icon has been looked at rendered, at 24px, light and dark
 - [ ] A traced logo diffs clean against the original artwork
 - [ ] Every structural claim on the site traces back to a source the client gave
+- [ ] Anything destined for print has its type outlined and fits its plate
+- [ ] Safety wording has been checked by someone who speaks the language
 
 The last one is not a design point, but it is the one that will actually stop a
 launch.

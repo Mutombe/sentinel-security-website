@@ -10,3 +10,4 @@ __pycache__/
 
 # Generated: the Unsplash contact sheet, rebuilt by tools/photos.py
 tools/photo_candidates.html
+assets/signs/_proof.html

@@ -12,6 +12,7 @@ OUT = os.path.join(HERE, os.pardir)
 sys.path.insert(0, HERE)
 
 from group import PARENT, COMPANIES, by_id, BRANDS, LEADERS, CONTACT
+from signs import SIGNS
 from build_icons import sprite as icon_sprite
 
 ORG = "Sentinel Integrated Technologies"
@@ -517,6 +518,7 @@ FOOTER = """
           <li><a href="security-services.html#manned">Manned guarding</a></li>
           <li><a href="security-services.html#response">Alarm response</a></li>
           <li><a href="renewable-energy.html">Solar and backup power</a></li>
+          <li><a href="signage.html">Site signage</a></li>
           <li><a href="about.html">About the group</a></li>
         </ul>
       </div>
@@ -1622,6 +1624,179 @@ company_page("circuitron", "circuitron-bench",
   "Circuitron Systems delivers security systems, two way radio and networking, smart "
   "building automation, computers and power, plus CircuitStore retail and EcoCircuit "
   "electronic waste recovery.")
+
+
+# ================================================================== SIGNAGE
+REGISTERS = [
+    ("statutory", "Statutory", "bolt",
+     "A real hazard, so the hazard code is kept exactly: ISO yellow, a black "
+     "triangle, no brand liberties. Energised fencing is the only genuine "
+     "hazard we install, and the sign has to be understood by someone who "
+     "reads no English, so it carries three languages."),
+    ("deterrent", "Deterrent", "shield",
+     "Not a hazard, a declaration: cameras, dogs, response, access. These "
+     "carry the Sentinel dark green. On a street where every sign is yellow, "
+     "a dark green one is read as a company rather than as hazard furniture, "
+     "and lime on that green measures 12:1, so nothing is given up."),
+    ("presence", "Presence", "mark",
+     "No warning at all. The shield, the name and the number, at eye height "
+     "where someone waiting at the gate will read it. Every client site is a "
+     "billboard that runs for years."),
+]
+
+WALK = [
+    ("Street boundary", "armed-response",
+     "The first sign, read from a vehicle before anyone stops. It is the one "
+     "that changes a decision, so nothing else competes with it here."),
+    ("Vehicle gate", "cctv",
+     "At the point someone has to wait. Cameras and response together, facing "
+     "the driver rather than the house."),
+    ("Fence line", "electric-fence",
+     "Along the energised run, on both faces, and at every corner and gate. "
+     "These are not optional and they are not a deterrent, they are a warning."),
+    ("Pedestrian entrance", "access-control",
+     "Where a visitor is expected to stop and be logged. Paired with the "
+     "intercom so the instruction and the means are in one place."),
+    ("Building entry", "alarm-monitored",
+     "Beside the door a keyholder uses, and on the glass of a shop or office "
+     "where it is read from the pavement."),
+    ("Equipment", "asset-tag",
+     "On every panel, recorder, motor and reader. It is how a technician knows "
+     "the history and how a client knows who to call."),
+]
+
+SPEC = [
+    ("Material", "3mm aluminium composite for gate and wall signs. 1.5mm "
+                 "aluminium for fence signs, which take weather on both faces."),
+    ("Print", "UV stable solvent print on the face, matt laminated. Matt, "
+              "because a gloss sign at the wrong angle is a mirror."),
+    ("Reflective", "Class 1 retroreflective on the street boundary and gate "
+                   "signs wherever the approach is unlit."),
+    ("Fixing", "Four stainless screws with caps into the wall or gate frame. "
+               "Structural tape on glass and on anything that must not be "
+               "drilled."),
+    ("Height", "Centre at 1.5 to 1.8m where a person reads it. Fence signs go "
+               "at the height of the energised wires, not above them."),
+    ("Artwork", "Every sign is vector with the type already outlined, so a "
+                "sign maker needs no fonts and nothing reflows. Scale to any "
+                "size from the same file."),
+]
+
+
+def sign_card(sign, note=None):
+    w, h = sign["size_mm"]
+    scale = 150.0 / max(w, h)
+    return """        <figure class="signcard signcard--%s" data-reveal>
+          <div class="signcard__plate">
+            <img src="assets/signs/%s.svg" alt="%s"
+                 width="%d" height="%d" style="width:%gpx" loading="lazy">
+          </div>
+          <figcaption>
+            <strong>%s</strong>
+            <span class="signcard__meta">%s &middot; %d &times; %d mm</span>
+            <small>%s</small>
+          </figcaption>
+        </figure>
+""" % (sign["register"], sign["id"],
+       sign["title"] + " sign",
+       w, h, round(w * scale), sign["title"],
+       sign["register"], w, h, note or sign["use"])
+
+
+SIGN_BY_ID = {x["id"]: x for x in SIGNS}
+
+sg = phero("Site signage", "The part of the system they actually read",
+  "A camera is a deterrent only if someone believes it is there. The sign on "
+  "the gate does that work, and it does it every day for years, which makes it "
+  "the largest advertising surface the group owns.",
+  "sys-cctv", "A dome camera mounted on a wall") + """
+  <section class="section section--white">
+    <div class="container split split--narrow">
+      <div data-reveal>
+        %s
+        <h2 class="h-2">Three registers, and the split is the point</h2>
+        <p class="script script--lg">read before anything else</p>
+        <p class="lead">
+          Every sign on every gate in Harare is yellow and black. That does the
+          warning job and none of the other one, because nothing distinguishes
+          one company's sign from the next.
+        </p>
+        <p>
+          So we split the set. Where there is a genuine hazard the code is kept
+          exactly, because safety is not a place to be interesting. Everywhere
+          else the signs are Sentinel green, and they are recognised from across
+          a street.
+        </p>
+        <div style="margin-top:2rem">%s</div>
+      </div>
+      <div class="cfacts" data-reveal>
+        <div class="cfact"><dt>In the set</dt><dd>%d signs</dd></div>
+        <div class="cfact"><dt>Artwork</dt><dd>Vector, type outlined</dd></div>
+        <div class="cfact"><dt>Languages</dt><dd>English, Shona, Ndebele</dd></div>
+        <div class="cfact"><dt>Fitted by</dt><dd><a href="services.html">Sentinel Integrated Technologies</a></dd></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--cream ruled">
+    <div class="container">
+""" % (eyebrow("Why they look like this"),
+       pbtn("Ask about signage", "contact.html", "pbtn--dark"),
+       len(SIGNS)) + shead(
+        "The set", "Eight signs, and where each one goes",
+        "A sign in the wrong place teaches people to ignore the rest of them.",
+        variant="shead--wide") + """
+      <div class="signgrid">
+""" + "".join(sign_card(x) for x in SIGNS) + """      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark">
+    <div class="container">
+""" + shead("Walking a site", "Where the signs go, in the order they are read",
+            "This is the survey we do on handover, and it is the same walk "
+            "whether the site is a house or a depot.", kv="eyebrow--dark") + """
+      <div class="walk">
+"""
+for _i, (_place, _sid, _note) in enumerate(WALK, 1):
+    _s = SIGN_BY_ID[_sid]
+    sg += """        <div class="walkstep" data-reveal>
+          <span class="walkstep__n num">%02d</span>
+          <div class="walkstep__body">
+            <h3>%s</h3>
+            <p>%s</p>
+          </div>
+          <a class="walkstep__sign" href="assets/signs/%s.svg" aria-label="%s artwork">
+            <img src="assets/signs/%s.svg" alt="" width="%d" height="%d" loading="lazy">
+          </a>
+        </div>
+""" % (_i, _place, _note, _sid, _s["title"], _sid,
+       _s["size_mm"][0], _s["size_mm"][1])
+
+sg += """      </div>
+    </div>
+  </section>
+
+  <section class="section section--white">
+    <div class="container">
+""" + shead("Specification", "What the sign maker needs",
+            "Everything here is settled, so a quotation is a price rather than "
+            "a conversation.") + """
+      <div class="spec">
+""" + "".join("""        <div class="spec__row" data-reveal>
+          <dt>%s</dt><dd>%s</dd>
+        </div>
+""" % (k, v) for k, v in SPEC) + """      </div>
+    </div>
+  </section>
+"""
+
+write("signage.html",
+      "Site signage: the signs on a Sentinel protected property | " + ORG,
+      "The Sentinel sign set: statutory electric fence warnings in three "
+      "languages, CCTV, armed response, dog unit, access control and alarm "
+      "signs, with the specification a sign maker can quote from.",
+      sg)
 
 # ================================================================= CONTACT
 contact = phero("Contact", "Tell us about your site",

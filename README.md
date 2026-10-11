@@ -11,6 +11,7 @@ services.html              Sentinel Integrated Technologies
                                      #cctv #alarms #access #gates #intercoms #fire)
 security-services.html     Sentinel Security Services
 circuitron.html            Circuitron Systems (anchors: #circuitstore #ecocircuit)
+signage.html               The sign set, where each one goes, and the spec
 about.html                 The group story, leadership, mission and values
 renewable-energy.html      Solar PV and backup power
 contact.html               Contact + enquiry form + map
@@ -27,6 +28,9 @@ tools/group.py             The group structure and its content, in one place
 tools/icons.py             Source for the drawn icon set
 tools/build_icons.py       Builds the sprite, and a proof sheet for checking it
 tools/subset_icons.py      Rebuilds the Phosphor subset when you need a new glyph
+tools/signs.py             Builds the site signage artwork
+tools/sign_glyphs.py       Solid pictograms for the signs
+tools/typeset.py           Outlines type, so sign artwork needs no fonts
 WEB-DESIGN-PRINCIPLES.md   The design rules this build follows
 ```
 
@@ -137,6 +141,46 @@ police and military imagery. None of it is used. A private Zimbabwean security
 company showing police livery or camouflage would be claiming something it is
 not, so every frame with a police car, a police vest or camouflage was passed
 over, even where it was the best photograph in the set.
+
+## The signage
+
+`assets/signs/` holds eight signs as vector artwork with the type already
+outlined, so a sign maker needs no fonts and nothing reflows at any size.
+
+```
+python tools/signs.py                      rebuild the artwork
+python tools/signs.py --sheet proof.html   plus a proof page
+```
+
+The set splits three ways, and the split is the idea.
+
+| Register | Colour | What it is |
+|---|---|---|
+| Statutory | ISO yellow and black | A real hazard. Energised fencing is the only one Sentinel installs, so that sign keeps the hazard code exactly and carries English, Shona and Ndebele. |
+| Deterrent | Sentinel green, lime ink | Not a hazard, a declaration: cameras, dogs, response, access, alarm. |
+| Presence | Green, shield forward | No warning at all. The billboard. |
+
+Every sign on every gate in Harare is yellow and black, which does the warning
+job and none of the other one. Deterrent signs are green so they are read as a
+company rather than as hazard furniture, and lime on `--g-900` measures 12:1,
+so nothing is given up in legibility.
+
+**The pictograms are their own set.** `tools/sign_glyphs.py` holds solid
+silhouettes, not the line icons. A 1.5 stroke on a 24 grid is a screen idiom;
+thickening it until it carries twenty metres closes up the detail, and the dome
+camera becomes a blob. Same subjects, different medium.
+
+Two of them took three attempts. The guard dog is a paw, because two goes at a
+profile dog read as a donkey and an unconvincing animal undermines the warning.
+The access pictogram is a card being presented to a reader, because a door on
+its own read as a locker. Render them before shipping:
+`python tools/signs.py --sheet` and look.
+
+**Before these go to print,** confirm the Shona and Ndebele wording on the
+electric fence sign with a native speaker, and confirm the current Zimbabwean
+requirement for electric fence warning signs: the interval, the faces and the
+minimum size. The page states 10m on both faces, which is the common
+convention, not a citation.
 
 ## The logo
 
