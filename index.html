@@ -126,27 +126,16 @@
 <main id="main">
 
   <!-- ===== Hero ===== -->
-  <section class="hero">
-    <div class="hero__media" aria-hidden="true" data-hero-carousel>
+  <section class="hero" data-hero>
+    <div class="hero__media" aria-hidden="true">
       <div class="hero__slide is-active" style="--pos:72% 34%;--expo:2.45">
-        <img  src="assets/img/photos/control-room-monitoring-1200.jpg"
-             srcset="assets/img/photos/control-room-monitoring-640.jpg 640w, assets/img/photos/control-room-monitoring-1200.jpg 1200w"
-             sizes="100vw" alt="An operator watching a wall of live camera feeds" fetchpriority="high" width="1200" height="608">
+        <img src="assets/img/photos/control-room-monitoring-1200.jpg" srcset="assets/img/photos/control-room-monitoring-640.jpg 640w, assets/img/photos/control-room-monitoring-1200.jpg 1200w" sizes="100vw" alt="An operator watching a wall of live camera feeds" fetchpriority="high" width="1200" height="608">
       </div>
       <div class="hero__slide" style="--pos:58% 38%;--expo:0.95">
-        <img data-slide-src data-src="assets/img/photos/security-officers-1200.jpg"
-             data-srcset="assets/img/photos/security-officers-640.jpg 640w, assets/img/photos/security-officers-1200.jpg 1200w"
-             sizes="100vw" alt="A security officer on post at a public event" width="1200" height="608">
+        <img data-slide-src data-src="assets/img/photos/security-officers-1200.jpg" data-srcset="assets/img/photos/security-officers-640.jpg 640w, assets/img/photos/security-officers-1200.jpg 1200w" sizes="100vw" alt="A security officer on post at a public event" width="1200" height="608">
       </div>
-      <div class="hero__slide" style="--pos:70% 40%;--expo:0.64">
-        <img data-slide-src data-src="assets/img/photos/technician-panel-1200.jpg"
-             data-srcset="assets/img/photos/technician-panel-640.jpg 640w, assets/img/photos/technician-panel-1200.jpg 1200w"
-             sizes="100vw" alt="A technician wiring an electrical panel on site" width="1200" height="608">
-      </div>
-      <div class="hero__slide" style="--pos:64% 34%;--expo:0.90">
-        <img data-slide-src data-src="assets/img/photos/operator-night-shift-1200.jpg"
-             data-srcset="assets/img/photos/operator-night-shift-640.jpg 640w, assets/img/photos/operator-night-shift-1200.jpg 1200w"
-             sizes="100vw" alt="A monitoring desk on night shift" width="1200" height="608">
+      <div class="hero__slide" style="--pos:50% 46%;--expo:1.35">
+        <img data-slide-src data-src="assets/img/photos/circuitron-bench-1200.jpg" data-srcset="assets/img/photos/circuitron-bench-640.jpg 640w, assets/img/photos/circuitron-bench-1200.jpg 1200w" sizes="100vw" alt="Patch cabling in a network cabinet" width="1200" height="600">
       </div>
     </div>
     <div class="hero__unify" aria-hidden="true"></div>
@@ -156,38 +145,90 @@
 
     <div class="container">
       <div class="hero__content">
-        <a class="hero__badge" href="about.html#recognition">
-          <span class="stars"><i class="ph-fill ph-star i-xs" aria-hidden="true"></i><i class="ph-fill ph-star i-xs" aria-hidden="true"></i><i class="ph-fill ph-star i-xs" aria-hidden="true"></i></span>
-          Award winning in <b class="num">2014, 2015 and 2016</b>
-        </a>
+        <div class="hero__panels">
 
-        <h1 class="h-hero">Your <span class="accent-lime">security</span><br>is our business</h1>
+          <div class="hero__panel is-active" id="hp-1" role="tabpanel" aria-labelledby="ht-1">
+            <div class="hero__id">
+              <img class="hero__lockup" src="assets/img/brand/sentinel-logo-compact-white.svg" alt="Sentinel Integrated Technologies" width="94" height="40" loading="eager">
+              <a class="hero__award" href="about.html#recognition">
+                <span class="stars"><i class="ph-fill ph-star i-xs" aria-hidden="true"></i><i class="ph-fill ph-star i-xs" aria-hidden="true"></i><i class="ph-fill ph-star i-xs" aria-hidden="true"></i></span>
+                Award winning in <b class="num">2014, 2015 and 2016</b>
+              </a>
+            </div>
+            <h1 class="h-hero">The systems that <span class="accent-lime">watch</span> the site</h1>
+            <p class="hero__lead">CCTV, alarms, access control, gates and fire detection, designed as one system and maintained by the people who fitted it.</p>
+            <div class="hero__actions">
+              <a class="pbtn" href="services.html"><span class="pbtn__label">See the systems</span><span class="pbtn__chev"><i class="ph ph-caret-double-right i-sm" aria-hidden="true"></i></span></a>
+              <a class="pbtn pbtn--ghost" href="contact.html"><span class="pbtn__label">Book a site survey</span><span class="pbtn__chev"><i class="ph ph-caret-double-right i-sm" aria-hidden="true"></i></span></a>
+              <dl class="hero__call">
+                <a class="rbtn" href="tel:+263773589461" aria-label="Call Sentinel"><i class="ph ph-phone-call i-md" aria-hidden="true"></i></a>
+                <div><dt>Call us</dt><dd class="num">+263 77 358 9461</dd></div>
+              </dl>
+            </div>
+          </div>
 
-        <p class="hero__lead">
-          Three companies across Zimbabwe: the systems that watch a site, the officers
-          who hold it, and the technology that connects both.
-        </p>
+          <div class="hero__panel" id="hp-2" role="tabpanel" aria-labelledby="ht-2">
+            <div class="hero__id">
+              <img class="hero__lockup" src="assets/img/brand/sentinel-security-services-white.svg" alt="Sentinel Security Services" width="120" height="40" loading="lazy">
+              <a class="hero__award" href="about.html#recognition">
+                <span class="stars"><i class="ph-fill ph-star i-xs" aria-hidden="true"></i><i class="ph-fill ph-star i-xs" aria-hidden="true"></i><i class="ph-fill ph-star i-xs" aria-hidden="true"></i></span>
+                Award winning in <b class="num">2014, 2015 and 2016</b>
+              </a>
+            </div>
+            <h1 class="h-hero">The officers who <span class="accent-lime">hold</span> the ground</h1>
+            <p class="hero__lead">Guarding, dog units and armed response across all ten provinces, answering to a control room that is staffed at every hour.</p>
+            <div class="hero__actions">
+              <a class="pbtn" href="security-services.html"><span class="pbtn__label">See guarding</span><span class="pbtn__chev"><i class="ph ph-caret-double-right i-sm" aria-hidden="true"></i></span></a>
+              <a class="pbtn pbtn--ghost" href="contact.html"><span class="pbtn__label">Request a quotation</span><span class="pbtn__chev"><i class="ph ph-caret-double-right i-sm" aria-hidden="true"></i></span></a>
+              <dl class="hero__call">
+                <a class="rbtn" href="tel:+263773589461" aria-label="Call Sentinel"><i class="ph ph-phone-call i-md" aria-hidden="true"></i></a>
+                <div><dt>Call us</dt><dd class="num">+263 77 358 9461</dd></div>
+              </dl>
+            </div>
+          </div>
 
-        <div class="hero__actions">
-          <a class="pbtn" href="contact.html"><span class="pbtn__label">Book a free site survey</span><span class="pbtn__chev"><i class="ph ph-caret-double-right i-sm" aria-hidden="true"></i></span></a>
-          <dl class="hero__call">
-            <a class="rbtn" href="tel:+263773589461" aria-label="Call Sentinel"><i class="ph ph-phone-call i-md" aria-hidden="true"></i></a>
-            <div><dt>Call us</dt><dd class="num">+263 77 358 9461</dd></div>
-          </dl>
+          <div class="hero__panel" id="hp-3" role="tabpanel" aria-labelledby="ht-3">
+            <div class="hero__id">
+              <img class="hero__lockup" src="assets/img/brand/circuitron-logo-white.png" alt="Circuitron Systems" loading="lazy" width="531" height="169">
+              <a class="hero__award" href="about.html#recognition">
+                <span class="stars"><i class="ph-fill ph-star i-xs" aria-hidden="true"></i><i class="ph-fill ph-star i-xs" aria-hidden="true"></i><i class="ph-fill ph-star i-xs" aria-hidden="true"></i></span>
+                Award winning in <b class="num">2014, 2015 and 2016</b>
+              </a>
+            </div>
+            <h1 class="h-hero">The technology that <span class="accent-lime">connects</span> both</h1>
+            <p class="hero__lead">Radios, networks, building automation and power, sold and supported as products in their own right, with a shop and a recycling route attached.</p>
+            <div class="hero__actions">
+              <a class="pbtn" href="circuitron.html"><span class="pbtn__label">See Circuitron</span><span class="pbtn__chev"><i class="ph ph-caret-double-right i-sm" aria-hidden="true"></i></span></a>
+              <a class="pbtn pbtn--ghost" href="circuitron.html#circuitstore"><span class="pbtn__label">Visit CircuitStore</span><span class="pbtn__chev"><i class="ph ph-caret-double-right i-sm" aria-hidden="true"></i></span></a>
+              <dl class="hero__call">
+                <a class="rbtn" href="tel:+263773589461" aria-label="Call Sentinel"><i class="ph ph-phone-call i-md" aria-hidden="true"></i></a>
+                <div><dt>Call us</dt><dd class="num">+263 77 358 9461</dd></div>
+              </dl>
+            </div>
+          </div>
         </div>
+        <div class="hero__tabs" role="tablist" aria-label="The Sentinel group">
 
-        <dl class="hero__facts">
-          <div class="hero__fact"><dt class="num">3</dt><dd>Companies</dd></div>
-          <div class="hero__fact"><dt class="num">10</dt><dd>Provinces</dd></div>
-          <div class="hero__fact"><dt class="num">24/7</dt><dd>Response</dd></div>
-          <div class="hero__fact"><dt class="num">2016</dt><dd>Since</dd></div>
-        </dl>
+          <button class="hero__tab is-active" type="button" role="tab" id="ht-1"
+                  aria-controls="hp-1" aria-selected="true" tabindex="0" data-hero-tab>
+            <span class="hero__tab-rail" aria-hidden="true"><i></i></span>
+            <span class="hero__tab-n num">01</span>
+            <span class="hero__tab-text"><strong>Technologies</strong><small>Electronic security</small></span>
+          </button>
 
-        <div class="hero__dots" data-hero-dots>
-          <button class="hero__dot is-active" type="button" data-hero-dot aria-label="Show image 1 of 4"></button>
-          <button class="hero__dot" type="button" data-hero-dot aria-label="Show image 2 of 4"></button>
-          <button class="hero__dot" type="button" data-hero-dot aria-label="Show image 3 of 4"></button>
-          <button class="hero__dot" type="button" data-hero-dot aria-label="Show image 4 of 4"></button>
+          <button class="hero__tab" type="button" role="tab" id="ht-2"
+                  aria-controls="hp-2" aria-selected="false" tabindex="-1" data-hero-tab>
+            <span class="hero__tab-rail" aria-hidden="true"><i></i></span>
+            <span class="hero__tab-n num">02</span>
+            <span class="hero__tab-text"><strong>Guarding</strong><small>Officers and response</small></span>
+          </button>
+
+          <button class="hero__tab" type="button" role="tab" id="ht-3"
+                  aria-controls="hp-3" aria-selected="false" tabindex="-1" data-hero-tab>
+            <span class="hero__tab-rail" aria-hidden="true"><i></i></span>
+            <span class="hero__tab-n num">03</span>
+            <span class="hero__tab-text"><strong>Circuitron</strong><small>Technology and retail</small></span>
+          </button>
         </div>
       </div>
     </div>
@@ -215,6 +256,7 @@
       </div>
     </div>
   </section>
+
 
   <!-- ===== The group ===== -->
   <section class="section section--cream ruled" id="group">

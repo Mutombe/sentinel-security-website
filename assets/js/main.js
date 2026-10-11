@@ -76,21 +76,27 @@
     window.addEventListener('scroll', function () { setMega(false); }, { passive: true });
   }
 
-  /* ---- Hero carousel ----
-     Crossfades a handful of stills. Slides after the first carry their source
-     on data attributes and are only attached once the page has loaded, so the
-     first frame never competes with the stylesheet or the fonts. */
-  var carousel = document.querySelector('[data-hero-carousel]');
+  /* ---- Hero ----
+     Three company panels over three photographs, picked by a named tab row.
+     Only the first slide ships a source; the rest attach after load so the
+     first frame never competes with the stylesheet or the fonts.
 
-  if (carousel) {
-    var slides = Array.prototype.slice.call(carousel.querySelectorAll('.hero__slide'));
-    var dots = Array.prototype.slice.call(document.querySelectorAll('[data-hero-dot]'));
+     The tabs follow the ARIA tabs pattern: arrow keys move between them, and
+     the inactive panels are hidden with visibility, which also takes their
+     links out of the tab order. */
+  var hero = document.querySelector('[data-hero]');
+
+  if (hero) {
+    var slides = Array.prototype.slice.call(hero.querySelectorAll('.hero__slide'));
+    var panels = Array.prototype.slice.call(hero.querySelectorAll('.hero__panel'));
+    var tabs = Array.prototype.slice.call(hero.querySelectorAll('[data-hero-tab]'));
     var index = 0;
     var timer = null;
-    var HOLD = 6200;
+    var DWELL = 7000;
+    hero.style.setProperty('--hero-dwell', (DWELL / 1000) + 's');
 
     var attachRest = function () {
-      carousel.querySelectorAll('img[data-src]').forEach(function (img) {
+      hero.querySelectorAll('img[data-src]').forEach(function (img) {
         if (img.getAttribute('data-srcset')) img.srcset = img.getAttribute('data-srcset');
         img.src = img.getAttribute('data-src');
         img.removeAttribute('data-src');
@@ -98,50 +104,82 @@
       });
     };
 
-    var show = function (next) {
+    var show = function (next, focusTab) {
+      next = (next + panels.length) % panels.length;
       if (next === index) return;
+
       slides[index].classList.remove('is-active');
-      if (dots[index]) dots[index].classList.remove('is-active');
-      index = (next + slides.length) % slides.length;
+      panels[index].classList.remove('is-active');
+      tabs[index].classList.remove('is-active');
+      tabs[index].setAttribute('aria-selected', 'false');
+      tabs[index].tabIndex = -1;
+
+      index = next;
+
       slides[index].classList.add('is-active');
-      if (dots[index]) dots[index].classList.add('is-active');
-      // Restart the drift on the slide that just became visible.
-      var img = slides[index].querySelector('img');
-      if (img) { img.style.animation = 'none'; void img.offsetWidth; img.style.animation = ''; }
+      panels[index].classList.add('is-active');
+      tabs[index].classList.add('is-active');
+      tabs[index].setAttribute('aria-selected', 'true');
+      tabs[index].tabIndex = 0;
+      if (focusTab) tabs[index].focus();
+
+      // Restart the drift and the progress rail on what just became visible.
+      [slides[index].querySelector('img'), tabs[index].querySelector('.hero__tab-rail i')]
+        .forEach(function (el) {
+          if (!el) return;
+          el.style.animation = 'none';
+          void el.offsetWidth;
+          el.style.animation = '';
+        });
     };
 
-    var stop = function () { if (timer) { clearInterval(timer); timer = null; } };
+    var stop = function () {
+      if (timer) { clearInterval(timer); timer = null; }
+      hero.classList.add('hero--paused');
+    };
     var start = function () {
-      if (timer || reduceMotion || slides.length < 2) return;
-      timer = setInterval(function () { show(index + 1); }, HOLD);
+      hero.classList.remove('hero--paused');
+      if (timer || reduceMotion || panels.length < 2) return;
+      timer = setInterval(function () { show(index + 1); }, DWELL);
     };
+    var restart = function () { stop(); start(); };
 
-    dots.forEach(function (dot, i) {
-      dot.addEventListener('click', function () {
-        show(i);
-        stop();
-        start();   // reset the clock so a manual pick gets a full turn
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener('click', function () { show(i); restart(); });
+      tab.addEventListener('keydown', function (e) {
+        var k = e.key;
+        if (k !== 'ArrowRight' && k !== 'ArrowLeft' && k !== 'Home' && k !== 'End') return;
+        e.preventDefault();
+        var to = k === 'Home' ? 0
+               : k === 'End' ? tabs.length - 1
+               : k === 'ArrowRight' ? i + 1 : i - 1;
+        show(to, true);
+        restart();
       });
     });
 
-    if (!reduceMotion) {
-      if (document.readyState === 'complete') attachRest();
-      else window.addEventListener('load', attachRest, { once: true });
+    // Reading beats advancing: hovering or tabbing into the hero holds it.
+    hero.addEventListener('mouseenter', stop);
+    hero.addEventListener('mouseleave', start);
+    hero.addEventListener('focusin', stop);
+    hero.addEventListener('focusout', function (e) {
+      if (!hero.contains(e.relatedTarget)) start();
+    });
 
+    if (document.readyState === 'complete') attachRest();
+    else window.addEventListener('load', attachRest, { once: true });
+
+    if (!reduceMotion) {
       if ('IntersectionObserver' in window) {
         new IntersectionObserver(function (entries) {
           entries.forEach(function (e) { e.isIntersecting ? start() : stop(); });
-        }, { threshold: 0.12 }).observe(carousel);
+        }, { threshold: 0.12 }).observe(hero);
       } else {
         start();
       }
       document.addEventListener('visibilitychange', function () {
         document.hidden ? stop() : start();
       });
-    } else {
-      // Still load the rest so the dots work if someone picks one by hand.
-      if (document.readyState === 'complete') attachRest();
-      else window.addEventListener('load', attachRest, { once: true });
     }
   }
 

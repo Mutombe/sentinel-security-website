@@ -24,9 +24,21 @@ COMPANIES = [
         "href": "services.html",
         "name": "Sentinel Integrated Technologies",
         "short": "Integrated Technologies",
+        "tab": ("Technologies", "Electronic security"),
         "legal": "Sentinel Integrated Technologies (PVT) Ltd",
         "role": "Electronic security technology",
         "headline": "The systems that watch the site",
+        "hero": {
+            "h1": ("The systems that ", "watch", " the site"),
+            "lead": "CCTV, alarms, access control, gates and fire detection, "
+                    "designed as one system and maintained by the people who "
+                    "fitted it.",
+            "cta": ("See the systems", "services.html"),
+            "cta2": ("Book a site survey", "contact.html"),
+            "photo": "control-room-monitoring",
+            "pos": "72% 34%", "expo": "2.45",
+            "alt": "An operator watching a wall of live camera feeds",
+        },
         "blurb": "Cameras, alarms, readers, gates and detectors, specified for one "
                  "property and commissioned as one system. Our own technicians do "
                  "the work and stay on to service it.",
@@ -117,9 +129,21 @@ COMPANIES = [
         "href": "security-services.html",
         "name": "Sentinel Security Services",
         "short": "Security Services",
+        "tab": ("Guarding", "Officers and response"),
         "legal": "Sentinel Security Services",
         "role": "Security operations",
         "headline": "The people who hold the ground",
+        "hero": {
+            "h1": ("The officers who ", "hold", " the ground"),
+            "lead": "Guarding, dog units and armed response across all ten "
+                    "provinces, answering to a control room that is staffed at "
+                    "every hour.",
+            "cta": ("See guarding", "security-services.html"),
+            "cta2": ("Request a quotation", "contact.html"),
+            "photo": "security-officers",
+            "pos": "58% 38%", "expo": "0.95",
+            "alt": "A security officer on post at a public event",
+        },
         "blurb": "Officers, handlers and response crews, supervised on a schedule "
                  "and answerable to a control room that is staffed at every hour "
                  "of every day.",
@@ -209,16 +233,28 @@ COMPANIES = [
         "href": "circuitron.html",
         "name": "Circuitron Systems",
         "short": "Circuitron Systems",
+        "tab": ("Circuitron", "Technology and retail"),
         "legal": "Circuitron Systems (Private) Limited",
         "role": "Technology and systems",
         "headline": "The technology business, standing on its own",
+        "hero": {
+            "h1": ("The technology that ", "connects", " both"),
+            "lead": "Radios, networks, building automation and power, sold and "
+                    "supported as products in their own right, with a shop and "
+                    "a recycling route attached.",
+            "cta": ("See Circuitron", "circuitron.html"),
+            "cta2": ("Visit CircuitStore", "circuitron.html#circuitstore"),
+            "photo": "circuitron-bench",
+            "pos": "50% 46%", "expo": "1.35",
+            "alt": "Patch cabling in a network cabinet",
+        },
         "blurb": "Communications, automation, electronics and power, sold and "
                  "supported as products in their own right, with a shop and a "
                  "recycling route attached.",
         "icon": "network-rack",
         "logo": "assets/img/brand/circuitron-logo.png",
         "logo_wh": (531, 169),
-        "logo_white": "assets/img/brand/circuitron-logo.png",
+        "logo_white": "assets/img/brand/circuitron-logo-white.png",
         "logo_h": 34,
         "strap": "Secure. Connect. Power.",
         "line": "Carries the technology business on its own: communications, "

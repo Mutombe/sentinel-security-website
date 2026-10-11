@@ -698,31 +698,72 @@ def steps_block():
 
 
 # ================================================================= HOME
-home = """
+def hero_block():
+    """Three panels, three photographs, one tab row that names the
+    companies. Built from the group data so a fourth company would appear
+    here without anyone remembering to add it."""
+    slides = panels = tabs = ''
+    for i, c in enumerate(COMPANIES):
+        h = c['hero']
+        on = i == 0
+        src = 'assets/img/photos/%s' % h['photo']
+        if on:
+            img = ('<img src="%s-1200.jpg" srcset="%s-640.jpg 640w, '
+                   '%s-1200.jpg 1200w" sizes="100vw" alt="%s" '
+                   'fetchpriority="high">' % (src, src, src, h['alt']))
+        else:
+            img = ('<img data-slide-src data-src="%s-1200.jpg" '
+                   'data-srcset="%s-640.jpg 640w, %s-1200.jpg 1200w" '
+                   'sizes="100vw" alt="%s">' % (src, src, src, h['alt']))
+        slides += ('      <div class="hero__slide%s" style="--pos:%s;--expo:%s">'
+                   '\n        %s\n      </div>\n'
+                   % (' is-active' if on else '', h['pos'], h['expo'], img))
+
+        panels += ("""
+          <div class="hero__panel%s" id="hp-%d" role="tabpanel" aria-labelledby="ht-%d">
+            <div class="hero__id">
+              <img class="hero__lockup" src="%s" alt="%s" width="%d" height="%d" loading="%s">
+              <a class="hero__award" href="about.html#recognition">
+                <span class="stars">%s%s%s</span>
+                Award winning in <b class="num">2014, 2015 and 2016</b>
+              </a>
+            </div>
+            <h1 class="h-hero">%s<span class="accent-lime">%s</span>%s</h1>
+            <p class="hero__lead">%s</p>
+            <div class="hero__actions">
+              %s
+              %s
+              <dl class="hero__call">
+                <a class="rbtn" href="tel:+263773589461" aria-label="Call Sentinel">%s</a>
+                <div><dt>Call us</dt><dd class="num">+263 77 358 9461</dd></div>
+              </dl>
+            </div>
+          </div>
+""" % (' is-active' if on else '', i + 1, i + 1,
+       c.get('logo_small_white', c['logo_white']), c['name'],
+       round(40 * c['logo_wh'][0] / c['logo_wh'][1]), 40,
+       'eager' if on else 'lazy', STAR, STAR, STAR,
+       h['h1'][0], h['h1'][1], h['h1'][2], h['lead'],
+       pbtn(h['cta'][0], h['cta'][1]),
+       pbtn(h['cta2'][0], h['cta2'][1], 'pbtn--ghost'),
+       icon('phone-call', 'i-md')))
+
+        tabs += ("""
+          <button class="hero__tab%s" type="button" role="tab" id="ht-%d"
+                  aria-controls="hp-%d" aria-selected="%s" tabindex="%d" data-hero-tab>
+            <span class="hero__tab-rail" aria-hidden="true"><i></i></span>
+            <span class="hero__tab-n num">%02d</span>
+            <span class="hero__tab-text"><strong>%s</strong><small>%s</small></span>
+          </button>
+""" % (' is-active' if on else '', i + 1, i + 1,
+       'true' if on else 'false', 0 if on else -1, i + 1,
+       c['tab'][0], c['tab'][1]))
+
+    return ("""
   <!-- ===== Hero ===== -->
-  <section class="hero">
-    <div class="hero__media" aria-hidden="true" data-hero-carousel>
-      <div class="hero__slide is-active" style="--pos:72%% 34%%;--expo:2.45">
-        <img  src="assets/img/photos/control-room-monitoring-1200.jpg"
-             srcset="assets/img/photos/control-room-monitoring-640.jpg 640w, assets/img/photos/control-room-monitoring-1200.jpg 1200w"
-             sizes="100vw" alt="An operator watching a wall of live camera feeds" width="1200" height="608" fetchpriority="high">
-      </div>
-      <div class="hero__slide" style="--pos:58%% 38%%;--expo:0.95">
-        <img data-slide-src data-src="assets/img/photos/security-officers-1200.jpg"
-             data-srcset="assets/img/photos/security-officers-640.jpg 640w, assets/img/photos/security-officers-1200.jpg 1200w"
-             sizes="100vw" alt="A security officer on post at a public event" width="1200" height="608">
-      </div>
-      <div class="hero__slide" style="--pos:70%% 40%%;--expo:0.64">
-        <img data-slide-src data-src="assets/img/photos/technician-panel-1200.jpg"
-             data-srcset="assets/img/photos/technician-panel-640.jpg 640w, assets/img/photos/technician-panel-1200.jpg 1200w"
-             sizes="100vw" alt="A technician wiring an electrical panel on site" width="1200" height="608">
-      </div>
-      <div class="hero__slide" style="--pos:64%% 34%%;--expo:0.90">
-        <img data-slide-src data-src="assets/img/photos/operator-night-shift-1200.jpg"
-             data-srcset="assets/img/photos/operator-night-shift-640.jpg 640w, assets/img/photos/operator-night-shift-1200.jpg 1200w"
-             sizes="100vw" alt="A monitoring desk on night shift" width="1200" height="608">
-      </div>
-    </div>
+  <section class="hero" data-hero>
+    <div class="hero__media" aria-hidden="true">
+%s    </div>
     <div class="hero__unify" aria-hidden="true"></div>
     <div class="hero__vignette" aria-hidden="true"></div>
     <div class="hero__grid" aria-hidden="true"></div>
@@ -730,44 +771,18 @@ home = """
 
     <div class="container">
       <div class="hero__content">
-        <a class="hero__badge" href="about.html#recognition">
-          <span class="stars">%s%s%s</span>
-          Award winning in <b class="num">2014, 2015 and 2016</b>
-        </a>
-
-        <h1 class="h-hero">Your <span class="accent-lime">security</span><br>is our business</h1>
-
-        <p class="hero__lead">
-          Three companies across Zimbabwe: the systems that watch a site, the officers
-          who hold it, and the technology that connects both.
-        </p>
-
-        <div class="hero__actions">
-          %s
-          <dl class="hero__call">
-            <a class="rbtn" href="tel:+263773589461" aria-label="Call Sentinel">%s</a>
-            <div><dt>Call us</dt><dd class="num">+263 77 358 9461</dd></div>
-          </dl>
-        </div>
-
-        <dl class="hero__facts">
-          <div class="hero__fact"><dt class="num">3</dt><dd>Companies</dd></div>
-          <div class="hero__fact"><dt class="num">10</dt><dd>Provinces</dd></div>
-          <div class="hero__fact"><dt class="num">24/7</dt><dd>Response</dd></div>
-          <div class="hero__fact"><dt class="num">2016</dt><dd>Since</dd></div>
-        </dl>
-
-        <div class="hero__dots" data-hero-dots>
-          <button class="hero__dot is-active" type="button" data-hero-dot aria-label="Show image 1 of 4"></button>
-          <button class="hero__dot" type="button" data-hero-dot aria-label="Show image 2 of 4"></button>
-          <button class="hero__dot" type="button" data-hero-dot aria-label="Show image 3 of 4"></button>
-          <button class="hero__dot" type="button" data-hero-dot aria-label="Show image 4 of 4"></button>
-        </div>
+        <div class="hero__panels">
+%s        </div>
+        <div class="hero__tabs" role="tablist" aria-label="The Sentinel group">
+%s        </div>
       </div>
     </div>
   </section>
-""" % (STAR, STAR, STAR, pbtn("Book a free site survey", "contact.html"),
-       icon("phone-call", "i-md")) + CLIENTS + """
+""" % (slides, panels, tabs))
+
+
+home = hero_block() + CLIENTS + """
+
   <!-- ===== The group ===== -->
   <section class="section section--cream ruled" id="group">
     <div class="container">

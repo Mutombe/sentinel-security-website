@@ -696,79 +696,142 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
       rgba(5, 29, 20, .72) 90%,
       var(--g-950) 100%);
 }
-.hero__content { position: relative; max-width: 660px; }
+.hero__content { position: relative; max-width: 720px; isolation: isolate; }
+.hero__content::before {
+  content: "";
+  position: absolute;
+  inset: -6vh -14% -5vh -50vw;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(74% 92% at 34% 48%,
+    rgba(3, 20, 14, .80) 0%,
+    rgba(3, 20, 14, .62) 46%,
+    rgba(3, 20, 14, .26) 72%,
+    rgba(3, 20, 14, 0) 100%);
+}
 .hero h1 { color: #fff; margin-bottom: clamp(.7rem, 1.8vh, 1.2rem); }
 .hero__lead {
   color: rgba(255,255,255,.74);
   font-size: clamp(.95rem, min(1.2vw, 1.9vh), 1.08rem);
-  max-width: 48ch;
+  max-width: 50ch;
   margin-bottom: clamp(1.1rem, 3vh, 2rem);
 }
 
-/* Credential capsule above the headline */
-.hero__badge {
-  display: inline-flex; align-items: center; gap: .6rem;
-  padding: .4rem .95rem .4rem .85rem;
-  margin-bottom: clamp(.7rem, 2vh, 1.4rem);
+/* Three panels, one per company. They share a grid cell so the hero is as
+   tall as the tallest of them and nothing jumps when the slide changes. */
+.hero__panels { display: grid; }
+.hero__panel {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;          /* also takes the hidden panels out of tab order */
+  transform: translateY(14px);
+  transition: opacity .5s var(--ease), transform .6s var(--ease), visibility .6s;
+}
+.hero__panel.is-active { opacity: 1; visibility: visible; transform: none; }
+
+/* The company's own mark, so the panel says who is speaking before the
+   headline does. */
+.hero__id {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: .7rem 1.1rem;
+  margin-bottom: clamp(.8rem, 2.2vh, 1.5rem);
+}
+.hero__lockup {
+  height: clamp(30px, 4.6vh, 42px);
+  width: auto;
+  display: block;
+}
+.hero__award {
+  display: inline-flex; align-items: center; gap: .55rem;
+  padding: .36rem .9rem .36rem .8rem;
   background: rgba(255, 255, 255, .1);
   border: 1px solid rgba(255, 255, 255, .18);
   border-radius: var(--r-pill);
   backdrop-filter: blur(8px);
-  color: #fff; font-size: .82rem; font-weight: 600;
+  color: #fff; font-size: .78rem; font-weight: 600;
+  transition: background-color .3s var(--ease), border-color .3s var(--ease);
 }
-.hero__badge b { color: var(--lime); font-weight: 800; }
-.hero__badge .stars { display: inline-flex; gap: 1px; color: var(--lime); }
+.hero__award:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.34); }
+.hero__award b { color: var(--lime); font-weight: 800; }
+.hero__award .stars { display: inline-flex; gap: 1px; color: var(--lime); }
 
-.hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.25rem; }
+.hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.1rem; }
 .hero__call { display: flex; align-items: center; gap: .8rem; margin: 0; }
 .hero__call dt { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.55); }
 .hero__call dd { margin: .15rem 0 0; color: #fff; font-weight: 800; font-size: 1.02rem; letter-spacing: -.01em; }
 
-/* Hero foot — capsule strip of facts */
-.hero__facts {
-  position: relative;
-  margin: clamp(1.25rem, 3.4vh, 2.75rem) 0 0;
+/* The picker names the companies rather than numbering pictures, because
+   saying who the three are is what the hero is now for. */
+.hero__tabs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.12);
+  margin-top: clamp(1.2rem, 3.4vh, 2.6rem);
+  max-width: 720px;
+  background: rgba(255, 255, 255, .12);
+  border: 1px solid rgba(255, 255, 255, .12);
   border-radius: var(--corner-lg);
   overflow: hidden;
-  max-width: 660px;
 }
-.hero__fact { background: rgba(9, 53, 34, .62); backdrop-filter: blur(8px); padding: clamp(.65rem, 1.6vh, 1.05rem) 1rem; }
-.hero__fact dt { font-size: clamp(1.15rem, min(2.3vw, 3vh), 1.85rem); font-weight: 800; color: #fff; line-height: 1; letter-spacing: -.03em; }
-.hero__fact dd { margin: .3rem 0 0; font-size: .7rem; letter-spacing: .07em; text-transform: uppercase; color: rgba(255,255,255,.58); }
-
-/* Slide picker. Bars rather than dots: they read as progress, and they give a
-   wider target than a 10px circle. */
-.hero__dots {
-  display: flex;
-  gap: .45rem;
-  margin-top: clamp(.9rem, 2.2vh, 1.4rem);
-}
-.hero__dot {
-  width: 30px;
-  height: 4px;
-  padding: 0;
+.hero__tab {
+  position: relative;
+  display: flex; align-items: flex-start; gap: .6rem;
+  padding: clamp(.75rem, 1.9vh, 1.15rem) clamp(.7rem, 1.4vw, 1.05rem);
+  background: rgba(9, 53, 34, .62);
+  backdrop-filter: blur(8px);
   border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .26);
+  text-align: left;
   cursor: pointer;
-  transition: background-color .4s var(--ease), width .4s var(--ease);
+  color: #fff;
+  transition: background-color .35s var(--ease);
 }
-.hero__dot:hover { background: rgba(255, 255, 255, .5); }
-.hero__dot.is-active { width: 44px; background: var(--lime); }
-/* The tap target is the full 44px even though the bar is 4px tall. */
-.hero__dot::after { content: ""; position: absolute; }
-.hero__dots { position: relative; }
-.hero__dot { position: relative; }
-.hero__dot::before {
-  content: "";
-  position: absolute;
-  inset: -16px -4px;
+.hero__tab:hover { background: rgba(12, 105, 52, .62); }
+.hero__tab.is-active { background: rgba(12, 105, 52, .78); }
+
+/* The rail doubles as the progress bar: it says which company is showing and
+   how long is left before it moves on. */
+.hero__tab-rail {
+  position: absolute; inset: 0 0 auto 0;
+  height: 3px;
+  background: rgba(255, 255, 255, .14);
+  overflow: hidden;
 }
+.hero__tab-rail i {
+  display: block; height: 100%; width: 100%;
+  background: var(--lime);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.hero__tab.is-active .hero__tab-rail i { animation: hero-progress var(--hero-dwell, 7s) linear forwards; }
+.hero--paused .hero__tab.is-active .hero__tab-rail i { animation-play-state: paused; }
+@keyframes hero-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes hero-progress-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+.hero__tab-n { font-size: .7rem; font-weight: 800; color: rgba(255,255,255,.66); line-height: 1.5; }
+.hero__tab.is-active .hero__tab-n { color: var(--lime); }
+.hero__tab-text strong {
+  display: block;
+  font-size: clamp(.82rem, 1.05vw, .95rem);
+  line-height: 1.2;
+  letter-spacing: -.01em;
+}
+.hero__tab-text small {
+  display: block; margin-top: .15rem;
+  font-size: .68rem; letter-spacing: .06em; text-transform: uppercase;
+  color: rgba(255,255,255,.52);
+}
+.hero__tab.is-active .hero__tab-text small { color: rgba(255,255,255,.72); }
+.hero__tab:focus-visible { outline: 2px solid var(--lime); outline-offset: -3px; }
+
+/* A quieter second action, so the pair reads as primary and alternative. */
+.pbtn--ghost {
+  background: rgba(255, 255, 255, .1);
+  border: 1px solid rgba(255, 255, 255, .26);
+  color: #fff;
+  backdrop-filter: blur(8px);
+}
+.pbtn--ghost .pbtn__chev { background: rgba(255, 255, 255, .14); color: #fff; }
+.pbtn--ghost:hover { background: rgba(255, 255, 255, .18); border-color: rgba(255, 255, 255, .4); }
 
 /* Interior page hero */
 .phero {
@@ -1249,7 +1312,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 /* Everything that reads as a panel now goes somewhere, so every one of them
    needs to say so on hover and take a focus ring. */
 a.step, a.ministat, a.bento__stat, a.bento__hero, a.bento__tile,
-a.byline__person, a.hero__badge, a.card {
+a.byline__person, a.card {
   cursor: pointer;
   text-decoration: none;
 }
@@ -1259,8 +1322,6 @@ a.step, a.ministat, a.bento__stat {
 a.ministat:hover { transform: translateY(-4px); box-shadow: var(--sh-2); }
 a.bento__stat:hover { transform: translateY(-4px); }
 a.byline__person:hover strong { color: var(--g-mid); }
-a.hero__badge { transition: background-color .3s var(--ease), border-color .3s var(--ease); }
-a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.34); }
 
 /* Bento photographs became links, so the anchor has to carry the tile geometry. */
 .bento__hero, .bento__tile {
@@ -1943,6 +2004,8 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 @media (prefers-reduced-motion: reduce) {
   .hero__slide.is-active img { animation: none; transform: none; }
   .hero__slide { transition: none; }
+  .hero__panel { transition: none; }
+  .hero__tab.is-active .hero__tab-rail i { animation: none; transform: scaleX(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2019,8 +2082,6 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
     width: 100%;
     max-width: none;
   }
-  .hero__facts { margin-top: clamp(1.1rem, 3vh, 1.9rem); }
-
   /* A portrait viewport crops hard into the middle of a 16:9 frame, so each
      slide keeps its own pan point and simply opens up a stop. */
   .hero__slide img {
@@ -2040,9 +2101,6 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
         var(--g-950) 86%),
       linear-gradient(90deg, rgba(3, 20, 14, .40) 0%, rgba(3, 20, 14, 0) 76%);
   }
-  .hero__dots { gap: .4rem; }
-  .hero__dot { width: 24px; }
-  .hero__dot.is-active { width: 36px; }
   .hero__grid {
     -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 78%);
             mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 78%);
@@ -2092,15 +2150,6 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
   .topbar__social { gap: .7rem; margin-left: 0; }
 
   /* ---- Hero ---- */
-  .hero__badge {
-    align-self: flex-start;
-    font-size: .72rem;
-    padding: .34rem .78rem .34rem .68rem;
-    gap: .45rem;
-    margin-bottom: clamp(.6rem, 1.8vh, 1.1rem);
-  }
-  .hero__badge b { white-space: nowrap; }
-
   .hero h1 { margin-bottom: clamp(.55rem, 1.6vh, .95rem); }
   .hero__lead {
     max-width: 34ch;
@@ -2110,6 +2159,17 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
   }
 
   /* Two full width actions, stacked and equal. */
+  .hero__tabs { max-width: none; }
+  .hero__tab {
+    flex-direction: column; align-items: flex-start; gap: .2rem;
+    padding: .62rem .6rem .66rem;
+  }
+  .hero__tab-n { font-size: .62rem; line-height: 1; }
+  .hero__tab-text strong { font-size: .78rem; letter-spacing: -.015em; }
+  .hero__tab-text small { display: none; }
+  .hero__id { gap: .5rem .8rem; margin-bottom: .7rem; }
+  .hero__lockup { height: 30px; }
+  .hero__award { font-size: .72rem; padding: .3rem .7rem .3rem .62rem; }
   .hero__actions { flex-direction: column; align-items: stretch; gap: .6rem; }
   .hero__actions .pbtn { width: 100%; justify-content: center; padding: 5px 1rem 5px 5px; }
   .hero__actions .pbtn .pbtn__label { flex: 1; text-align: center; padding: .85rem 1rem; }
@@ -2129,11 +2189,6 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
   .hero__call dt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .hero__call dd { margin: 0; font-size: .97rem; }
 
-  /* Four across rather than two by two: half the height, and it reads as a strip. */
-  .hero__facts { grid-template-columns: repeat(4, 1fr); border-radius: var(--corner-md); }
-  .hero__fact { padding: .62rem .35rem; text-align: center; }
-  .hero__fact dt { font-size: 1.12rem; }
-  .hero__fact dd { margin-top: .18rem; font-size: .57rem; letter-spacing: .04em; }
 
   /* Headings need tighter tracking at small sizes or they look loose. */
   .h-1, .h-2 { letter-spacing: -.028em; }
@@ -2213,16 +2268,12 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 /* Short phones (SE class). Shed the strip rather than squeeze everything. */
 @media (max-width: 640px) and (max-height: 700px) {
   .hero { min-height: 0; }
-  .hero__lead { display: none; }
-  .hero__facts { margin-top: clamp(1rem, 3vh, 1.5rem); }
-}
+  .hero__lead { display: none; }}
 
 /* Very narrow phones: drop the bento to one column so nothing gets cramped. */
 @media (max-width: 380px) {
   .bento { grid-template-columns: 1fr; }
   .bento__tile, .bento__stat { aspect-ratio: 16 / 9; }
-  .hero__fact dd { font-size: .53rem; }
-  .hero__fact dt { font-size: 1.02rem; }
   .footer__top { grid-template-columns: 1fr; }
 }
 

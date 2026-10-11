@@ -99,6 +99,41 @@ at icon size: the first dome camera read as an eye, the first motion sensor as
 a handbag, the first dog as a hand. A PTZ camera was cut altogether because at
 24px it was indistinguishable from the dome.
 
+## The hero
+
+Three panels, one per company, over three photographs, picked by a row of
+named tabs. Each panel carries that company's own lockup, its own headline, its
+own two actions and a photograph of its own work. Everything comes from
+`tools/group.py`, so a fourth company would appear in the hero without anyone
+remembering to add it.
+
+The headlines are written as one sentence split three ways, which is why they
+should be edited together or not at all:
+
+> The systems that **watch** the site &middot; The officers who **hold** the
+> ground &middot; The technology that **connects** both
+
+**The tab row is the picker.** Dots say "there are more pictures"; named tabs
+say who the three companies are, which is what the hero is now for. The rail
+along the top of the active tab doubles as the progress bar, so the dwell is
+visible rather than a surprise.
+
+Behaviour: hovering or tabbing into the hero holds it, because reading beats
+advancing. Arrow keys move between tabs. Inactive panels are hidden with
+`visibility`, which also takes their links out of the tab order, so a keyboard
+user never lands on an invisible button. Reduced motion stops the advance, the
+drift and the progress sweep, and leaves the tabs working.
+
+Each panel is the same height, so nothing jumps when the slide changes, and the
+whole hero fits one screen at 1920, 1440, 1366, 1280, 1024, 834, 390 and 360.
+
+**Contrast on a photograph has to be sampled, not calculated.** `--g-900` under
+the copy is not the real background; the picture is. The copy sits on a local
+radial wash rather than a heavier global scrim, so the photograph keeps its
+openness and only the type area is conditioned. Measured at the glyphs on all
+three slides, the worst case is 4.68:1 against a 3:1 requirement for the
+headline, and every small text element clears 4.5:1.
+
 ## The photography
 
 Every photograph has a named slot in `tools/photo_plan.py`. The slot says what
