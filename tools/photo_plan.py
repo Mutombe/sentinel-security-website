@@ -48,18 +48,6 @@ SLOTS = [
         "sizes": HERO, "crop": "entropy",
     },
     {
-        "id": "hero-night",
-        "file": "operator-night-shift",
-        "use": "Home hero, slide 4",
-        "want": "Night. A single operator or a monitoring desk, screen light on a "
-                "face, everything else dark.",
-        "queries": ["night shift control room", "operator monitor night dark",
-                    "security monitoring night", "dispatcher night screens"],
-        "sizes": HERO, "crop": "entropy",
-    },
-
-    # --------------------------------------------------------- page heroes
-    {
         "id": "phero-systems",
         "file": "access-terminal",
         "use": "Security systems page hero, bento tile",
@@ -271,7 +259,6 @@ CHOICES = {
     "hero-control-room": "TtMKq3lJm-U",
     "hero-officers": "YQ9aFeawqeo",
     "hero-technician": "GXLPLG3_Vf4",
-    "hero-night": "F9kaWPCi8t0",
     "phero-systems": "CqSpoJs2ehg",
     "phero-about": "WyoErwOE0Oc",
     "phero-circuitron": "PSpf_XgOM5w",

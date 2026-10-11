@@ -151,11 +151,17 @@ figcaption small{opacity:.6}
 # ------------------------------------------------------------------- fetch
 def fetch(only=None):
     from PIL import Image
+    from photos_local import LOCAL
     st = load_store()
     os.makedirs(PHOTOS, exist_ok=True)
     for slot in SLOTS:
         sid = slot["id"]
         if only and sid not in only:
+            continue
+        # Anything the client supplied is theirs. A re run of this script must
+        # not quietly put a stock photograph back over it.
+        if slot["file"] in LOCAL:
+            print("%-22s client supplied, left alone" % sid)
             continue
         pid = CHOICES.get(sid)
         if not pid:
