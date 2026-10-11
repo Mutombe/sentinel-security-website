@@ -37,7 +37,7 @@ COMPANIES = [
             "cta": ("See the systems", "services.html"),
             "cta2": ("Book a site survey", "contact.html"),
             "photo": "control-room-monitoring",
-            "pos": "72% 34%", "expo": "2.45",
+            "pos": "68% 38%", "expo": "1.18",
             "alt": "A Sentinel operator watching a wall of live camera feeds",
         },
         "blurb": "Cameras, alarms, readers, gates and detectors, specified for one "
@@ -143,7 +143,7 @@ COMPANIES = [
             "cta": ("See guarding", "security-services.html"),
             "cta2": ("Request a quotation", "contact.html"),
             "photo": "security-officers",
-            "pos": "58% 38%", "expo": "0.95",
+            "pos": "52% 42%", "expo": "0.92",
             "alt": "Sentinel officers and a dog unit on patrol at dusk",
         },
         "blurb": "Officers, handlers and response crews, supervised on a schedule "
@@ -248,7 +248,7 @@ COMPANIES = [
             "cta": ("See Circuitron", "circuitron.html"),
             "cta2": ("Visit CircuitStore", "circuitron.html#circuitstore"),
             "photo": "circuitron-bench",
-            "pos": "50% 46%", "expo": "1.35",
+            "pos": "50% 46%", "expo": "1.10",
             "alt": "Patch cabling in a network cabinet",
         },
         "blurb": "Communications, automation, electronics and power, sold and "

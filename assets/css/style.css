@@ -666,7 +666,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   position: absolute; inset: 0; z-index: -3;
   pointer-events: none;
   background: var(--g-850);
-  opacity: .24;
+  opacity: .12;
   mix-blend-mode: color;
 }
 
@@ -674,7 +674,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .hero__vignette {
   position: absolute; inset: 0; z-index: -3;
   pointer-events: none;
-  background: radial-gradient(124% 96% at 54% 44%, transparent 52%, rgba(3, 20, 14, .42) 100%);
+  background: radial-gradient(118% 92% at 52% 46%, transparent 58%, rgba(3, 20, 14, .26) 100%);
   mix-blend-mode: multiply;
 }
 
@@ -684,46 +684,45 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   pointer-events: none;
   background-image: var(--pat-grid-lt);
   background-size: var(--cell) var(--cell);
-  opacity: .5;
+  opacity: .34;
   -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,.5) 0%, #000 38%, #000 100%);
           mask-image: linear-gradient(90deg, rgba(0,0,0,.5) 0%, #000 38%, #000 100%);
 }
 .hero__scrim {
   position: absolute; inset: 0; z-index: -1;
-  /* 4. Scrim. Legibility only: a long horizontal ramp under the copy, and a
-     short fade at the head and foot so the hero meets the header and the page
-     below it without an edge. */
+  /* Two gentle ramps rather than one steep one. The left carries the copy and
+     has cleared by three quarters of the frame; the bottom carries the tab
+     strip and hands off to the page. Through the middle the photograph is
+     almost untouched, which is the point. */
   background:
-    linear-gradient(95deg,
-      rgba(3, 20, 14, .95) 0%,
-      rgba(3, 20, 14, .90) 26%,
-      rgba(3, 20, 14, .64) 44%,
-      rgba(3, 20, 14, .24) 62%,
+    linear-gradient(100deg,
+      rgba(3, 20, 14, .82) 0%,
+      rgba(3, 20, 14, .62) 26%,
+      rgba(3, 20, 14, .30) 46%,
+      rgba(3, 20, 14, .08) 62%,
       rgba(3, 20, 14, 0) 78%),
     linear-gradient(180deg,
-      rgba(3, 20, 14, .58) 0%,
-      rgba(3, 20, 14, 0) 22%,
-      rgba(3, 20, 14, 0) 62%,
-      rgba(5, 29, 20, .72) 90%,
-      var(--g-950) 100%);
+      rgba(3, 20, 14, .44) 0%,
+      rgba(3, 20, 14, .06) 20%,
+      rgba(3, 20, 14, .04) 52%,
+      rgba(5, 29, 20, .46) 86%,
+      rgba(3, 20, 14, .78) 100%);
 }
-.hero__content { position: relative; max-width: 720px; isolation: isolate; }
-.hero__content::before {
-  content: "";
-  position: absolute;
-  inset: -6vh -14% -5vh -50vw;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(74% 92% at 34% 48%,
-    rgba(3, 20, 14, .80) 0%,
-    rgba(3, 20, 14, .62) 46%,
-    rgba(3, 20, 14, .26) 72%,
-    rgba(3, 20, 14, 0) 100%);
-}
-.hero h1 { color: #fff; margin-bottom: clamp(.7rem, 1.8vh, 1.2rem); }
+
+.hero__content { position: relative; max-width: 720px; }
+/* A soft wide shadow darkens the few pixels around each glyph instead of the
+   whole photograph. It is what lets the scrim above be as light as it is. */
+.hero .h-hero { color: #fff; margin-bottom: clamp(.7rem, 1.8vh, 1.2rem);
+  text-shadow: 0 1px 2px rgba(3, 20, 14, .6), 0 2px 28px rgba(3, 20, 14, .62); }
 .hero__lead {
-  color: rgba(255,255,255,.74);
+  color: #fff;
   font-size: clamp(.95rem, min(1.2vw, 1.9vh), 1.08rem);
+  /* Small type over a lit face is the hardest thing in the frame. A tight
+     halo plus a wide soft pass carries it without touching the photograph. */
+  text-shadow:
+    0 0 2px rgba(3, 20, 14, .92),
+    0 1px 3px rgba(3, 20, 14, .85),
+    0 2px 18px rgba(3, 20, 14, .8);
   max-width: 50ch;
   margin-bottom: clamp(1.1rem, 3vh, 2rem);
 }
@@ -765,6 +764,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   margin-bottom: clamp(.8rem, 2.2vh, 1.5rem);
 }
 .hero__lockup {
+  filter: drop-shadow(0 2px 14px rgba(3, 20, 14, .6));
   height: clamp(30px, 4.6vh, 42px);
   width: auto;
   display: block;
@@ -772,8 +772,8 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 
 .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.1rem; }
 .hero__call { display: flex; align-items: center; gap: .8rem; margin: 0; }
-.hero__call dt { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.55); }
-.hero__call dd { margin: .15rem 0 0; color: #fff; font-weight: 800; font-size: 1.02rem; letter-spacing: -.01em; }
+.hero__call dt { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.72); text-shadow: 0 1px 10px rgba(3,20,14,.7); }
+.hero__call dd { margin: .15rem 0 0; color: #fff; font-weight: 800; font-size: 1.02rem; letter-spacing: -.01em; text-shadow: 0 1px 12px rgba(3,20,14,.7); }
 
 /* The picker names the companies rather than numbering pictures, because
    saying who the three are is what the hero is now for. */
@@ -790,6 +790,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 }
 .hero__tab {
   position: relative;
+  text-shadow: 0 1px 10px rgba(3, 20, 14, .65);
   display: flex; align-items: flex-start; gap: .6rem;
   padding: clamp(.75rem, 1.9vh, 1.15rem) clamp(.7rem, 1.4vw, 1.05rem);
   background: rgba(9, 53, 34, .62);
@@ -833,9 +834,9 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .hero__tab-text small {
   display: block; margin-top: .15rem;
   font-size: .68rem; letter-spacing: .06em; text-transform: uppercase;
-  color: rgba(255,255,255,.52);
+  color: rgba(255,255,255,.7);
 }
-.hero__tab.is-active .hero__tab-text small { color: rgba(255,255,255,.72); }
+.hero__tab.is-active .hero__tab-text small { color: rgba(255,255,255,.86); }
 .hero__tab:focus-visible { outline: 2px solid var(--lime); outline-offset: -3px; }
 
 /* A quieter second action, so the pair reads as primary and alternative. */
@@ -2068,7 +2069,12 @@ a.byline__person:hover strong { color: var(--g-mid); }
     padding-bottom: clamp(1.6rem, 5vw, 2.4rem);
   }
   .hero__content { max-width: none; }
-  .hero__content::before { display: none; }
+  /* The copy sits on a solid block here, so the shadows that carry it over a
+     photograph on the desktop are just a halo. */
+  .hero .h-hero, .hero__lead, .hero__call dd, .hero__call dt, .hero__tab {
+    text-shadow: none;
+  }
+  .hero__lockup { filter: none; }
 
   .hero__panels { min-height: 0; }
   .hero__id { margin-bottom: .9rem; }
