@@ -725,9 +725,20 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   opacity: 0;
   visibility: hidden;          /* also takes the hidden panels out of tab order */
   transform: translateY(14px);
-  transition: opacity .5s var(--ease), transform .6s var(--ease), visibility .6s;
+  /* Out first, in second. Crossfading two headlines over each other ghosts
+     them together and neither is readable for a quarter of a second. */
+  transition: opacity .26s var(--ease), transform .45s var(--ease), visibility .45s;
 }
-.hero__panel.is-active { opacity: 1; visibility: visible; transform: none; }
+/* The incoming panel starts before the outgoing one has finished, so the two
+   never ghost together and the slot is never empty: the lowest combined
+   opacity through a switch is about .38, at t = .16s. */
+.hero__panel.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity .34s var(--ease) .16s, transform .5s var(--ease) .16s,
+              visibility .5s .16s;
+}
 
 /* The company's own mark, so the panel says who is speaking before the
    headline does. */
