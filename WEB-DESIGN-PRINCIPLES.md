@@ -478,6 +478,113 @@ that stop working on the smallest phones.
 
 ---
 
+## 12b. Draw the icons the set does not have
+
+A general icon library has a word for "shield" and no word for "dome camera",
+"electric fence", "gate motor" or "dog unit". On a site about a specific trade,
+the specific nouns are the ones that matter, so draw them.
+
+**Study the discipline, not the drawings.** Two reference sheets gave a grid, a
+stroke weight, a terminal style and a rule about accent nodes. Those are the
+things to copy. The drawings themselves are someone else's.
+
+**Fix the constraints first, then draw inside them.** One grid (24), one stroke
+(1.5), round caps and joins, open line work, nothing within 2px of the edge,
+filled circles only for accent nodes. Every glyph that obeys those sits in a
+page with every other one without being retuned.
+
+**Render the set and look at it. You cannot judge an icon from its path data.**
+Build a proof sheet that shows every glyph at 20, 24, 32 and 64px, on light and
+on dark, and open it. Of the first pass, a third read as the wrong object:
+- the dome camera read as an **eye** (a lens circle with a pupil inside a dome)
+- the motion sensor read as a **handbag** (a rounded body on three legs)
+- the dog read as a **hand**
+- the satellite dish read as an **umbrella**
+- the RJ45 plug read as a **briefcase**
+- the e-waste glyph read as a **crumpled bag**
+
+None of those were visible in the source. All were obvious in one screenshot.
+
+**At icon size, clear beats clever.** Detection cones became a smile. Rotation
+arcs became a moustache. A flame inside a circle with tick marks around it grew
+spider legs. Each time the fix was to remove, not to add.
+
+**Cut a glyph rather than ship a bad one.** A PTZ camera is a dome camera at
+24px, whatever you do to it. Two camera types said everything three would have.
+The set is better at 35 than it was at 37.
+
+**Ship one sprite, inlined.** `<use href="other-file.svg#id">` does not work
+cross file in Chrome or Safari, so an external sprite silently renders nothing.
+Inline the whole sprite once per page: it gzips to almost nothing against
+markup that repeats, and a glyph then takes its colour from `color` and its
+size from the same scale the icon font uses.
+
+---
+
+## 12c. Trace a logo, do not redraw it by eye
+
+A client's mark is not a design exercise. It is a fixed asset, and the job is to
+reproduce it exactly in a format that scales.
+
+**Measure it.** Scan the artwork for ink, find the runs row by row and column by
+column, and the geometry falls out as numbers: a 41px stroke, a 589 by 568
+frame, outer verticals ending at y=401, a 45 degree chamfer, nine rectangles for
+the letterform. That is an SVG anyone can edit later, not a trace of a
+screenshot.
+
+**Verify the reproduction against the original, pixel for pixel.** Rebuild the
+mask from your own path data and diff it. The number that matters is not
+"looks right": it is how many ink pixels disagree, and whether any of them sit
+somewhere other than an antialiased edge. This trace came out at 61 pixels of
+248,675, all of them one pixel wide.
+
+**Watch the fill rule.** A ring is an outer shape minus an inner one and needs
+`evenodd`. Solid parts that touch or overlap need `nonzero`, or every overlap
+punches a hole. Put them in separate `<path>` elements rather than hoping.
+
+**Recentre, do not just delete.** A lockup with its third line dropped is not a
+compact lockup; it is a lockup with a hole in the bottom. Shift the remaining
+type back to the optical centre of the mark.
+
+**Name what you cannot verify.** The descriptor type here is an unidentified
+squared condensed grotesque. Tracing the letters that exist is safe. Setting new
+words in a guess is not, so the sub brands got an honest typographic treatment
+instead and the gap went in the handover notes.
+
+---
+
+## 12d. Structure is content
+
+When a client's business is a group, the structure is not an org chart buried on
+an About page. It is the thing a visitor most needs to understand, and it should
+be the first thing they can touch.
+
+**Put the structure in one data file and read everything from it.** The chart on
+the home page, the panel under the navigation, the group page, each company
+page, the capability cards and the footer all read from the same dict here. A
+capability added in one place appears in six, and an anchor cannot drift out of
+step with the heading it points at.
+
+**Draw the diagram the client drew.** The Operations Director sketched one
+parent, three companies and two divisions under one of them. The site renders
+exactly that, with connector lines built from pseudo elements so they hold at
+any width, and each node is a link.
+
+**Connectors carry meaning, so they are not hairlines.** A structure diagram
+drawn in `--line` disappears. It needs a step more presence than an ordinary
+divider, because following it is the point.
+
+**Mind what a node's children do to its siblings.** Two units hanging under the
+third company stretched the other two cards by 114px and threw their calls to
+action out of line. Putting the cards on one grid row and the units on a second
+fixed it: three equal cards, and the units hanging below the one that owns them.
+
+**On a phone a tree becomes a spine.** Three columns at 390px is unreadable.
+One vertical rule down the left with each node ticking off it says the same
+thing and fits.
+
+---
+
 ## 13. Degrade honestly
 
 - **Never gate content behind JavaScript.** Scroll reveal animations are the
@@ -527,9 +634,35 @@ Before calling anything done, prove these rather than assume them:
 - [ ] The page renders fully with JavaScript disabled
 - [ ] Mobile navigation opens, locks scroll and closes
 - [ ] Every font and icon file is licensed for the use
+- [ ] Every drawn icon has been looked at rendered, at 24px, light and dark
+- [ ] A traced logo diffs clean against the original artwork
+- [ ] Every structural claim on the site traces back to a source the client gave
 
 The last one is not a design point, but it is the one that will actually stop a
 launch.
+
+---
+
+## 15b. Trust the measurement, then check the measurement
+
+Half the bugs this round were in the harness, not the site.
+
+- A fixed step scroll loop stopped early on short pages and reported hidden
+  elements that were not hidden.
+- A contrast checker that walks computed background colours reports 1:1 for
+  white text on a transparent header over a photograph. The header was at
+  10.5:1; only a pixel sample could say so.
+- An overflow checker that ignores `overflow: hidden` ancestors reports a
+  marquee track as a bug. It is meant to be wider than its window.
+- Counting rendered lines by dividing box height by line height counts padding
+  as text. A `Range` and `getClientRects()` counts line boxes.
+- Headless Chrome on Windows will not open a window narrower than about 500px,
+  so a "390px" run was silently a 500px run. Loading the page in a 390px iframe
+  gives a real phone viewport.
+
+**A clean report from a harness you have not tested is worth nothing.** When a
+check passes everywhere, try to make it fail on purpose. When it fails somewhere
+surprising, suspect the check first.
 
 ---
 

@@ -5,15 +5,24 @@ Run:  python tools/build.py
 It writes the six pages in the project root. The site never needs this to run;
 it just keeps the duplicated header, footer and CTA band in sync.
 """
-import io, os
+import io, os, sys
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
+HERE = os.path.dirname(os.path.abspath(__file__))
+OUT = os.path.join(HERE, os.pardir)
+sys.path.insert(0, HERE)
+
+from group import PARENT, COMPANIES, by_id, BRANDS, LEADERS, CONTACT
+from build_icons import sprite as icon_sprite
+
+ORG = "Sentinel Integrated Technologies"
+TAGLINE = "towards a #secure world"
 
 NAV = [
     ("index.html", "Home"),
-    ("about.html", "About"),
-    ("services.html", "Services"),
-    ("renewable-energy.html", "Renewable Energy"),
+    ("group.html", "The group"),
+    ("services.html", "Security systems"),
+    ("security-services.html", "Guarding"),
+    ("circuitron.html", "Circuitron"),
     ("contact.html", "Contact"),
 ]
 
@@ -25,6 +34,13 @@ def icon(name, size="i-md", style="ph", cls=""):
 
 def duo(name, size="i-2xl"):
     return icon(name, size, "ph-duotone")
+
+
+def si(name, size="i-md", cls=""):
+    """A glyph from the Sentinel set. The sprite is inlined once per page, so
+    this is a same document reference and needs no extra request."""
+    return ('<svg class="si %s%s" aria-hidden="true" focusable="false">'
+            '<use href="#si-%s"/></svg>' % (size, (" " + cls) if cls else "", name))
 
 WA_ENQUIRY = ("https://wa.me/263773589461?text="
               "Hello%20Sentinel%2C%20I%20would%20like%20to%20ask%20about%20a%20security%20system%20for%20my%20property.")
@@ -82,6 +98,124 @@ def ncard(variant, ico, title, text, bullets, href, cta="Explore more"):
 """ % (variant, duo(ico), title, text, lis, href, cta, CHEV_SM)
 
 
+
+# -------------------------------------------------- the group, as components
+def org_card(c, compact=False):
+    """One company in the structure. Compact drops the description."""
+    subs = ""
+    if c.get("units"):
+        # The units sit on the chart's second row, under the column that owns
+        # them, so they do not stretch the other companies' cards.
+        col = COMPANIES.index(c) + 1
+        subs = ('<span class="org__subs" style="grid-column:%d">%s</span>' % (col, "".join(
+            '<a class="org__sub" href="%s#%s">%s<small>%s</small></a>'
+            % (c["href"], u["id"], u["name"], u["strap"]) for u in c["units"])))
+    body = "" if compact else "<p>%s</p>" % c["line"]
+    return """        <div class="org__co">
+          <a class="org__card" href="%s">
+            <span class="org__ico">%s</span>
+            <span class="org__role">%s</span>
+            <h3 class="org__name">%s</h3>
+            %s
+            <span class="org__caps">%s</span>
+            <span class="org__go">%s %s</span>
+          </a>
+          %s
+        </div>
+""" % (c["href"], si(c["icon"], "i-xl"), c["role"], c["short"], body,
+       "".join("<i>%s</i>" % x for x in c["chips"]),
+       "Open " + c["short"], CHEV_SM, subs)
+
+
+def org_chart(compact=False):
+    """The structure the Operations Director drew, made clickable."""
+    return """      <div class="org%s" data-reveal>
+        <a class="org__parent" href="group.html">
+          <span class="org__parent-mark">
+            <img src="assets/img/brand/mark.svg" alt="" width="44" height="42" loading="lazy">
+          </span>
+          <span class="org__parent-text">
+            <strong>%s</strong>
+            <small>%s</small>
+          </span>
+        </a>
+        <span class="org__trunk" aria-hidden="true"></span>
+        <div class="org__row">
+%s        </div>
+      </div>
+""" % (" org--compact" if compact else "", PARENT["name"], PARENT["role"],
+       "".join(org_card(c, compact) for c in COMPANIES))
+
+
+NUMBER_WORD = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six",
+               7: "Seven", 8: "Eight"}
+
+
+def company_logo(c):
+    """Circuitron has its own mark. The two Sentinel companies wear the shield,
+    so they get the shield with their descriptor set beside it."""
+    if c["logo"].endswith(".png"):
+        return ('<img class="cfacts__img" src="%s" alt="%s" width="531" height="169" '
+                'loading="lazy">' % (c["logo"], c["name"]))
+    return ('<img class="cfacts__mark" src="%s" alt="" width="44" height="42" '
+            'loading="lazy"><span class="cfacts__name">%s<small>%s</small></span>'
+            % (c["logo"], "Sentinel", c["short"]))
+
+
+def division_card(c, d):
+    """A capability inside a company: what it is, then the actual line items."""
+    return """        <article class="dcard" id="%s" data-reveal>
+          <span class="dcard__ico">%s</span>
+          <h3 class="h-3">%s</h3>
+          <p>%s</p>
+          <ul class="dcard__list">%s</ul>
+          <a class="dcard__cta" href="contact.html">Ask about this %s</a>
+        </article>
+""" % (d["id"], si(d["icon"], "i-xl"), d["name"], d["line"],
+       "".join("<li>%s</li>" % i for i in d["items"]), CHEV_SM)
+
+
+def unit_panel(c, u):
+    """CircuitStore and EcoCircuit: businesses inside a business."""
+    return """        <article class="unit" id="%s" data-reveal>
+          <div class="unit__head">
+            <span class="unit__ico">%s</span>
+            <div>
+              <h3 class="h-3">%s</h3>
+              <p class="script unit__strap">%s</p>
+            </div>
+          </div>
+          <p>%s</p>
+          <ul class="unit__list">%s</ul>
+        </article>
+""" % (u["id"], si(u["icon"], "i-xl"), u["name"], u["strap"], u["line"],
+       "".join("<li>%s%s</li>" % (CHEV_SM, i) for i in u["items"]))
+
+
+def siblings(current):
+    """At the foot of a company page: the other two, so nobody dead ends."""
+    others = [c for c in COMPANIES if c["id"] != current]
+    cards = "".join("""        <a class="sib" href="%s" data-reveal>
+          <span class="sib__ico">%s</span>
+          <span class="sib__body"><strong>%s</strong><small>%s</small></span>
+          <span class="sib__go" aria-hidden="true">%s</span>
+        </a>
+""" % (c["href"], si(c["icon"], "i-lg"), c["short"], c["role"], ARROW) for c in others)
+    return """  <section class="section section--cream section--tight">
+    <div class="container">
+%s      <div class="sibs">
+%s        <a class="sib sib--all" href="group.html" data-reveal>
+          <span class="sib__ico">%s</span>
+          <span class="sib__body"><strong>The whole group</strong><small>How the three fit together</small></span>
+          <span class="sib__go" aria-hidden="true">%s</span>
+        </a>
+      </div>
+    </div>
+  </section>
+""" % (shead("Elsewhere in the group", "The rest of Sentinel"), cards,
+       si("group-tree", "i-lg"), ARROW)
+
+
 # ----------------------------------------------------------------- shell
 def head(title, desc, canonical):
     return """<!DOCTYPE html>
@@ -97,9 +231,10 @@ def head(title, desc, canonical):
 <meta property="og:type" content="website">
 <meta property="og:title" content="%s">
 <meta property="og:description" content="%s">
-<meta property="og:image" content="assets/img/brand/flier-2.jpg">
+<meta property="og:image" content="assets/img/brand/flier-1.jpg">
 <meta property="og:locale" content="en_ZW">
 
+<link rel="icon" type="image/svg+xml" href="assets/img/brand/mark.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="assets/img/brand/favicon-180.png">
 
@@ -111,7 +246,8 @@ def head(title, desc, canonical):
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
-""" % (title, desc, canonical, title, desc)
+%s
+""" % (title, desc, canonical, title, desc, icon_sprite())
 
 
 def topbar():
@@ -120,44 +256,91 @@ def topbar():
 <div class="topbar">
   <div class="container topbar__inner">
     <ul class="topbar__list">
-      <li>%s <span>Zimbabwe&rsquo;s trusted electronic security company</span></li>
+      <li>%s <a href="about.html">About the group</a></li>
       <li>%s <a href="mailto:info@sentinel.co.zw">info@sentinel.co.zw</a></li>
-      <li>%s <a href="tel:+263773589461" class="num">+263 773 589 461</a></li>
+      <li>%s <a href="tel:+263773589461" class="num">+263 77 358 9461</a></li>
     </ul>
     <div class="topbar__social">
-      <span class="script">towards a #secure_world</span>
+      <span class="script">towards a #secure world</span>
       <a href="https://wa.me/263773589461" aria-label="Message Sentinel on WhatsApp" rel="noopener">%s</a>
       <a href="mailto:info@sentinel.co.zw" aria-label="Email Sentinel">%s</a>
       <a href="tel:+263773589461" aria-label="Call Sentinel">%s</a>
     </div>
   </div>
 </div>
-""" % (icon("check-circle", "i-xs"), icon("envelope-simple", "i-xs"), icon("phone-call", "i-xs"),
+""" % (icon("buildings", "i-xs"), icon("envelope-simple", "i-xs"), icon("phone-call", "i-xs"),
        icon("whatsapp-logo", "i-sm", "ph-fill"), icon("envelope-simple", "i-sm", "ph-fill"),
        icon("phone-call", "i-sm", "ph-fill"))
 
 
+GROUP_HREFS = [c["href"] for c in COMPANIES] + ["group.html"]
+
+
+def megapanel():
+    """The group, laid out under the nav. Every page can see the whole structure
+    without leaving the page it is on."""
+    cards = ""
+    for c in COMPANIES:
+        units = ""
+        if c.get("units"):
+            units = '<span class="mega__units">%s</span>' % " ".join(
+                '<a href="%s#%s">%s</a>' % (c["href"], u["id"], u["name"])
+                for u in c["units"])
+        cards += """        <a class="mega__card" href="%s">
+          <span class="mega__icon">%s</span>
+          <strong>%s</strong>
+          <small>%s</small>
+          <span class="mega__chips">%s</span>
+          %s
+        </a>
+""" % (c["href"], si(c["icon"], "i-lg"), c["short"], c["role"],
+       "".join("<i>%s</i>" % x for x in c["chips"]), units)
+    return """      <div class="mega" id="mega" hidden>
+        <div class="container mega__inner">
+          <a class="mega__parent" href="group.html">
+            <span class="mega__mark">%s</span>
+            <span>
+              <strong>%s</strong>
+              <small>%s</small>
+            </span>
+            <span class="mega__go">See the structure %s</span>
+          </a>
+          <div class="mega__grid">
+%s          </div>
+        </div>
+      </div>
+""" % (si("group-tree", "i-lg"), PARENT["name"] + ", the group", PARENT["line"],
+       CHEV_SM, cards)
+
+
 def header(active):
-    items = "\n".join(
-        '        <li><a class="nav__link" href="%s"%s>%s</a></li>'
-        % (h, ' aria-current="page"' if h == active else "", l) for h, l in NAV)
+    items = ""
+    for h, l in NAV:
+        on = ' aria-current="page"' if h == active else ""
+        if h == "group.html":
+            cur = ' data-within="true"' if active in GROUP_HREFS else ""
+            items += ('        <li class="nav__has-mega"><a class="nav__link" '
+                      'href="%s"%s%s aria-expanded="false" aria-controls="mega" '
+                      'data-mega>%s %s</a></li>\n'
+                      % (h, on, cur, l, icon("caret-down", "i-xs")))
+        else:
+            items += '        <li><a class="nav__link" href="%s"%s>%s</a></li>\n' % (h, on, l)
     drawer = "\n".join(
         '    <a href="%s">%s <span class="num">%02d</span></a>' % (h, l, i + 1)
-        for i, (h, l) in enumerate(NAV))
+        for i, (h, l) in enumerate(NAV + [("about.html", "About")]))
     return """
 <!-- ===== Header ===== -->
 <header class="header">
   <div class="container header__inner">
-    <a class="brand" href="index.html" aria-label="Sentinel Security Technology, home">
-      <img class="brand__light" src="assets/img/brand/sentinel-logo-white.png" alt="Sentinel Security Technology" width="300" height="104">
-      <img class="brand__dark" src="assets/img/brand/sentinel-logo.png" alt="" width="300" height="104" aria-hidden="true">
+    <a class="brand" href="index.html" aria-label="%s, home">
+      <img class="brand__light" src="assets/img/brand/sentinel-logo-compact-white.svg" alt="%s" width="328" height="140">
+      <img class="brand__dark" src="assets/img/brand/sentinel-logo-compact.svg" alt="" width="328" height="140" aria-hidden="true">
     </a>
 
     <nav class="nav" aria-label="Primary">
       <ul class="nav__list">
-%s
-      </ul>
-    </nav>
+%s      </ul>
+%s    </nav>
 
     <div class="header__cta">%s</div>
 
@@ -172,15 +355,15 @@ def header(active):
 %s
   </nav>
   <div class="drawer__foot">
-    <a href="tel:+263773589461" class="num">+263 773 589 461</a>
+    <a href="tel:+263773589461" class="num">+263 77 358 9461</a>
     <a href="mailto:info@sentinel.co.zw">info@sentinel.co.zw</a>
-    <p>38 Northampton Crescent, Eastlea, Harare</p>
+    <p>29 Tweed Road, Eastlea, Harare</p>
     %s
   </div>
 </div>
 
 <main id="main">
-""" % (items, pbtn("Book a site survey", "contact.html"), drawer,
+""" % (ORG, ORG, items, megapanel(), pbtn("Book a site survey", "contact.html"), drawer,
        pbtn("Book a site survey", "contact.html", "pbtn--block"))
 
 
@@ -205,7 +388,7 @@ CTA = """
   </section>
 """ % (eyebrow("Next step", "eyebrow--dark"),
        pbtn("Book a site survey", "contact.html", "pbtn--light"),
-       pbtn("+263 773 589 461", "tel:+263773589461", "pbtn--outline"))
+       pbtn("+263 77 358 9461", "tel:+263773589461", "pbtn--outline"))
 
 
 FOOTER = """
@@ -216,11 +399,11 @@ FOOTER = """
   <div class="container">
     <div class="footer__top">
       <div class="footer__brand">
-        <a href="index.html" aria-label="Sentinel Security Technology, home">
-          <img src="assets/img/brand/sentinel-logo-white.png" alt="Sentinel Security Technology" width="300" height="104" loading="lazy">
+        <a href="index.html" aria-label="%s, home">
+          <img src="assets/img/brand/sentinel-logo-white.svg" alt="%s" width="328" height="140" loading="lazy">
         </a>
-        <p class="script footer__tagline">towards a #secure_world</p>
-        <p>Security specialists who protect and secure your assets through digital solutions. Harare, Zimbabwe.</p>
+        <p class="script footer__tagline">towards a #secure world</p>
+        <p>A Zimbabwean security group: electronic systems, guarding operations and technology, run as three companies under one standard.</p>
         <div class="socials">
           <a href="https://wa.me/263773589461" aria-label="Message Sentinel on WhatsApp" rel="noopener">%s</a>
           <a href="mailto:info@sentinel.co.zw" aria-label="Email Sentinel">%s</a>
@@ -229,35 +412,38 @@ FOOTER = """
       </div>
 
       <div>
-        <h4>Company</h4>
+        <h4>The group</h4>
         <ul class="footer__links">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="about.html">About us</a></li>
-          <li><a href="services.html">Services</a></li>
-          <li><a href="renewable-energy.html">Renewable energy</a></li>
-          <li><a href="contact.html">Contact</a></li>
+          <li><a href="group.html">How we are structured</a></li>
+          <li><a href="services.html">Sentinel Integrated Technologies</a></li>
+          <li><a href="security-services.html">Sentinel Security Services</a></li>
+          <li><a href="circuitron.html">Circuitron Systems</a></li>
+          <li><a href="circuitron.html#circuitstore">CircuitStore</a></li>
+          <li><a href="circuitron.html#ecocircuit">EcoCircuit</a></li>
         </ul>
       </div>
 
       <div>
-        <h4>Services</h4>
+        <h4>What we do</h4>
         <ul class="footer__links">
           <li><a href="services.html#cctv">CCTV surveillance</a></li>
           <li><a href="services.html#alarms">Intruder alarms</a></li>
           <li><a href="services.html#access">Access control</a></li>
-          <li><a href="services.html#fire">Fire detection</a></li>
-          <li><a href="services.html#man-traps">Man traps</a></li>
-          <li><a href="services.html#physical">Physical access control</a></li>
+          <li><a href="services.html#gates">Gate automation</a></li>
+          <li><a href="security-services.html#manned">Manned guarding</a></li>
+          <li><a href="security-services.html#response">Alarm response</a></li>
+          <li><a href="renewable-energy.html">Solar and backup power</a></li>
+          <li><a href="about.html">About the group</a></li>
         </ul>
       </div>
 
       <div>
         <h4>Get in touch</h4>
         <ul class="footer__contact">
-          <li>%s<span>38 Northampton Crescent,<br>Eastlea, Harare, Zimbabwe</span></li>
+          <li>%s<span>29 Tweed Road,<br>Eastlea, Harare, Zimbabwe</span></li>
           <li>%s<span class="num">
-              <a href="tel:+263773589461">+263 773 589 461</a>
-              <a href="tel:+263772568361">+263 772 568 361</a>
+              <a href="tel:+263773589461">+263 77 358 9461</a>
+              <a href="tel:+263772568361">+263 77 256 8361</a>
               <a href="tel:+263242006157">+263 24 200 6157</a>
             </span></li>
           <li>%s<a href="mailto:info@sentinel.co.zw">info@sentinel.co.zw</a></li>
@@ -266,7 +452,7 @@ FOOTER = """
     </div>
 
     <div class="footer__bottom">
-      <p style="margin:0">&copy; <span data-year class="num">2026</span> Sentinel Security Technology</p>
+      <p style="margin:0">&copy; <span data-year class="num">2026</span> Sentinel Integrated Technologies (PVT) Ltd</p>
       <nav aria-label="Legal">
         <a href="privacy.html">Privacy policy</a>
         <a href="contact.html">Contact</a>
@@ -320,7 +506,8 @@ FOOTER = """
 <script src="assets/js/main.js" defer></script>
 </body>
 </html>
-""" % (icon("whatsapp-logo", "i-sm", "ph-fill"), icon("envelope-simple", "i-sm", "ph-fill"),
+""" % (ORG, ORG,
+       icon("whatsapp-logo", "i-sm", "ph-fill"), icon("envelope-simple", "i-sm", "ph-fill"),
        icon("phone-call", "i-sm", "ph-fill"),
        icon("map-pin", "i-sm"), icon("phone-call", "i-sm"), icon("envelope-simple", "i-sm"),
        icon("arrow-up", "i-sm"),
@@ -368,16 +555,16 @@ CLIENTS = """
       <div class="marquee">
         <div class="marquee__track">
           <div class="marquee__group">
-            <a href="about.html#clients" aria-label="Ecobank, a Sentinel client"><img src="assets/img/clients/ecobank.png" alt="Ecobank" loading="lazy"></a>
-            <a href="about.html#clients" aria-label="Green Fuel, a Sentinel client"><img src="assets/img/clients/green-fuel.png" alt="Green Fuel" loading="lazy"></a>
-            <a href="about.html#clients" aria-label="ProBrands, a Sentinel client"><img src="assets/img/clients/probrands.png" alt="ProBrands" loading="lazy"></a>
-            <a href="about.html#clients" aria-label="Cottco Holdings, a Sentinel client"><img src="assets/img/clients/cottco.png" alt="Cottco Holdings Limited" loading="lazy"></a>
+            <a href="about.html#clients" aria-label="Ecobank, a Sentinel client"><img src="assets/img/clients/ecobank.png" alt="Ecobank" width="160" height="48" loading="lazy"></a>
+            <a href="about.html#clients" aria-label="Green Fuel, a Sentinel client"><img src="assets/img/clients/green-fuel.png" alt="Green Fuel" width="160" height="48" loading="lazy"></a>
+            <a href="about.html#clients" aria-label="ProBrands, a Sentinel client"><img src="assets/img/clients/probrands.png" alt="ProBrands" width="160" height="48" loading="lazy"></a>
+            <a href="about.html#clients" aria-label="Cottco Holdings, a Sentinel client"><img src="assets/img/clients/cottco.png" alt="Cottco Holdings Limited" width="160" height="48" loading="lazy"></a>
           </div>
           <div class="marquee__group" aria-hidden="true">
-            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/ecobank.png" alt="" loading="lazy"></a>
-            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/green-fuel.png" alt="" loading="lazy"></a>
-            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/probrands.png" alt="" loading="lazy"></a>
-            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/cottco.png" alt="" loading="lazy"></a>
+            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/ecobank.png" alt="" width="160" height="48" loading="lazy"></a>
+            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/green-fuel.png" alt="" width="160" height="48" loading="lazy"></a>
+            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/probrands.png" alt="" width="160" height="48" loading="lazy"></a>
+            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/cottco.png" alt="" width="160" height="48" loading="lazy"></a>
           </div>
         </div>
       </div>
@@ -442,23 +629,23 @@ home = """
         <h1 class="h-hero">Your <span class="accent-lime">security</span><br>is our business</h1>
 
         <p class="hero__lead">
-          We design, install and maintain electronic security across Zimbabwe, from one
-          camera at a front gate to a control room watching a whole estate.
+          Three companies across Zimbabwe: the systems that watch a site, the officers
+          who hold it, and the technology that connects both.
         </p>
 
         <div class="hero__actions">
           %s
           <dl class="hero__call">
             <a class="rbtn" href="tel:+263773589461" aria-label="Call Sentinel">%s</a>
-            <div><dt>Call us</dt><dd class="num">+263 773 589 461</dd></div>
+            <div><dt>Call us</dt><dd class="num">+263 77 358 9461</dd></div>
           </dl>
         </div>
 
         <dl class="hero__facts">
-          <div class="hero__fact"><dt class="num">24/7</dt><dd>Support</dd></div>
-          <div class="hero__fact"><dt class="num">3</dt><dd>Awards</dd></div>
-          <div class="hero__fact"><dt class="num">5</dt><dd>Sectors</dd></div>
-          <div class="hero__fact"><dt class="num">6</dt><dd>Systems</dd></div>
+          <div class="hero__fact"><dt class="num">3</dt><dd>Companies</dd></div>
+          <div class="hero__fact"><dt class="num">10</dt><dd>Provinces</dd></div>
+          <div class="hero__fact"><dt class="num">24/7</dt><dd>Response</dd></div>
+          <div class="hero__fact"><dt class="num">2016</dt><dd>Since</dd></div>
         </dl>
 
         <div class="hero__dots" data-hero-dots>
@@ -472,6 +659,14 @@ home = """
   </section>
 """ % (STAR, STAR, STAR, pbtn("Book a free site survey", "contact.html"),
        icon("phone-call", "i-md")) + CLIENTS + """
+  <!-- ===== The group ===== -->
+  <section class="section section--cream ruled" id="group">
+    <div class="container">
+""" + shead("One group, three companies",
+            "Everything a site needs, under one roof",
+            cta=pbtn("See the structure", "group.html", "pbtn--dark"),
+            variant="shead--wide") + org_chart() + """    </div>
+  </section>
   <!-- ===== Approach ===== -->
   <section class="section section--cream ruled">
     <div class="container">
@@ -519,14 +714,14 @@ home = """
 
       <div data-reveal>
         %s
-        <h2 class="h-2">We take care of all your security needs</h2>
+        <h2 class="h-2">One group, one number to call</h2>
         <p class="lead">
-          An accredited Zimbabwean firm covering electronic security, control room
-          operation and physical access control.
+          An accredited Zimbabwean group covering electronic security, guarding
+          operations and the technology that ties them together.
         </p>
         <p>
-          Our own technicians design, install and commission every system, then stay on to
-          maintain it. You call us, not four contractors.
+          Our own technicians and our own officers do the work, then stay on to maintain
+          it. You call us, not four contractors.
         </p>
 
         <div class="byline">
@@ -570,26 +765,10 @@ home = """
       <div class="grid g-3">
 """
 
-SERVICES = [
- ("cctv", "security-camera", "CCTV surveillance",
-  "Cameras placed around your actual blind spots, sightlines and lighting, not a standard layout.",
-  ["IP and HD analogue systems", "Remote viewing on phone or desktop", "Number plate recognition"]),
- ("alarms", "bell-ringing", "Intruder alarms",
-  "Built to put someone off before they get in, and to record what happened if they do.",
-  ["Perimeter beams and indoor sensors", "Panic buttons", "Linked to armed response"]),
- ("access", "fingerprint", "Access control",
-  "Controlling who opens which door, from one reception to a group of sites.",
-  ["Fingerprint, card and PIN readers", "Time and attendance reports", "Visitor passes"]),
- ("fire", "fire-extinguisher", "Fire detection",
-  "Fire sensors and alarms that give people time to get out and limit what you lose.",
-  ["Addressable and conventional panels", "Smoke, heat and flame sensors", "Sounders and evacuation"]),
- ("man-traps", "door-open", "Man traps",
-  "Interlocking doors for banking halls, strongrooms and server rooms.",
-  ["Cash handling areas", "Strongroom and server entry", "Stops tailgating"]),
- ("physical", "barricade", "Physical access control",
-  "Vehicle and pedestrian control, including high security and anti terror equipment.",
-  ["Boom gates and gate motors", "Turnstiles and walkways", "Parking control"]),
-]
+# The six cards on the home page are the six capabilities of the technologies
+# company, read straight from the group data so the anchors cannot drift.
+SERVICES = [(d["id"], d["icon"], d["name"], d["line"], d["items"][:3])
+            for d in by_id("technologies")["divisions"]]
 
 for anchor, ico, title, text, bullets in SERVICES:
     home += """        <article class="card card--hoverdark" data-reveal>
@@ -599,7 +778,7 @@ for anchor, ico, title, text, bullets in SERVICES:
           <ul class="card__list">%s</ul>
           <a class="plink" href="services.html#%s">Read more %s</a>
         </article>
-""" % (duo(ico, "i-lg"), title, text, "".join("<li>%s</li>" % b for b in bullets), anchor, ARROW)
+""" % (si(ico, "i-xl"), title, text, "".join("<li>%s</li>" % b for b in bullets), anchor, ARROW)
 
 home += """      </div>
     </div>
@@ -685,15 +864,16 @@ home += """      </div>
        duo("shield-check", "i-lg"), duo("sun", "i-lg"), duo("lightning", "i-lg"), duo("wrench", "i-lg"))
 
 write("index.html",
-      "Sentinel Security Technology | Electronic Security in Zimbabwe",
+      "Sentinel Integrated Technologies | Electronic Security in Zimbabwe",
       "CCTV, intruder alarms, access control, fire detection and physical access control across Zimbabwe. Based in Harare, support at any hour, award winning in 2014, 2015 and 2016.",
       home)
 
 
 # ================================================================= ABOUT
-about = phero("About", "We take care of all your security needs",
-  "An accredited Zimbabwean firm covering electronic security, control room operation "
-  "and physical access control.",
+about = phero("About", "A decade of guarding, turned into a group",
+  "Sentinel started in 2016 with officers on gates. The technology work grew out of that, "
+  "and in 2026 it became a company of its own. Three businesses now, built on the same ten "
+  "years of ground truth.",
   "foot-patrol-street", "A Sentinel officer on foot patrol") + """
   <section class="section section--white">
     <div class="container split">
@@ -717,39 +897,74 @@ about = phero("About", "We take care of all your security needs",
 
       <div data-reveal>
         %s
-        <h2 class="h-2">What Sentinel does</h2>
+        <h2 class="h-2">How the group came about</h2>
         <p class="lead">
           We work for organisations that cannot afford a gap in cover: offices, banks,
           government departments, factories and building sites.
         </p>
         <p>
-          That is why banks and manufacturers hand us the parts of a building they cannot
-          afford to get wrong. Six things done properly, not twenty done badly.
+          Guarding came first. Covering those sites meant learning cameras, alarms and access
+          control properly, and that work outgrew the guarding business. So we gave it a
+          company of its own.
+        </p>
+        <p>
+          Each business now holds its own staff, stock and service schedule. The group exists
+          so a client who needs all three still deals with one number.
         </p>
         <div class="tags" style="margin-top:1.75rem">
           <a href="#recognition">Accredited Zimbabwean firm</a><a href="contact.html">Based in Harare</a>
-          <a href="contact.html">Working countrywide</a><a href="contact.html">Support at any hour</a>
+          <a href="group.html">Three operating companies</a><a href="contact.html">Support at any hour</a>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section section--cream">
+  <section class="section section--cream ruled">
     <div class="container">
 """ % (duo("scan-smiley", "i-xl"), eyebrow("Who we are")) + shead(
+  "The structure", "Three companies, one standard",
+  cta=pbtn("See the structure", "group.html", "pbtn--dark"),
+  variant="shead--wide") + org_chart(compact=True) + """    </div>
+  </section>
+
+  <section class="section section--white">
+    <div class="container">
+""" + shead("Who runs it", "The people accountable for it") + """
+      <div class="grid g-2">
+""" + "".join("""        <article class="leader" data-reveal>
+          <div class="leader__head">
+            <span class="leader__ico">%s</span>
+            <div>
+              <h3 class="h-3">%s</h3>
+              <p class="leader__role">%s</p>
+            </div>
+          </div>
+          <p>%s</p>
+          <ul class="leader__quals">%s</ul>
+        </article>
+""" % (si(l["icon"], "i-xl"), l["name"], l["role"], l["line"],
+       "".join("<li>%s</li>" % q for q in l["quals"])) for l in LEADERS) + """      </div>
+    </div>
+  </section>
+
+  <section class="section section--cream">
+    <div class="container">
+""" + shead(
   "What drives us", "Mission, vision and values",
   "Three statements we are happy to be held to.") + """
       <div class="grid g-3">
 """ + ncard("white", "target", "Mission",
-            "To keep pace with the technology and stay ahead of our competitors. What we "
-            "install today should still hold up in five years.",
+            "Reliable, professional security within a legal and ethical framework, so clients "
+            "have peace of mind. Scalable solutions, priced so they can actually be bought.",
             [], "contact.html", "Talk to us") \
     + ncard("lime", "compass", "Vision",
-            "We are committed to providing the highest quality of security services to individuals "
-            "and business in Zimbabwe.", [], "services.html", "Our services") \
+            "A customer centred market leader in integrated security, and a smarter, safer, "
+            "better connected future for the places we work in.",
+            [], "group.html", "See the group") \
     + ncard("dark", "shield-check", "Values",
-            "We set our standards by what clients expect, then try to beat it. Not by "
-            "whatever is easiest to deliver.", [], "contact.html", "Work with us") + """      </div>
+            "Integrity, commitment, innovation, quality and excellence. We set our standards by "
+            "what clients expect, then try to beat it.",
+            [], "contact.html", "Work with us") + """      </div>
     </div>
   </section>
 
@@ -813,12 +1028,15 @@ about += """      </div>
 """ + CLIENTS
 
 write("about.html",
-      "About Us | Sentinel Security Technology",
+      "About the Sentinel group | " + ORG,
       "An accredited Zimbabwean security firm supplying electronic security, control room operations and physical access control to corporate, banking, government, manufacturing and construction clients.",
       about)
 
 
 # ================================================================= SERVICES
+DIV_ICON = {d["id"]: d["icon"] for c in COMPANIES for d in c["divisions"]}
+
+
 def detail(anchor, kicker, title, lead, bullets, photo, alt, flip):
     lis = "".join("<li>%s</li>" % b for b in bullets)
     media = """        <div data-reveal>
@@ -830,23 +1048,46 @@ def detail(anchor, kicker, title, lead, bullets, photo, alt, flip):
         </div>
 """ % (photo, photo, photo, alt)
     text = """        <div data-reveal>
+          <span class="dmark">%s</span>
           %s
           <h2 class="h-2" style="font-size:clamp(1.6rem,2.8vw,2.3rem)">%s</h2>
           <p class="lead">%s</p>
           <ul class="card__list" style="margin-top:1.4rem">%s</ul>
           <div style="margin-top:2rem">%s</div>
         </div>
-""" % (eyebrow(kicker), title, lead, lis, pbtn("Ask for a quotation", "contact.html"))
+""" % (si(DIV_ICON.get(anchor, "perimeter"), "i-2xl"), eyebrow(kicker), title, lead, lis,
+       pbtn("Ask for a quotation", "contact.html"))
     inner = (media + text) if flip else (text + media)
     return """      <div class="split" id="%s" style="scroll-margin-top:calc(var(--header-h) + 28px);padding-block:clamp(2.5rem,5vw,4rem)">
 %s      </div>
 """ % (anchor, inner)
 
 
-services = phero("Services", "Everything we install and maintain",
-  "Residential, commercial and industrial. The same team designs it, installs it and services it, "
-  "so there is one number to call when something needs attention.",
+_tech = by_id("technologies")
+services = phero(_tech["role"], _tech["name"], _tech["lead"],
   "access-control-desk", "Access control at a reception desk") + """
+  <section class="section section--white">
+    <div class="container split split--narrow">
+      <div data-reveal>
+        %s
+        <h2 class="h-2">%s</h2>
+        <p class="script script--lg">%s</p>
+        <p class="lead">%s</p>
+        <div style="margin-top:2rem">%s</div>
+      </div>
+      <div class="cfacts" data-reveal>
+        <span class="cfacts__logo">%s</span>
+        <div class="cfact"><dt>Part of</dt><dd><a href="group.html">%s, the group</a></dd></div>
+        <div class="cfact"><dt>Registered as</dt><dd>%s</dd></div>
+        <div class="cfact"><dt>Serves</dt><dd>%s</dd></div>
+        <div class="cfact"><dt>How we work</dt><dd>%s</dd></div>
+      </div>
+    </div>
+  </section>
+""" % (eyebrow("What we carry"), _tech["headline"], _tech["strap"], _tech["blurb"],
+       pbtn("Book a site survey", "contact.html", "pbtn--dark"),
+       company_logo(_tech), PARENT["name"], _tech["legal"],
+       ", ".join(_tech["sectors"]), " &rsaquo; ".join(_tech["process"])) + """
   <section class="section section--cream">
     <div class="container">
 """ + shead("Where we work", "Three kinds of site, one standard of work",
@@ -875,50 +1116,52 @@ services = services.replace('<article class="ncard ncard--white"', '<article cla
 services = services.replace('<article class="ncard ncard--lime"', '<article class="ncard ncard--lime" id="commercial"', 1)
 services = services.replace('<article class="ncard ncard--dark"', '<article class="ncard ncard--dark" id="industrial"', 1)
 
-services += shead("In detail", "Six systems we specialise in",
+services += shead("Capabilities", "Six systems, one integrated job",
                   "Each one is something we staff for, train for and keep stock for.")
 
 DETAILS = [
- ("cctv", "Surveillance", "CCTV surveillance",
+ ("cctv", "Surveillance", "CCTV and video surveillance",
   "Camera systems for homes and businesses, laid out around your actual blind spots, sightlines "
   "and lighting rather than a standard drawing.",
-  ["IP and HD analogue cameras", "Video management and remote viewing",
-   "Number plate recognition", "Optics that work after dark",
-   "Recording kept as long as your policy says"],
+  ["IP and analogue cameras", "Remote viewing from anywhere",
+   "Recording and playback", "Camera upgrades on an existing cable run",
+   "Optics that work after dark"],
   "control-room-monitoring", "Operators watching a CCTV wall"),
- ("alarms", "Detection", "Intruder alarms",
+ ("alarms", "Detection", "Intruder and alarm systems",
   "Systems meant to put someone off before they get in, and to record an incident already under way "
   "so you have something to act on afterwards.",
-  ["Perimeter beams and motion sensors", "Panic and duress buttons",
-   "Linked to armed response", "Zones you can arm separately",
+  ["Motion sensors and perimeter beams", "Door and window contacts",
+   "Panic and duress buttons", "Zones you can arm separately",
    "Battery backup through an outage"],
   "operator-night-shift", "Alarm monitoring on night shift"),
- ("access", "Identity", "Access control",
+ ("access", "Identity", "Access control and man traps",
   "Door control for a small business upward, making a building both safer and easier to move "
   "around, from one reception door to a group of sites.",
-  ["Fingerprint, card and PIN readers", "Time and attendance reporting",
-   "Visitor passes and temporary codes", "Alerts on forced or held doors",
-   "One place to manage several sites"],
+  ["Biometric, card and PIN readers", "Door controllers and interlocks",
+   "Man traps for cash areas and strongrooms", "Visitor management and temporary codes",
+   "Time and attendance integration"],
   "access-control-desk", "Access control at a reception desk"),
- ("fire", "Life safety", "Fire detection",
-  "Fire sensors and alarms that buy people time to get out and keep the damage down.",
-  ["Addressable and conventional panels", "Smoke, heat and flame detection",
-   "Sounders and evacuation systems", "Doors that release for exit",
-   "Testing and certification on a schedule"],
-  "guard-reception-radio", "Reception security and life safety monitoring"),
- ("man-traps", "High security", "Man traps",
-  "Interlocking doors for the parts of a building that hold real value. Every installation starts "
-  "with a site assessment so the trap suits the traffic going through it.",
-  ["Banking halls and cash areas", "Server rooms and strongrooms",
-   "Interlocks that stop tailgating", "Single occupancy sensing",
-   "Override and fire mode release"],
-  "guards-briefing", "Security team briefing"),
- ("physical", "Perimeter", "Physical access control",
-  "Vehicle and pedestrian equipment, including high security and anti terror products for "
-  "perimeters that face real exposure.",
-  ["Boom gates and gate automation", "Turnstiles and pedestrian lanes", "Parking control systems",
-   "Road blockers and bollards", "Number plate driven access"],
+ ("gates", "Vehicles", "Gate automation and vehicle control",
+  "The gate is the first thing a site is judged on and the first thing that fails, so we fit "
+  "motors rated for the traffic you actually put through them.",
+  ["Automatic gates and gate motors", "Boom gates and road blockers",
+   "Turnstiles and pedestrian lanes", "Safety sensors and remote access",
+   "Number plate driven entry"],
   "k9-vehicle-search", "Vehicle checkpoint search"),
+ ("intercoms", "Entry", "Video intercoms",
+  "See who is at the gate before you open it, from the house, the office or a phone anywhere "
+  "with a signal.",
+  ["Audio and video door stations", "Residential and estate intercoms",
+   "Commercial entry systems", "Visitor identification",
+   "Wired to the access control system"],
+  "guard-reception-radio", "Reception security and visitor control"),
+ ("fire", "Life safety", "Fire detection and perimeter",
+  "Fire sensors that buy people time to get out, and an energised perimeter that holds the line "
+  "while help is on the way.",
+  ["Addressable and conventional panels", "Smoke, heat and flame detection",
+   "Sounders and evacuation systems", "Electric fencing and perimeter beams",
+   "Testing and certification on a schedule"],
+  "guards-briefing", "Security team briefing"),
 ]
 for i, d in enumerate(DETAILS):
     services += detail(*d, flip=(i % 2 == 1))
@@ -966,9 +1209,13 @@ services += """      </div>
   </section>
 """
 
+services += siblings("technologies")
+
 write("services.html",
-      "Services: CCTV, Alarms, Access Control and Fire Detection | Sentinel Security Technology",
-      "CCTV, intruder alarms, access control, fire detection, man traps and physical access control for homes, offices and industrial sites across Zimbabwe.",
+      "Sentinel Integrated Technologies: CCTV, alarms, access control and fire | " + ORG,
+      "CCTV and video surveillance, intruder alarms, access control and man traps, gate "
+      "automation, video intercoms and fire detection, designed and installed as one system "
+      "across Zimbabwe.",
       services)
 
 
@@ -981,7 +1228,7 @@ solar = phero("Renewable Energy", "Solar PV for homes, businesses and power plan
       <div data-reveal>
         %s
         <h2 class="h-2">Panels that keep your bill down and your site running</h2>
-        <p class="script script--lg">towards a #secure_world</p>
+        <p class="script script--lg">towards a #secure world</p>
         <p class="lead">
           Cutting a bill and surviving an outage are the same job. We size, supply and
           maintain systems that carry the loads you actually run.
@@ -1089,9 +1336,9 @@ solar += """      </div>
         </div>
         <div class="office" data-reveal>
           <h3>Head office, Eastlea</h3>
-          <p>38 Northampton Crescent, Eastlea, Harare</p>
-          <a href="tel:+263773589461" class="num">+263 773 589 461</a>
-          <a href="tel:+263772568361" class="num">+263 772 568 361</a>
+          <p>29 Tweed Road, Eastlea, Harare</p>
+          <a href="tel:+263773589461" class="num">+263 77 358 9461</a>
+          <a href="tel:+263772568361" class="num">+263 77 256 8361</a>
           <a href="mailto:info@sentinel.co.zw">info@sentinel.co.zw</a>
         </div>
       </div>
@@ -1100,10 +1347,175 @@ solar += """      </div>
 """
 
 write("renewable-energy.html",
-      "Renewable Energy: Solar PV in Zimbabwe | Sentinel Security Technology",
+      "Renewable Energy: Solar PV in Zimbabwe | Sentinel Integrated Technologies",
       "Solar PV engineering, procurement and construction, plus operations and maintenance, for homes, businesses and power plants in Zimbabwe.",
       solar)
 
+
+
+# ================================================================= THE GROUP
+def group_detail(c, ground):
+    """A company in full: what it is, then every capability it carries."""
+    rows = ""
+    for i, d in enumerate(c["divisions"], 1):
+        rows += """          <a class="drow" href="%s#%s" data-reveal>
+            <span class="drow__n num">%02d</span>
+            <span class="drow__ico">%s</span>
+            <span class="drow__body">
+              <h4>%s</h4>
+              <p>%s</p>
+            </span>
+            <span class="drow__go" aria-hidden="true">%s</span>
+          </a>
+""" % (c["href"], d["id"], i, si(d["icon"], "i-lg"), d["name"],
+       ", ".join(d["items"][:4]) + ".", ARROW)
+
+    units = ""
+    if c.get("units"):
+        units = """          <div class="gdetail__units">%s</div>
+""" % "".join("""<a class="gunit" href="%s#%s">%s<span><strong>%s</strong><small>%s</small></span></a>"""
+              % (c["href"], u["id"], si(u["icon"], "i-md"), u["name"], u["strap"])
+              for u in c["units"])
+
+    kv = "eyebrow--dark" if ground == "dark" else ""
+    return """  <section class="section section--%s" id="%s">
+    <div class="container">
+%s      <div class="gdetail">
+        <div class="gdetail__intro" data-reveal>
+          <p class="gdetail__legal">%s</p>
+          <p class="lead">%s</p>
+          <p class="script gdetail__strap">%s</p>
+          <dl class="gdetail__meta">
+            <div><dt>Serves</dt><dd>%s</dd></div>
+            <div><dt>How it works</dt><dd>%s</dd></div>
+          </dl>
+          <div style="margin-top:1.75rem">%s</div>
+        </div>
+        <div class="gdetail__rows">
+%s        </div>
+      </div>
+%s    </div>
+  </section>
+""" % (ground, c["id"],
+       shead(c["role"], c["name"], kv=kv),
+       c["legal"], c["lead"], c["strap"],
+       ", ".join(c["sectors"]), " &rsaquo; ".join(c["process"]),
+       pbtn("Open " + c["short"], c["href"],
+            "pbtn--light" if ground == "dark" else "pbtn--dark"),
+       rows, units)
+
+
+grp = phero("The group", "Three companies, one standard of work",
+  "Sentinel runs as a group. One company builds the electronic systems, one runs the "
+  "people on the ground, and one carries the technology business. This is how they "
+  "fit together.",
+  "control-room-monitoring", "The Sentinel control room during a night shift") + """
+  <section class="section section--white">
+    <div class="container">
+""" + shead("The structure", "What sits where",
+            "Each company holds its own licences, staff and discipline. The group "
+            "exists so a client needs one number, not three.",
+            variant="shead--wide") + org_chart() + """    </div>
+  </section>
+"""
+
+for _c, _g in zip(COMPANIES, ["cream", "dark", "white"]):
+    grp += group_detail(_c, _g)
+
+grp += """  <section class="section section--cream">
+    <div class="container">
+""" + shead("Who runs it", "The people accountable for it") + """
+      <div class="grid g-2">
+""" + "".join("""        <article class="leader" data-reveal>
+          <div class="leader__head">
+            <span class="leader__ico">%s</span>
+            <div>
+              <h3 class="h-3">%s</h3>
+              <p class="leader__role">%s</p>
+            </div>
+          </div>
+          <p>%s</p>
+          <ul class="leader__quals">%s</ul>
+        </article>
+""" % (si(l["icon"], "i-xl"), l["name"], l["role"], l["line"],
+       "".join("<li>%s</li>" % q for q in l["quals"])) for l in LEADERS) + """      </div>
+    </div>
+  </section>
+"""
+
+write("group.html",
+      "The Sentinel group: three companies under one standard | " + ORG,
+      "Sentinel Integrated Technologies, Sentinel Security Services and Circuitron "
+      "Systems: how the Sentinel group is structured and what each company does.",
+      grp)
+
+
+# ============================================================= COMPANY PAGES
+def company_page(cid, hero_photo, hero_alt, title, desc):
+    c = by_id(cid)
+    body = phero(c["role"], c["name"], c["lead"], hero_photo, hero_alt) + """
+  <section class="section section--white">
+    <div class="container split split--narrow">
+      <div data-reveal>
+        %s
+        <h2 class="h-2">%s</h2>
+        <p class="script script--lg">%s</p>
+        <p class="lead">%s</p>
+        <div style="margin-top:2rem">%s</div>
+      </div>
+      <div class="cfacts" data-reveal>
+        <span class="cfacts__logo">%s</span>
+        <div class="cfact"><dt>Part of</dt><dd><a href="group.html">%s, the group</a></dd></div>
+        <div class="cfact"><dt>Registered as</dt><dd>%s</dd></div>
+        <div class="cfact"><dt>Serves</dt><dd>%s</dd></div>
+        <div class="cfact"><dt>How we work</dt><dd>%s</dd></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--cream ruled">
+    <div class="container">
+""" % (eyebrow("What we carry"), c["headline"], c["strap"], c["blurb"],
+       pbtn("Book a site survey", "contact.html", "pbtn--dark"),
+       company_logo(c),
+       PARENT["name"], c["legal"], ", ".join(c["sectors"]),
+       " &rsaquo; ".join(c["process"])) + shead(
+        "Capabilities", "What this company does",
+        "%s lines of work, each with its own team and its own spares."
+        % NUMBER_WORD[len(c["divisions"])],
+        variant="shead--wide") + """
+      <div class="dgrid">
+""" + "".join(division_card(c, d) for d in c["divisions"]) + """      </div>
+    </div>
+  </section>
+"""
+    if c.get("units"):
+        body += """  <section class="section section--dark">
+    <div class="container">
+""" + shead("The ecosystem", "Two businesses inside the business",
+            "Circuitron reaches the market two more ways: a shop and a recycling "
+            "route.", kv="eyebrow--dark") + """
+      <div class="grid g-2">
+""" + "".join(unit_panel(c, u) for u in c["units"]) + """      </div>
+    </div>
+  </section>
+"""
+    body += siblings(cid)
+    write(c["href"], title, desc, body)
+
+
+company_page("guarding", "guards-briefing",
+  "Sentinel officers at a shift briefing",
+  "Sentinel Security Services: manned guarding, dog units and armed response | " + ORG,
+  "Manned guarding, event security, 24 hour alarm monitoring and armed response, dog "
+  "units, perimeter protection and investigations across all ten provinces of Zimbabwe.")
+
+company_page("circuitron", "dispatch-tablet",
+  "A Circuitron technician commissioning a system on site",
+  "Circuitron Systems: technology, communications and electronics | " + ORG,
+  "Circuitron Systems delivers security systems, two way radio and networking, smart "
+  "building automation, computers and power, plus CircuitStore retail and EcoCircuit "
+  "electronic waste recovery.")
 
 # ================================================================= CONTACT
 contact = phero("Contact", "Tell us about your site",
@@ -1118,13 +1530,13 @@ contact = phero("Contact", "Tell us about your site",
 
         <div class="cinfo">
           <span class="cinfo__icon">%s</span>
-          <div><h3>Address</h3><p>38 Northampton Crescent,<br>Eastlea, Harare, Zimbabwe</p></div>
+          <div><h3>Address</h3><p>29 Tweed Road,<br>Eastlea, Harare, Zimbabwe</p></div>
         </div>
         <div class="cinfo">
           <span class="cinfo__icon">%s</span>
           <div><h3>Telephone</h3>
-            <a href="tel:+263773589461" class="num">+263 773 589 461</a>
-            <a href="tel:+263772568361" class="num">+263 772 568 361</a>
+            <a href="tel:+263773589461" class="num">+263 77 358 9461</a>
+            <a href="tel:+263772568361" class="num">+263 77 256 8361</a>
             <a href="tel:+263242006157" class="num">+263 24 200 6157</a>
           </div>
         </div>
@@ -1171,7 +1583,7 @@ contact = phero("Contact", "Tell us about your site",
           <button class="pbtn pbtn--block" type="submit" style="margin-top:1.5rem">
             <span class="pbtn__label">Send enquiry</span>%s
           </button>
-          <p class="form-note">This opens your email app with the details filled in. Prefer to talk? Call <a href="tel:+263773589461" class="num">+263 773 589 461</a>.</p>
+          <p class="form-note">This opens your email app with the details filled in. Prefer to talk? Call <a href="tel:+263773589461" class="num">+263 77 358 9461</a>.</p>
           <p class="form-status" role="status"></p>
         </form>
       </div>
@@ -1188,7 +1600,7 @@ contact = phero("Contact", "Tell us about your site",
       <div class="grid g-2">
         <div class="office" data-reveal>
           <h3>Head office, Eastlea</h3>
-          <p>38 Northampton Crescent, Eastlea, Harare</p>
+          <p>29 Tweed Road, Eastlea, Harare</p>
           <a href="tel:+263242006157" class="num">+263 24 200 6157</a>
           <a href="mailto:info@sentinel.co.zw">info@sentinel.co.zw</a>
         </div>
@@ -1204,33 +1616,33 @@ contact = phero("Contact", "Tell us about your site",
 
   <section class="map-wrap" aria-label="Map of our head office">
     <div class="map-wrap__fallback" aria-hidden="true">
-      <strong>38 Northampton Crescent, Eastlea</strong>
+      <strong>29 Tweed Road, Eastlea</strong>
       <span>Harare, Zimbabwe</span>
-      <a href="https://www.google.com/maps/search/?api=1&amp;query=38+Northampton+Crescent%2C+Eastlea%2C+Harare%2C+Zimbabwe" rel="noopener">Open in Google Maps</a>
+      <a href="https://www.google.com/maps/search/?api=1&amp;query=29+Tweed+Road%2C+Eastlea%2C+Harare%2C+Zimbabwe" rel="noopener">Open in Google Maps</a>
     </div>
     <iframe class="map-embed"
-      src="https://www.google.com/maps?q=38%20Northampton%20Crescent%2C%20Eastlea%2C%20Harare%2C%20Zimbabwe&output=embed"
-      title="Map showing 38 Northampton Crescent, Eastlea, Harare"
+      src="https://www.google.com/maps?q=29%20Tweed%20Road%2C%20Eastlea%2C%20Harare%2C%20Zimbabwe&output=embed"
+      title="Map showing 29 Tweed Road, Eastlea, Harare"
       loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
   </section>
 """
 
 write("contact.html",
-      "Contact: Book a Free Site Survey | Sentinel Security Technology",
-      "Contact Sentinel Security Technology in Harare, Zimbabwe. Free site survey and security risk assessment. Call +263 773 589 461 or email info@sentinel.co.zw.",
+      "Contact: Book a Free Site Survey | Sentinel Integrated Technologies",
+      "Contact Sentinel Integrated Technologies in Harare, Zimbabwe. Free site survey and security risk assessment. Call +263 77 358 9461 or email info@sentinel.co.zw.",
       contact, cta=False)
 
 
 # ================================================================= PRIVACY
 privacy = phero("Privacy policy", "Privacy policy",
-  "How Sentinel Security Technology handles the information you share with us.") + """
+  "How Sentinel Integrated Technologies handles the information you share with us.") + """
   <section class="section section--white">
     <div class="container container--narrow prose">
       <p><em>Last updated: September 2026.</em></p>
 
       <h2>Who we are</h2>
-      <p>Sentinel Security Technology is a security solutions provider registered in Zimbabwe, with
-      its head office at 38 Northampton Crescent, Eastlea, Harare. If you have a question about this
+      <p>Sentinel Integrated Technologies is a security solutions provider registered in Zimbabwe, with
+      its head office at 29 Tweed Road, Eastlea, Harare. If you have a question about this
       policy, write to us at <a href="mailto:info@sentinel.co.zw">info@sentinel.co.zw</a>.</p>
 
       <h2>What we collect</h2>
@@ -1280,8 +1692,8 @@ privacy = phero("Privacy policy", "Privacy policy",
 """
 
 write("privacy.html",
-      "Privacy Policy | Sentinel Security Technology",
-      "How Sentinel Security Technology collects, uses and protects the information you share with us.",
+      "Privacy Policy | Sentinel Integrated Technologies",
+      "How Sentinel Integrated Technologies collects, uses and protects the information you share with us.",
       privacy, cta=False)
 
 print("done")

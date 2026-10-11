@@ -29,6 +29,53 @@
     });
   }
 
+  /* ---- The group panel ----
+     Opens on hover with a pointer, on click or Enter otherwise, and the link
+     still goes to the group page either way. */
+  var megaBtn = document.querySelector('[data-mega]');
+  var mega = document.getElementById('mega');
+
+  if (megaBtn && mega) {
+    var megaHost = megaBtn.closest('.nav__has-mega');
+    var closeTimer = null;
+
+    function setMega(open) {
+      clearTimeout(closeTimer);
+      mega.classList.toggle('is-open', open);
+      megaBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    function closeSoon() {
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(function () { setMega(false); }, 180);
+    }
+
+    if (window.matchMedia('(hover: hover)').matches) {
+      megaHost.addEventListener('mouseenter', function () { setMega(true); });
+      megaHost.addEventListener('mouseleave', closeSoon);
+      mega.addEventListener('mouseenter', function () { setMega(true); });
+      mega.addEventListener('mouseleave', closeSoon);
+    }
+
+    megaBtn.addEventListener('focus', function () { setMega(true); });
+    megaBtn.addEventListener('click', function (e) {
+      if (mega.classList.contains('is-open')) return;   // second tap follows the link
+      if (!window.matchMedia('(hover: hover)').matches) {
+        e.preventDefault();
+        setMega(true);
+      }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setMega(false);
+    });
+    document.addEventListener('focusin', function (e) {
+      if (!mega.contains(e.target) && !megaHost.contains(e.target)) setMega(false);
+    });
+    document.addEventListener('click', function (e) {
+      if (!mega.contains(e.target) && !megaHost.contains(e.target)) setMega(false);
+    });
+    window.addEventListener('scroll', function () { setMega(false); }, { passive: true });
+  }
+
   /* ---- Hero carousel ----
      Crossfades a handful of stills. Slides after the first carry their source
      on data attributes and are only attached once the page has loaded, so the

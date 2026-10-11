@@ -16,12 +16,12 @@ def fetch(folder, remote, local):
 
 os.chdir(r"C:\Users\PC\documents\sentinel\assets\icons")
 
-ICONS = """security-camera bell-ringing fingerprint fire-extinguisher door-open barricade
+ICONS = """
 house-line buildings factory clock-countdown graduation-cap tag magnifying-glass headset
 handshake target compass shield-check sun lightning wrench solar-panel map-pin phone-call
 envelope-simple clock whatsapp-logo facebook-logo linkedin-logo caret-double-right
 arrow-right arrow-up check-circle star asterisk eye scan-smiley identification-badge
-chat-circle-dots users-three x""".split()
+chat-circle-dots users-three x caret-down""".split()
 
 STYLES = [
     ("regular", "regular.css", "Phosphor.woff2",         "Phosphor",         "ph"),

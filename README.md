@@ -1,26 +1,120 @@
-# Sentinel Security Technology website
+# Sentinel Integrated Technologies website
 
-A static site. No build step required, no dependencies. Open `index.html` or
-upload the whole folder to any web host.
+A static site for the Sentinel group. No build step required, no dependencies.
+Open `index.html` or upload the whole folder to any web host.
 
 ```
-index.html              Home
-about.html              About us
-services.html           Services (anchors: #residential #commercial #industrial
-                                   #cctv #alarms #access #fire #man-traps #physical)
-renewable-energy.html   Solar PV division
-contact.html            Contact + enquiry form + map
-privacy.html            Privacy policy
-robots.txt, sitemap.xml SEO
-assets/css/style.css    The whole design system (one file, sectioned and commented)
-assets/js/main.js       Header, drawer, reveals, accordion, form
-assets/fonts/           Manrope (body, headings, numbers), Grand Hotel (accents)
-assets/icons/           Phosphor, subset to the glyphs in use
-assets/img/             brand, clients, photos
-tools/build.py          Optional page generator (see "Editing pages")
-tools/subset_icons.py   Rebuilds the Phosphor subset when you need a new glyph
-WEB-DESIGN-PRINCIPLES.md  The design rules this build follows
+index.html                 Home (group overview + the structure chart)
+group.html                 The group in full: three companies, every capability
+services.html              Sentinel Integrated Technologies
+                           (anchors: #residential #commercial #industrial
+                                     #cctv #alarms #access #gates #intercoms #fire)
+security-services.html     Sentinel Security Services
+circuitron.html            Circuitron Systems (anchors: #circuitstore #ecocircuit)
+about.html                 The group story, leadership, mission and values
+renewable-energy.html      Solar PV and backup power
+contact.html               Contact + enquiry form + map
+privacy.html               Privacy policy
+robots.txt, sitemap.xml    SEO
+assets/css/style.css       The whole design system (one file, sectioned and commented)
+assets/js/main.js          Header, group panel, drawer, reveals, carousel, accordion, form
+assets/fonts/              Manrope (body, headings, numbers), Grand Hotel (accents)
+assets/icons/phosphor.css  Phosphor, subset to the glyphs in use
+assets/icons/sentinel.svg  The drawn icon set, 35 glyphs (see "The icon set")
+assets/img/                brand, clients, photos
+tools/build.py             Page generator (see "Editing pages")
+tools/group.py             The group structure and its content, in one place
+tools/icons.py             Source for the drawn icon set
+tools/build_icons.py       Builds the sprite, and a proof sheet for checking it
+tools/subset_icons.py      Rebuilds the Phosphor subset when you need a new glyph
+WEB-DESIGN-PRINCIPLES.md   The design rules this build follows
 ```
+
+## The group
+
+The site is built around the structure the Operations Director drew: one parent
+with three operating companies, and two divisions under one of those.
+
+```
+Sentinel
+├── Sentinel Integrated Technologies (PVT) Ltd    services.html
+│     CCTV · alarms · access control · gate automation · intercoms · fire
+├── Sentinel Security Services                    security-services.html
+│     guarding · events · alarm response · dog units · perimeter · investigations
+└── Circuitron Systems (Private) Limited          circuitron.html
+      security systems · communications · automation · electronics
+      ├── CircuitStore    retail and e-commerce
+      └── EcoCircuit      electronic waste recovery
+```
+
+**`tools/group.py` is the single source of truth.** Every place a company is
+described reads from it: the chart on the home page, the panel under the nav,
+the group page, each company page, the six capability cards on the home page,
+and the footer. Change a capability there and it changes everywhere, and the
+anchors cannot drift out of step with the headings.
+
+To add a capability to a company, add a dict to its `divisions` list with an
+`id`, an `icon` from the drawn set, a `name`, a one sentence `line` and an
+`items` list. Then run `python tools/build.py`.
+
+## The icon set
+
+`assets/icons/sentinel.svg` holds 35 glyphs drawn for this site, because
+Phosphor has no word for a dome camera, an electric fence, a gate motor or a
+dog unit. They follow the reference sheets the client supplied: a 24 grid, a
+1.5 stroke, round caps and joins, open line work, and nothing closer than 2px
+to the edge.
+
+Phosphor still covers the generic vocabulary (clock, phone, envelope, shield,
+caret). The drawn set covers the hardware and the work.
+
+```
+python tools/build_icons.py                       rebuild the sprite
+python tools/build_icons.py --sheet proof.html    plus a page showing every
+                                                  glyph at 20, 24, 32 and 64px
+                                                  on light and dark
+```
+
+The sprite is inlined into each page at build time, once, straight after
+`<body>`. That is deliberate: `<use href="other-file.svg#id">` does not work
+cross file in Chrome or Safari, and the sprite gzips to a few hundred bytes
+against markup that repeats.
+
+Use one with `si("cam-dome")` in `tools/build.py`, or in hand written HTML:
+
+```html
+<svg class="si i-xl" aria-hidden="true"><use href="#si-cam-dome"/></svg>
+```
+
+The size classes (`i-xs` through `i-2xl`) are the same scale Phosphor uses, and
+a glyph takes its colour from `color` like any font icon.
+
+**Open the proof sheet before you ship a new glyph.** Several of these were
+redrawn two and three times because the first version read as the wrong object
+at icon size: the first dome camera read as an eye, the first motion sensor as
+a handbag, the first dog as a hand. A PTZ camera was cut altogether because at
+24px it was indistinguishable from the dome.
+
+## The logo
+
+`assets/img/brand/sentinel-logo.svg` is vector, not a trace of a screenshot.
+The shield is drawn from measured geometry and the wordmark is outlined from
+the supplied artwork. Rebuilt against the original it matches to within 0.03%
+of the inked pixels, all of it antialiasing on the edges.
+
+| file | use |
+|---|---|
+| `sentinel-logo.svg` | full lockup: shield, SENTINEL, Integrated Technologies, (PVT) Ltd |
+| `sentinel-logo-compact.svg` | without the entity line, for the header |
+| `mark.svg` | the shield alone |
+| `*-white.svg` | the same four for dark grounds |
+| `circuitron-logo.png` | Circuitron's own mark, trimmed to its artwork |
+
+The shield is 589 x 568 with a 41 stroke: an outer hexagon minus an inner one
+(even odd), then nine rectangles for the S. It is small enough to read in full
+inside `assets/img/brand/mark.svg`, so a colour or weight change is a one line
+edit rather than a redraw. Favicons are rendered from it by
+`brand_assets.py` in the scratchpad rather than hand cropped.
 
 ## Deployment
 
@@ -262,18 +356,48 @@ better, with real photographs of Sentinel's own installations and team. Drop
 replacements in at the same filenames and the site picks them up with no code
 change. Each photo is referenced at two sizes: `name-640.jpg` and `name-1200.jpg`.
 
-**2. The headline numbers need confirming.** The hero strip and the About page
-use `24/7`, `3` awards, `5` sectors and `6` systems. All are drawn from the old
-site, but if Sentinel has stronger real figures (years trading, sites secured,
-cameras under management) those belong here instead.
+**2. Sentinel Security Services has no logo of its own.** The supplied artwork
+covers Sentinel Integrated Technologies and Circuitron Systems. Where the
+guarding company needs a mark, the site uses the Sentinel shield with the
+company name set beside it in Manrope (`company_logo()` in `tools/build.py`).
+That is a deliberate stand in, not a wordmark. Drop a real file into
+`assets/img/brand/` and change the company's `logo` value in `tools/group.py`.
 
-**3. The WhatsApp community link is a placeholder.** `WA_COMMUNITY` in
+The descriptor type in the supplied lockup is a squared condensed grotesque
+that has not been identified, so no new wordmark should be set by eye. If the
+designer's font is known, say so and the sub brand lockups can be drawn
+properly.
+
+**3. The headline numbers need confirming.** The hero strip uses `3` companies,
+`10` provinces, `24/7` response and `2016`. The first comes from the structure,
+the rest from the Sentinel Security Services profile. If there are stronger
+real figures (sites secured, cameras under management, officers deployed) they
+belong here instead.
+
+**4. The group's own name.** The Operations Director's diagram labels the parent
+simply "Sentinel". The site uses that, with the Sentinel Integrated Technologies
+lockup as the house mark because that is the only Sentinel wordmark that exists.
+If the holding company trades under a fuller name, change `PARENT["name"]` in
+`tools/group.py`.
+
+**5. The brand green.** The supplied logo inks at `#2D6635`. The site's brand
+green is `#0C6934`, which the whole palette was built around over earlier
+rounds, and the logo files are generated in that colour so nothing on the page
+shows two greens. If `#2D6635` is the official value, say so and the ramp can be
+rebuilt around it.
+
+**6. Renewable energy sits outside the structure.** `renewable-energy.html`
+predates the group diagram, which does not mention solar. It is kept as a group
+level capability and cross linked from Circuitron's power section. Tell us which
+company owns it and it can be moved under that company properly.
+
+**7. The WhatsApp community link is a placeholder.** `WA_COMMUNITY` in
 `tools/build.py` currently points at `https://chat.whatsapp.com/` with no invite
 code, which lands on a generic page. Create the community in WhatsApp, copy its
 invite link, and paste it in. The enquiry option beside it is already live and
 goes to the real number.
 
-**4. The contact form has no backend.** It composes a `mailto:` to
+**8. The contact form has no backend.** It composes a `mailto:` to
 `info@sentinel.co.zw` and opens the visitor's email client. That works, but it
 loses anyone without a configured mail app. To take submissions properly, point
 the `<form>` at a form service (Formspree, Web3Forms, Netlify Forms) or a small
@@ -293,8 +417,14 @@ server endpoint, and delete the `data-contact-form` handler at the bottom of
 - **The awards** are labelled generically as "Industry award" for 2014, 2015 and
   2016 because the old site never named them. If you have the actual award
   names, put them in `about.html` and `index.html`.
-- **The fire detection photo** on `services.html` is the weakest match in the
-  set. It shows a guard with a laptop, not fire safety equipment.
+- **The photographs do not yet match the new structure.** The library was shot
+  for one company and now has to carry three. Guarding has usable frames; the
+  technology and Circuitron pages are borrowing them. Replacing these is the
+  next piece of work.
+- **The Circuitron profile names three sub brands,** CircuitStore and
+  EcoCircuit, both built here, and refers to a certificate of incorporation
+  dated 19 August 2026. Neither sub brand has artwork yet; both are set
+  typographically.
 - **Projects page.** The old site linked one but it 404s. Three or four real case
   studies would be the single biggest credibility addition to this site.
 

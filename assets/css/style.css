@@ -227,6 +227,20 @@ p:last-child { margin-bottom: 0; }
 
 /* ---------- 3b. Phosphor icons ---------- */
 .ph, .ph-duotone, .ph-fill { font-size: 1em; line-height: 1; vertical-align: middle; }
+/* The Sentinel glyphs are SVG rather than a font, so they take their size
+   from the same scale and their colour from `color`. */
+.si {
+  width: 1em; height: 1em;
+  display: inline-block;
+  flex: none;
+  vertical-align: -0.145em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .i-xs { font-size: 14px; }
 .i-sm { font-size: 17px; }
 .i-md { font-size: 22px; }
@@ -419,8 +433,8 @@ p:last-child { margin-bottom: 0; }
 .header--solid .header__inner { height: 70px; }
 
 .brand { display: flex; align-items: center; flex: none; }
-.brand img { height: 40px; width: auto; transition: height .35s var(--ease); }
-.header--solid .brand img { height: 34px; }
+.brand img { height: 44px; width: auto; transition: height .35s var(--ease); }
+.header--solid .brand img { height: 37px; }
 .brand__light { display: block; }
 .brand__dark { display: none; }
 .header--solid .brand__light { display: none; }
@@ -458,6 +472,85 @@ p:last-child { margin-bottom: 0; }
 .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
 .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+/* ---------- 7b. The group panel under the nav ---------- */
+.nav__has-mega > .nav__link {
+  display: inline-flex; align-items: center; gap: .3rem;
+}
+.nav__has-mega > .nav__link i { transition: transform .3s var(--ease); }
+.nav__has-mega > .nav__link[aria-expanded="true"] i { transform: rotate(180deg); }
+.nav__link[data-within="true"] { color: var(--lime); }
+.header--solid .nav__link[data-within="true"] { color: var(--green); }
+
+.mega {
+  position: absolute;
+  left: 0; right: 0;
+  top: 100%;
+  background: var(--white);
+  border-top: 1px solid var(--line);
+  box-shadow: var(--sh-3);
+  opacity: 0; visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity .25s var(--ease), transform .3s var(--ease), visibility .3s;
+}
+.mega[hidden] { display: block; }          /* animated, not removed */
+.mega.is-open { opacity: 1; visibility: visible; transform: none; }
+.mega__inner { padding: clamp(1.4rem, 2.4vw, 2.1rem) var(--gutter) clamp(1.6rem, 2.6vw, 2.3rem); }
+
+.mega__parent {
+  display: flex; align-items: center; gap: .9rem;
+  padding: .85rem 1.1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--corner-lg);
+  background: var(--g-900);
+  color: #fff;
+  transition: background-color .3s var(--ease);
+}
+.mega__parent:hover { background: var(--g-800); }
+.mega__mark { display: grid; place-items: center; color: var(--lime); }
+.mega__parent strong { display: block; font-size: 1rem; line-height: 1.2; }
+.mega__parent small { font-size: .82rem; color: var(--on-dark-soft); }
+.mega__go {
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: .35rem;
+  font-size: .8rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--lime);
+}
+
+.mega__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+.mega__card {
+  display: block;
+  padding: 1.1rem 1.15rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--corner-lg);
+  background: var(--cream);
+  color: var(--ink);
+  transition: background-color .3s var(--ease), border-color .3s var(--ease), transform .3s var(--ease);
+}
+.mega__card:hover { background: var(--white); border-color: var(--g-light); transform: translateY(-3px); }
+.mega__icon { display: block; color: var(--g-mid); margin-bottom: .55rem; }
+.mega__card strong { display: block; font-size: 1.02rem; line-height: 1.22; }
+.mega__card small { display: block; margin-top: .15rem; font-size: .8rem; color: var(--body-2); }
+.mega__chips { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .7rem; }
+.mega__chips i {
+  font-style: normal;
+  font-size: .68rem; font-weight: 700;
+  letter-spacing: .05em; text-transform: uppercase;
+  padding: .22rem .5rem;
+  border-radius: var(--r-pill);
+  background: var(--white);
+  border: 1px solid var(--line);
+  color: var(--ink-3);
+}
+.mega__card:hover .mega__chips i { background: var(--cream); }
+.mega__units { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .7rem; }
+.mega__units a {
+  font-size: .76rem; font-weight: 700;
+  color: var(--g-mid);
+  border-bottom: 1px solid currentColor;
+}
+.mega__units a:hover { color: var(--ink); }
 
 /* Mobile drawer */
 .drawer {
@@ -1196,6 +1289,401 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 .step { display: block; color: inherit; }
 .step:hover h3 { color: var(--lime); }
 
+/* ---------- 19c. The group structure ---------- */
+/* The chart the Operations Director drew: one parent, three companies, and in
+   one case two units below that. The connectors are drawn rather than drawn
+   in, so they stay put at any width. */
+/* The connectors are the diagram, so they are drawn a step stronger than an
+   ordinary hairline: a reader has to be able to follow them. */
+.org { --org-line: rgba(12, 105, 52, .26); }
+.section--dark .org { --org-line: rgba(169, 238, 110, .32); }
+
+.org__parent {
+  display: inline-flex; align-items: center; gap: 1rem;
+  padding: .95rem 1.75rem .95rem 1.05rem;
+  border-radius: var(--corner-lg);
+  background: var(--g-900);
+  color: #fff;
+  transition: background-color .3s var(--ease), transform .3s var(--ease);
+}
+.org__parent:hover { background: var(--g-800); transform: translateY(-2px); }
+.org__parent-mark {
+  display: grid; place-items: center;
+  width: 52px; height: 52px;
+  border-radius: var(--corner-md);
+  background: rgba(255, 255, 255, .08);
+}
+.org__parent-mark img { width: 28px; height: auto; }
+.org__parent-text strong { display: block; font-size: 1.3rem; line-height: 1.15; letter-spacing: -.01em; }
+.org__parent-text small { font-size: .8rem; color: var(--on-dark-soft); letter-spacing: .04em; text-transform: uppercase; }
+
+.org { display: flex; flex-direction: column; align-items: center; }
+.org__trunk {
+  display: block;
+  width: 2px; height: 34px;
+  background: var(--org-line);
+}
+.org__row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: clamp(1rem, 2vw, 1.6rem);
+  row-gap: 28px;
+  width: 100%;
+  position: relative;
+  padding-top: 34px;
+  align-items: stretch;
+}
+/* The horizontal rail joining the three, and the drop into each one. */
+.org__row::before {
+  content: "";
+  position: absolute; top: 0;
+  left: calc(100% / 6); right: calc(100% / 6);
+  height: 2px;
+  background: var(--org-line);
+}
+.org__co { display: contents; }
+
+.org__card {
+  position: relative;
+  grid-row: 1;
+  display: flex; flex-direction: column;
+  padding: clamp(1.2rem, 2vw, 1.6rem);
+  border: 1px solid var(--line);
+  border-radius: var(--corner-xl);
+  background: var(--white);
+  color: var(--ink);
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease);
+}
+.org__card::before {
+  content: "";
+  position: absolute; top: -34px; left: 50%;
+  width: 2px; height: 34px;
+  transform: translateX(-50%);
+  background: var(--org-line);
+}
+.org__card:hover { transform: translateY(-5px); box-shadow: var(--sh-2); border-color: var(--g-light); }
+.section--dark .org__card { background: var(--g-800); border-color: rgba(255,255,255,.1); color: #fff; }
+.section--dark .org__card:hover { background: var(--g-750); }
+
+.org__ico { color: var(--g-mid); }
+.section--dark .org__ico { color: var(--lime); }
+.org__role {
+  display: block; margin-top: .8rem;
+  font-size: .72rem; font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--g-mid);
+}
+.section--dark .org__role { color: var(--lime); }
+.org__name { margin: .25rem 0 .55rem; font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.2; }
+.org__card p { font-size: .92rem; margin: 0; }
+.section--dark .org__card p { color: var(--on-dark-soft); }
+.org__caps { display: flex; flex-wrap: wrap; gap: .32rem; margin: 1rem 0 1.1rem; }
+.org__caps i {
+  font-style: normal;
+  font-size: .68rem; font-weight: 700;
+  letter-spacing: .05em; text-transform: uppercase;
+  padding: .24rem .55rem;
+  border-radius: var(--r-pill);
+  background: var(--cream);
+  border: 1px solid var(--line);
+  color: var(--ink-3);
+}
+.section--dark .org__caps i { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.14); color: #fff; }
+.org__go {
+  margin-top: auto;
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-size: .78rem; font-weight: 800;
+  letter-spacing: .07em; text-transform: uppercase;
+  color: var(--g-mid);
+}
+.section--dark .org__go { color: var(--lime); }
+
+/* The two units under Circuitron hang off the bottom of its card. */
+.org__subs { position: relative; grid-row: 2; display: flex; flex-wrap: wrap; gap: .5rem; }
+.org__subs::before {
+  content: "";
+  position: absolute; top: -28px; left: 50%;
+  width: 2px; height: 28px;
+  transform: translateX(-50%);
+  background: var(--org-line);
+}
+.org__sub {
+  flex: 1 1 auto;
+  display: flex; flex-direction: column; gap: .1rem;
+  padding: .6rem .85rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--corner-md);
+  background: transparent;
+  color: var(--ink);
+  font-size: .88rem; font-weight: 700;
+  transition: background-color .3s var(--ease), border-color .3s var(--ease);
+}
+.org__sub:hover { background: var(--white); border-style: solid; border-color: var(--g-light); }
+.org__sub small { font-weight: 500; font-size: .72rem; color: var(--body-2); }
+.section--dark .org__sub { color: #fff; border-color: rgba(255,255,255,.22); }
+.section--dark .org__sub small { color: var(--on-dark-soft); }
+.section--dark .org__sub:hover { background: rgba(255,255,255,.06); }
+
+/* Compact: used where the chart is a reminder rather than the subject. */
+.org--compact .org__card { padding: 1rem 1.1rem; }
+.org--compact .org__name { font-size: 1.02rem; }
+
+/* A capability's glyph above its eyebrow, so the system reads before the words. */
+.dmark {
+  display: grid; place-items: center;
+  width: 68px; height: 68px;
+  margin-bottom: 1.1rem;
+  border-radius: var(--corner-xl);
+  background: var(--lime-4);
+  border: 1px solid var(--line);
+  color: var(--g-mid);
+}
+
+/* ---------- 19d. Capabilities inside a company ---------- */
+.dgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: clamp(1rem, 1.6vw, 1.4rem);
+}
+.dcard {
+  display: flex; flex-direction: column;
+  padding: clamp(1.3rem, 2.1vw, 1.8rem);
+  border: 1px solid var(--line);
+  border-radius: var(--corner-xl);
+  background: var(--white);
+  scroll-margin-top: calc(var(--header-h) + 24px);
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.dcard:hover { transform: translateY(-4px); box-shadow: var(--sh-2); }
+.dcard__ico {
+  display: grid; place-items: center;
+  width: 58px; height: 58px;
+  margin-bottom: 1.1rem;
+  border-radius: var(--corner-lg);
+  background: var(--lime-4);
+  color: var(--g-mid);
+}
+.dcard h3 { margin: 0 0 .5rem; }
+.dcard > p { margin: 0 0 1.1rem; font-size: .95rem; }
+.dcard__list { display: grid; gap: .42rem; margin: 0 0 1.3rem; padding: 0; list-style: none; }
+.dcard__list li {
+  position: relative;
+  padding-left: 1.15rem;
+  font-size: .9rem;
+  color: var(--body);
+}
+.dcard__list li::before {
+  content: "";
+  position: absolute; left: 0; top: .52em;
+  width: 7px; height: 7px;
+  border-radius: 2px;
+  background: var(--g-light);
+}
+.dcard__cta {
+  margin-top: auto;
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-size: .8rem; font-weight: 800;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--g-mid);
+}
+.dcard:hover .dcard__cta { color: var(--ink); }
+
+/* ---------- 19e. A business inside a business ---------- */
+.unit {
+  padding: clamp(1.4rem, 2.3vw, 2rem);
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: var(--corner-xl);
+  background: var(--g-800);
+  scroll-margin-top: calc(var(--header-h) + 24px);
+}
+.unit__head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.1rem; }
+.unit__ico {
+  display: grid; place-items: center;
+  width: 60px; height: 60px; flex: none;
+  border-radius: var(--corner-lg);
+  background: rgba(169, 238, 110, .12);
+  color: var(--lime);
+}
+.unit h3 { margin: 0; color: #fff; }
+.unit__strap { margin: .1rem 0 0; font-size: 1.15rem; color: var(--lime); }
+.unit > p { color: var(--on-dark-soft); margin: 0 0 1.2rem; }
+.unit__list { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.unit__list li {
+  display: flex; align-items: center; gap: .55rem;
+  font-size: .9rem; color: #fff;
+  padding: .55rem .8rem;
+  border-radius: var(--corner-md);
+  background: rgba(255, 255, 255, .05);
+}
+.unit__list li i { color: var(--lime); }
+
+/* ---------- 19f. The rest of the group ---------- */
+.sibs { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(.8rem, 1.4vw, 1.2rem); }
+.sib {
+  display: flex; align-items: center; gap: .9rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--corner-lg);
+  background: var(--white);
+  color: var(--ink);
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+.sib:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
+.sib__ico { color: var(--g-mid); flex: none; }
+.sib__body strong { display: block; font-size: .98rem; line-height: 1.2; }
+.sib__body small { font-size: .8rem; color: var(--body-2); }
+.sib__go { margin-left: auto; color: var(--g-mid); transition: transform .3s var(--ease); }
+.sib:hover .sib__go { transform: translateX(4px); }
+.sib--all { background: var(--g-900); color: #fff; border-color: var(--g-900); }
+.sib--all .sib__ico, .sib--all .sib__go { color: var(--lime); }
+.sib--all .sib__body small { color: var(--on-dark-soft); }
+
+/* ---------- 19g. A company in full, on the group page ---------- */
+.gdetail { display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: clamp(2rem, 4vw, 3.5rem); align-items: start; }
+.gdetail__legal {
+  font-size: .74rem; font-weight: 800;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--g-mid);
+  margin: 0 0 .9rem;
+}
+.section--dark .gdetail__legal { color: var(--lime); }
+.gdetail__strap { font-size: 1.5rem; margin: .4rem 0 1.4rem; color: var(--g-mid); }
+.section--dark .gdetail__strap { color: var(--lime); }
+.gdetail__meta { display: grid; gap: .9rem; margin: 0; padding-top: 1.3rem; border-top: 1px solid var(--line); }
+.section--dark .gdetail__meta { border-color: rgba(255,255,255,.14); }
+.gdetail__meta dt {
+  font-size: .72rem; font-weight: 800;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--body-2);
+  margin-bottom: .2rem;
+}
+.section--dark .gdetail__meta dt { color: var(--on-dark-soft); }
+.gdetail__meta dd { margin: 0; font-size: .94rem; font-weight: 600; }
+.section--dark .gdetail__meta dd { color: #fff; }
+
+.gdetail__rows { display: grid; gap: .5rem; }
+.drow {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: .9rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: var(--corner-lg);
+  background: var(--white);
+  color: var(--ink);
+  transition: background-color .3s var(--ease), transform .3s var(--ease), border-color .3s var(--ease);
+}
+.drow:hover { transform: translateX(4px); border-color: var(--g-light); }
+.section--dark .drow { background: var(--g-800); border-color: rgba(255,255,255,.1); color: #fff; }
+.section--dark .drow:hover { background: var(--g-750); }
+.drow__n { font-size: .8rem; font-weight: 800; color: var(--g-mid); }
+.section--dark .drow__n { color: var(--lime); }
+.drow__ico { color: var(--g-mid); }
+.section--dark .drow__ico { color: var(--lime); }
+.drow__body h4 { margin: 0; font-size: 1rem; line-height: 1.25; }
+.drow__body p { margin: .15rem 0 0; font-size: .84rem; color: var(--body-2); }
+.section--dark .drow__body p { color: var(--on-dark-soft); }
+.drow__go { color: var(--g-mid); transition: transform .3s var(--ease); }
+.section--dark .drow__go { color: var(--lime); }
+.drow:hover .drow__go { transform: translateX(3px); }
+
+.gdetail__units { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.6rem; }
+.gunit {
+  display: flex; align-items: center; gap: .7rem;
+  padding: .75rem 1.1rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--r-pill);
+  color: var(--ink);
+  transition: background-color .3s var(--ease), border-color .3s var(--ease);
+}
+.gunit:hover { border-style: solid; border-color: var(--g-light); background: var(--white); }
+.gunit strong { display: block; font-size: .92rem; line-height: 1.2; }
+.gunit small { font-size: .78rem; color: var(--body-2); }
+.gunit svg { color: var(--g-mid); }
+.section--dark .gunit { color: #fff; border-color: rgba(255,255,255,.22); }
+.section--dark .gunit svg { color: var(--lime); }
+.section--dark .gunit small { color: var(--on-dark-soft); }
+
+/* ---------- 19h. Leadership ---------- */
+.leader {
+  padding: clamp(1.4rem, 2.3vw, 2rem);
+  border: 1px solid var(--line);
+  border-radius: var(--corner-xl);
+  background: var(--white);
+}
+.leader__head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.1rem; }
+.leader__ico {
+  display: grid; place-items: center;
+  width: 60px; height: 60px; flex: none;
+  border-radius: var(--corner-lg);
+  background: var(--lime-4);
+  color: var(--g-mid);
+}
+.leader h3 { margin: 0; }
+.leader__role {
+  margin: .1rem 0 0;
+  font-size: .76rem; font-weight: 800;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--g-mid);
+}
+.leader > p { margin: 0 0 1.2rem; font-size: .95rem; }
+.leader__quals { display: grid; gap: .4rem; margin: 0; padding: 1.1rem 0 0; list-style: none; border-top: 1px solid var(--line); }
+.leader__quals li { position: relative; padding-left: 1.15rem; font-size: .86rem; color: var(--body-2); }
+.leader__quals li::before {
+  content: ""; position: absolute; left: 0; top: .5em;
+  width: 7px; height: 7px; border-radius: 2px; background: var(--g-light);
+}
+
+/* ---------- 19i. Company page facts ---------- */
+.cfacts { display: grid; gap: .6rem; }
+.cfacts__logo {
+  display: flex; align-items: center; gap: .85rem;
+  padding: 1.15rem 1.25rem;
+  margin-bottom: .3rem;
+  border: 1px solid var(--line);
+  border-radius: var(--corner-lg);
+  background: var(--white);
+}
+.cfacts__img { max-width: 100%; height: auto; max-height: 56px; width: auto; }
+.cfacts__mark { width: 40px; height: auto; flex: none; }
+.cfacts__name {
+  font-size: 1.12rem; font-weight: 800; line-height: 1.1;
+  letter-spacing: -.01em; color: var(--ink);
+  text-transform: uppercase;
+}
+.cfacts__name small {
+  display: block;
+  font-size: .8rem; font-weight: 600;
+  letter-spacing: .02em; text-transform: none;
+  color: var(--body-2);
+}
+.cfact {
+  padding: 1.05rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--corner-lg);
+  background: var(--cream);
+}
+.cfact dt {
+  font-size: .72rem; font-weight: 800;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--body-2);
+  margin-bottom: .25rem;
+}
+.cfact dd { margin: 0; font-size: .98rem; font-weight: 700; color: var(--ink); }
+.cfact a { color: var(--g-mid); border-bottom: 1px solid currentColor; }
+.cfact a:hover { color: var(--ink); }
+.cmeta {
+  margin-top: 1.1rem;
+  font-size: .8rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--body-2);
+}
+
+.split--narrow { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); align-items: start; }
+.shead--wide .shead__title { max-width: 22ch; }
+
 /* ---------- 20. Back to top ---------- */
 .fab-rail {
   position: fixed;
@@ -1331,6 +1819,8 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 @media (max-width: 1080px) {
   .footer__top { grid-template-columns: 1fr 1fr; }
   .steps { grid-template-columns: repeat(2, 1fr); }
+  .gdetail { grid-template-columns: 1fr; gap: 2rem; }
+  .split--narrow { grid-template-columns: 1fr; }
 }
 
 /* Below this the hero content genuinely cannot fit one screen; let it grow. */
@@ -1339,8 +1829,34 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 }
 
 @media (max-width: 980px) {
-  .nav, .header__cta { display: none; }
+  .nav, .header__cta, .mega { display: none; }
   .nav-toggle { display: grid; }
+  /* The chart turns into a spine: one vertical rule down the left with each
+     company hanging off it. A three column chart at 390px is unreadable. */
+  .org { align-items: stretch; }
+  .org__parent { align-self: flex-start; }
+  .org__trunk { margin-left: 22px; height: 24px; }
+  .org__row {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    row-gap: 1.4rem;
+    padding-top: 0;
+    padding-left: 22px;
+  }
+  .org__row::before {
+    left: 0; right: auto; top: 0; bottom: 42px;
+    width: 2px; height: auto;
+  }
+  .org__card, .org__subs { grid-row: auto !important; grid-column: auto !important; }
+  .org__card::before {
+    top: 34px; left: -22px;
+    width: 22px; height: 2px;
+    transform: none;
+  }
+  .org__subs { padding-left: 22px; }
+  .org__subs::before { top: 0; left: 0; height: 100%; width: 2px; transform: none; }
+  .sibs { grid-template-columns: 1fr; }
+  .mega__grid { grid-template-columns: 1fr; }
   .topbar__list li:nth-child(2) { display: none; }
   .g-3, .g-4 { grid-template-columns: repeat(2, 1fr); }
   .split, .contact-grid { grid-template-columns: 1fr; }
@@ -1401,6 +1917,14 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 }
 
 @media (max-width: 640px) {
+  .dgrid { grid-template-columns: 1fr; }
+  .drow { grid-template-columns: auto 1fr auto; }
+  .drow__ico { display: none; }
+  .gdetail__units { flex-direction: column; align-items: stretch; }
+  .gunit { border-radius: var(--corner-md); }
+  .leader__head, .unit__head { gap: .8rem; }
+  .leader__ico, .unit__ico { width: 50px; height: 50px; }
+  .dcard__ico { width: 50px; height: 50px; }
   :root {
     --header-h: 64px;
     --topbar-h: 34px;
