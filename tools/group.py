@@ -37,7 +37,7 @@ COMPANIES = [
             "cta2": ("Book a site survey", "contact.html"),
             "photo": "control-room-monitoring",
             "pos": "72% 34%", "expo": "2.45",
-            "alt": "An operator watching a wall of live camera feeds",
+            "alt": "A Sentinel operator watching a wall of live camera feeds",
         },
         "blurb": "Cameras, alarms, readers, gates and detectors, specified for one "
                  "property and commissioned as one system. Our own technicians do "
@@ -142,7 +142,7 @@ COMPANIES = [
             "cta2": ("Request a quotation", "contact.html"),
             "photo": "security-officers",
             "pos": "58% 38%", "expo": "0.95",
-            "alt": "A security officer on post at a public event",
+            "alt": "Sentinel officers and a dog unit on patrol at dusk",
         },
         "blurb": "Officers, handlers and response crews, supervised on a schedule "
                  "and answerable to a control room that is staffed at every hour "

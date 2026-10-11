@@ -214,18 +214,18 @@ def company_logo(c, h=None, white=False, cls="", lazy=True):
 
 DIV_PHOTO = {
     # A capability only gets a photograph when there is an honest one for it.
-    "k9": ("k9-handler-standing", "A handler with a patrol dog"),
+    "k9": ("k9-handler-standing", "A Sentinel handler with a patrol dog"),
     "response": ("response-night", "A response vehicle on a wet road at night"),
-    "events": ("officer-radio", "An officer coordinating by radio"),
-    "perimeter": ("vehicle-checkpoint", "A boom barrier at a vehicle entrance"),
-    "manned": ("security-officers", "An officer on post at a public event"),
+    "events": ("officer-radio", "An officer working a gatehouse by radio"),
+    "perimeter": ("vehicle-checkpoint", "Officers and a dog unit at an estate gate"),
+    "manned": ("officers-warehouse", "Officers patrolling a warehouse yard"),
     "communications": ("tech-network", "A fibre patch panel in a network cabinet"),
-    "automation": ("tech-smart", "A smart control panel being set"),
-    "electronics": ("tech-retail", "Shelves of electronics in a technology store"),
+    "automation": ("tech-smart", "A smart home panel being set from a phone"),
+    "electronics": ("tech-retail", "Security and smart home equipment of the kind CircuitStore carries"),
     "security-systems": ("sys-cctv", "A dome camera on a wall bracket"),
     # Loss and shrinkage work happens on a shop floor, so the officer on duty
     # is the honest frame for it until a dedicated one exists.
-    "investigations": ("officer-on-duty", "An officer working a retail floor"),
+    "investigations": ("officer-on-duty", "Sentinel officers on post at an office entrance"),
 }
 
 
@@ -252,7 +252,7 @@ def division_card(c, d):
 
 
 UNIT_PHOTO = {
-    "circuitstore": ("tech-retail", "Shelves of electronics in a technology store"),
+    "circuitstore": ("tech-retail", "Security and smart home equipment of the kind CircuitStore carries"),
     "ecocircuit": ("tech-ewaste", "Mixed electronic scrap waiting to be sorted"),
 }
 
@@ -822,7 +822,7 @@ home = hero_block() + CLIENTS + """
         <a class="bento__hero" href="about.html" aria-label="About Sentinel">
           <img src="assets/img/photos/officer-radio-1200.jpg"
                srcset="assets/img/photos/officer-radio-640.jpg 640w, assets/img/photos/officer-radio-1200.jpg 1200w"
-               sizes="(max-width:980px) 100vw, 45vw" alt="An officer coordinating a site by radio">
+               sizes="(max-width:980px) 100vw, 45vw" alt="An officer working a gatehouse checkpoint by radio">
         </a>
         <a class="bento__stat" href="contact.html">
           %s
@@ -997,18 +997,18 @@ about = phero("About", "A decade of guarding, turned into a group",
   "Sentinel started in 2016 with officers on gates. The technology work grew out of that, "
   "and in 2026 it became a company of its own. Three businesses now, built on the same ten "
   "years of ground truth.",
-  "officer-on-duty", "A Sentinel officer on foot patrol") + """
+  "officer-on-duty", "Sentinel officers on post at an office entrance") + """
   <section class="section section--white">
     <div class="container split">
       <div class="bento" data-reveal>
         <a class="bento__hero" href="services.html" aria-label="Our services">
           <img src="assets/img/photos/security-officers-1200.jpg"
                srcset="assets/img/photos/security-officers-640.jpg 640w, assets/img/photos/security-officers-1200.jpg 1200w"
-               sizes="(max-width:980px) 100vw, 45vw" alt="A security officer on post">
+               sizes="(max-width:980px) 100vw, 45vw" alt="Officers and a dog unit on patrol at dusk">
         </a>
         <a class="bento__tile" href="services.html#cctv" aria-label="CCTV surveillance">
           <img src="assets/img/photos/tile-night-640.jpg"
-               alt="A monitoring desk on night shift">
+               alt="An operator watching a wall of live camera feeds">
         </a>
         <a class="bento__stat" href="index.html#sectors">
           %s
@@ -1184,7 +1184,7 @@ def detail(anchor, kicker, title, lead, bullets, photo, alt, flip):
 
 _tech = by_id("technologies")
 services = phero(_tech["role"], _tech["name"], _tech["lead"],
-  "sys-access", "A fob presented to a door reader") + """
+  "sys-access", "A reader being used at a door") + """
   <section class="section section--white">
     <div class="container split split--narrow">
       <div data-reveal>
@@ -1259,7 +1259,7 @@ DETAILS = [
   ["Biometric, card and PIN readers", "Door controllers and interlocks",
    "Man traps for cash areas and strongrooms", "Visitor management and temporary codes",
    "Time and attendance integration"],
-  "access-terminal", "Access control at a reception desk"),
+  "access-terminal", "A facial recognition reader at an entrance"),
  ("gates", "Vehicles", "Gate automation and vehicle control",
   "The gate is the first thing a site is judged on and the first thing that fails, so we fit "
   "motors rated for the traffic you actually put through them.",
@@ -1532,7 +1532,7 @@ grp = phero("The group", "Three companies, one standard of work",
   "Sentinel runs as a group. One company builds the electronic systems, one runs the "
   "people on the ground, and one carries the technology business. This is how they "
   "fit together.",
-  "control-room-monitoring", "The Sentinel control room during a night shift") + """
+  "control-room-monitoring", "A Sentinel operator in the control room") + """
   <section class="section section--white">
     <div class="container">
 """ + shead("The structure", "What sits where",
@@ -1627,8 +1627,8 @@ def company_page(cid, hero_photo, hero_alt, title, desc):
     write(c["href"], title, desc, body)
 
 
-company_page("guarding", "security-officers",
-  "A Sentinel officer on post at a public event",
+company_page("guarding", "officers-team",
+  "A Sentinel team outside the branch",
   "Sentinel Security Services: manned guarding, dog units and armed response | " + ORG,
   "Manned guarding, event security, 24 hour alarm monitoring and armed response, dog "
   "units, perimeter protection and investigations across all ten provinces of Zimbabwe.")
@@ -1817,7 +1817,7 @@ write("signage.html",
 contact = phero("Contact", "Tell us about your site",
   "A free survey and risk assessment, anywhere in Zimbabwe. Send the details and our "
   "technical team will come back to you.",
-  "technician-panel", "A technician checking a site on a tablet") + """
+  "technician-panel", "A technician checking a rack on a tablet") + """
   <section class="section section--white">
     <div class="container contact-grid">
       <div data-reveal>
