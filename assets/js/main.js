@@ -109,6 +109,10 @@
       });
     };
 
+    var announce = function () {
+      document.dispatchEvent(new CustomEvent('sentinel:slidechange'));
+    };
+
     var show = function (next, focusTab) {
       next = (next + panels.length) % panels.length;
       if (next === index) return;
@@ -127,6 +131,7 @@
       tabs[index].setAttribute('aria-selected', 'true');
       tabs[index].tabIndex = 0;
       if (focusTab) tabs[index].focus();
+      announce();          // the newly shown photograph gets framed
 
       // Restart the drift and the progress rail on what just became visible.
       [slides[index].querySelector('img'), tabs[index].querySelector('.hero__tab-rail i')]
@@ -357,6 +362,136 @@
     window.addEventListener('load', sweep);
     setTimeout(sweep, 1200);
     setTimeout(sweep, 3500);
+  }
+
+  /* ---- Framing ----
+     Each photograph that declares a subject box gets its crop chosen here,
+     on the screen it is actually being shown on, rather than from a fixed
+     object-position that can only be right at one width. */
+  var framed = Array.prototype.slice.call(document.querySelectorAll('img[data-focus]'));
+
+  if (framed.length) {
+    var STEPS = 64;          /* 65 positions per axis */
+    var PENALTY = 1000;      /* visibility beats centring */
+
+    /* Anything painted over a photograph is an obstacle to steer around. */
+    function obstaclesFor(frameRect, img) {
+      var out = [];
+      var marks = document.querySelectorAll('[data-obstacle]');
+      for (var i = 0; i < marks.length; i++) {
+        var el = marks[i];
+        if (el.contains(img)) continue;              /* its own wrapper is not an obstacle */
+        /* Only things in the same section are layered over it; rectangle
+           overlap alone scored a copy column three sections away against a
+           photograph it never touches. */
+        if (el.closest('section') !== img.closest('section')) continue;
+        var cs = getComputedStyle(el);
+        if (cs.visibility === 'hidden' || cs.display === 'none' ||
+            parseFloat(cs.opacity) < 0.08) continue;  /* a hidden slide's copy does not count */
+        var r = el.getBoundingClientRect();
+        if (!r.width || !r.height) continue;
+        var x0 = Math.max(r.left, frameRect.left), y0 = Math.max(r.top, frameRect.top);
+        var x1 = Math.min(r.right, frameRect.right), y1 = Math.min(r.bottom, frameRect.bottom);
+        if (x1 <= x0 || y1 <= y0) continue;
+        out.push({ x0: x0 - frameRect.left, y0: y0 - frameRect.top,
+                   x1: x1 - frameRect.left, y1: y1 - frameRect.top });
+      }
+      return out;
+    }
+
+    function overlap(ax0, ay0, ax1, ay1, b) {
+      var w = Math.min(ax1, b.x1) - Math.max(ax0, b.x0);
+      var h = Math.min(ay1, b.y1) - Math.max(ay0, b.y0);
+      return (w > 0 && h > 0) ? w * h : 0;
+    }
+
+    function frameOne(img) {
+      var spec = img.getAttribute('data-focus');
+      if (!spec) return;
+      var box = spec.split(/\s+/).map(Number);
+      if (box.length !== 4) return;
+      var nw = img.naturalWidth, nh = img.naturalHeight;
+      if (!nw || !nh) return;
+
+      /* The layout box, never the hovered or drifting one: several of these
+         photographs scale on hover or during the carousel, and framing must
+         not follow that. */
+      var r = img.getBoundingClientRect();
+      var fw = img.offsetWidth || r.width, fh = img.offsetHeight || r.height;
+      if (fw < 4 || fh < 4) return;
+
+      var scale = Math.max(fw / nw, fh / nh);          /* cover */
+      var dw = nw * scale, dh = nh * scale;
+      var slackX = dw - fw, slackY = dh - fh;
+
+      var sx0 = box[0] / 100 * dw, sy0 = box[1] / 100 * dh;
+      var sx1 = box[2] / 100 * dw, sy1 = box[3] / 100 * dh;
+      var sArea = Math.max((sx1 - sx0) * (sy1 - sy0), 1);
+
+      // A ground is framed for visibility only. Its copy is laid over it
+      // behind a scrim by design, and where the frame is wider than the file
+      // there is no horizontal room to move the subject out from under it.
+      var ground = img.closest('.secbg') !== null ||
+                   img.closest('.hero__media') !== null ||
+                   img.closest('.phero__media') !== null;
+      var obs = ground ? [] : obstaclesFor(r, img);
+
+      var bestX = 50, bestY = 50, best = Infinity;
+      for (var i = 0; i <= STEPS; i++) {
+        var px = i / STEPS;
+        var ox = slackX > 0 ? -slackX * px : 0;
+        for (var j = 0; j <= STEPS; j++) {
+          var py = j / STEPS;
+          var oy = slackY > 0 ? -slackY * py : 0;
+
+          var bx0 = sx0 + ox, by0 = sy0 + oy, bx1 = sx1 + ox, by1 = sy1 + oy;
+
+          /* How much of the subject falls outside the frame. */
+          var insideW = Math.min(bx1, fw) - Math.max(bx0, 0);
+          var insideH = Math.min(by1, fh) - Math.max(by0, 0);
+          var inside = (insideW > 0 && insideH > 0) ? insideW * insideH : 0;
+          var outside = (sArea - inside) / sArea;
+
+          /* How much of it sits under something. */
+          var covered = 0;
+          for (var k = 0; k < obs.length; k++) covered += overlap(bx0, by0, bx1, by1, obs[k]);
+          covered /= sArea;
+
+          var cx = (bx0 + bx1) / 2 / fw - 0.5;
+          var cy = (by0 + by1) / 2 / fh - 0.5;
+          var cost = PENALTY * (outside + covered) + cx * cx + cy * cy;
+
+          if (cost < best) { best = cost; bestX = px * 100; bestY = py * 100; }
+          if (slackY <= 0) break;
+        }
+        if (slackX <= 0) break;
+      }
+      img.style.objectPosition = bestX.toFixed(2) + '% ' + bestY.toFixed(2) + '%';
+    }
+
+    var frameAll = function () {
+      for (var i = 0; i < framed.length; i++) frameOne(framed[i]);
+    };
+
+    framed.forEach(function (img) {
+      if (img.complete && img.naturalWidth) frameOne(img);
+      else img.addEventListener('load', function () { frameOne(img); });
+    });
+
+    /* Re-run wherever the layout can change under it. */
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(frameAll);
+    window.addEventListener('load', frameAll);
+    setTimeout(frameAll, 1100);          /* after the reveals have settled */
+
+    var rt;
+    window.addEventListener('resize', function () {
+      clearTimeout(rt);
+      rt = setTimeout(frameAll, 120);
+    }, { passive: true });
+
+    document.addEventListener('sentinel:slidechange', frameAll);
+
+    window.__frameAll = frameAll;        /* the QA script calls this */
   }
 
   /* ---- Accordion ---- */

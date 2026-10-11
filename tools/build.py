@@ -13,6 +13,7 @@ sys.path.insert(0, HERE)
 
 from group import PARENT, COMPANIES, by_id, BRANDS, LEADERS, CONTACT
 from signs import SIGNS
+from focus import attr as focus_attr
 from build_icons import sprite as icon_sprite
 
 ORG = "Sentinel Integrated Technologies"
@@ -64,6 +65,9 @@ def photo_img(name, alt, sizes, cls="", style="", lazy=True, eager=False):
         bits += ' class="%s"' % cls
     bits += ' src="%s" srcset="%s 640w, %s 1200w" sizes="%s"' % (big, small, big, sizes)
     bits += ' alt="%s" width="%d" height="%d"' % (alt, w, h)
+    # The subject box travels with the image, so the page can keep it whole
+    # at whatever size the frame turns out to be.
+    bits += focus_attr(name)
     if style:
         bits += ' style="%s"' % style
     if eager:
@@ -358,6 +362,16 @@ DIV_PHOTO = {
 }
 
 
+def ambient(name):
+    """The blurred copy of a card's own photograph, behind the card.
+
+    Decorative and already described by the real image above it, so it is
+    hidden from assistive technology."""
+    return ('<img class="dcard__bleed" src="assets/img/photos/%s-640.jpg" '
+            'alt="" aria-hidden="true" loading="lazy" width="640" height="480">\n          '
+            % name)
+
+
 def division_card(c, d):
     d = dict(d, line=autolink(d["line"], max_links=1))
     """A capability inside a company: what it is, then the actual line items."""
@@ -370,12 +384,14 @@ def division_card(c, d):
           </a>
 """ % photo_img(f, alt, "(max-width:720px) 100vw, 30vw")
     return """        <article class="dcard%s" id="%s" data-reveal>
-%s          <span class="dcard__ico">%s</span>
+          %s%s          <span class="dcard__ico" data-obstacle>%s</span>
           <h3 class="h-3">%s</h3>
           <p>%s</p>
           <ul class="dcard__list">%s</ul>
         </article>
-""" % (" dcard--photo" if media else "", d["id"], media, si(d["icon"], "i-xl"),
+""" % (" dcard--photo" if media else "", d["id"],
+       ambient(DIV_PHOTO[d["id"]][0]) if media else "",
+       media, si(d["icon"], "i-xl"),
        d["name"], d["line"],
        "".join("<li>%s</li>" % i for i in d["items"]))
 
@@ -598,7 +614,7 @@ CTA = ("""
   <section class="section section--tight">
     <div class="container">
       <div class="cta cta--photo" data-reveal>
-%s        <div class="cta__inner">
+%s        <div class="cta__inner" data-obstacle>
           <div>
             %s
             <h2 class="h-2">Book a free site survey</h2>
@@ -760,7 +776,7 @@ def phero(label, title, lead, pic=None, alt=""):
         media, cls = "", "phero phero--plain"
     return """
   <section class="%s">
-%s    <div class="container">
+%s    <div class="container" data-obstacle>
       <nav class="crumb" aria-label="Breadcrumb"><a href="index.html">Home</a> <i class="sep">/</i> <span>%s</span></nav>
       <h1 class="h-1">%s</h1>
       <p class="lead">%s</p>
@@ -839,7 +855,22 @@ def photo_bands(html, name):
         return ('<section class="section section--dark section--photo%s"%s>\n%s'
                 % (m.group(1), m.group(2), secbg(photo, pos=pos).rstrip("\n")))
 
-    return DARK_BAND.sub(one, html)
+    html = DARK_BAND.sub(one, html)
+
+    # The band's own copy column sits on top of the picture, so the
+    # engine is told to steer each subject into what the text leaves free.
+    out, at = [], 0
+    for m in re.finditer(r'<section class="section section--dark section--photo', html):
+        stop = html.find('</section>', m.start())
+        if stop < 0:
+            continue
+        block = html[m.start():stop]
+        out.append(html[at:m.start()])
+        out.append(block.replace('<div class="container">',
+                                 '<div class="container" data-obstacle>', 1))
+        at = stop
+    out.append(html[at:])
+    return ''.join(out)
 
 # --------------------------------------------------------- entrance gestures
 # A class on a container, and the gesture its children arrive with. The order
@@ -886,9 +917,22 @@ def gestures(html):
                          m.group(2), m.group(3), m.group(4)), html)
     return html
 
+# A page may carry its own company's colours. The class goes on <main>, so the
+# group's header and footer keep the group's green.
+THEMES = {"circuitron.html": "theme-circuitron"}
+
+
+def theme(html, name):
+    cls = THEMES.get(name)
+    if not cls:
+        return html
+    return html.replace('<main id="main">', '<main id="main" class="%s">' % cls, 1)
+
+
 def write(name, title, desc, body, cta=True):
     html = head(title, desc, name) + topbar() + header(name) + body + (CTA if cta else "") + FOOTER
     html = photo_bands(html, name)
+    html = theme(html, name)
     html = gestures(html)
     html = drop_self_links(html, name)
     html = size_images(html)
@@ -950,12 +994,14 @@ def hero_block():
         src = 'assets/img/photos/%s' % h['photo']
         if on:
             img = ('<img src="%s-1200.jpg" srcset="%s-640.jpg 640w, '
-                   '%s-1200.jpg 1200w" sizes="100vw" alt="%s" '
-                   'fetchpriority="high">' % (src, src, src, h['alt']))
+                   '%s-1200.jpg 1200w" sizes="100vw" alt="%s"%s '
+                   'fetchpriority="high">'
+                   % (src, src, src, h['alt'], focus_attr(h['photo'])))
         else:
             img = ('<img data-slide-src data-src="%s-1200.jpg" '
                    'data-srcset="%s-640.jpg 640w, %s-1200.jpg 1200w" '
-                   'sizes="100vw" alt="%s">' % (src, src, src, h['alt']))
+                   'sizes="100vw" alt="%s"%s>'
+                   % (src, src, src, h['alt'], focus_attr(h['photo'])))
         slides += ('      <div class="hero__slide%s" style="--pos:%s;--expo:%s">'
                    '\n        %s\n      </div>\n'
                    % (' is-active' if on else '', h['pos'], h['expo'], img))
@@ -1009,7 +1055,7 @@ def hero_block():
     <div class="hero__scrim"></div>
 
     <div class="container">
-      <div class="hero__content">
+      <div class="hero__content" data-obstacle>
         <div class="hero__panels">
 %s        </div>
         <div class="hero__tabs" role="tablist" aria-label="The Sentinel group">
@@ -1038,7 +1084,7 @@ home = hero_block() + CLIENTS + """
         <a class="bento__hero" href="about.html" aria-label="About Sentinel">
           <img src="assets/img/photos/officer-radio-1200.jpg"
                srcset="assets/img/photos/officer-radio-640.jpg 640w, assets/img/photos/officer-radio-1200.jpg 1200w"
-               sizes="(max-width:980px) 100vw, 45vw" alt="An officer working a gatehouse checkpoint by radio">
+               sizes="(max-width:980px) 100vw, 45vw" alt="An officer working a gatehouse checkpoint by radio" data-focus="30 7 42 27">
         </a>
         <a class="bento__stat" href="contact.html">
           <strong class="num">24/7</strong>
@@ -1131,7 +1177,7 @@ about = phero("About", "A decade of guarding, turned into a group",
         <a class="bento__hero" href="services.html" aria-label="Our services">
           <img src="assets/img/photos/security-officers-1200.jpg"
                srcset="assets/img/photos/security-officers-640.jpg 640w, assets/img/photos/security-officers-1200.jpg 1200w"
-               sizes="(max-width:980px) 100vw, 45vw" alt="Officers and a dog unit on patrol at dusk">
+               sizes="(max-width:980px) 100vw, 45vw" alt="Officers and a dog unit on patrol at dusk" data-focus="30 7 61 35">
         </a>
         <a class="bento__tile" href="services.html#cctv" aria-label="CCTV surveillance">
           <img src="assets/img/photos/tile-night-640.jpg"

@@ -34,11 +34,26 @@
   --g-dark:  var(--g-850);
   --g-mid:   #0C6934;  /* the logo green */
   --g-light: #3FB56F;
-  --lime:    #A9EE6E;  /* the accent */
+  /* The accent: the logo's hue, at the lightness the dark ground needs.
+     The mark itself (#0C6934) measures 2.78:1 on --g-950 and cannot carry
+     type there; this is the same green at 54% lightness, 9.7:1 on the dark
+     and 8.0:1 for ink set on top of it. */
+  /* The dark ground's channels, so an overlay can take an alpha and still
+     follow the theme. Every scrim uses rgb(var(--shade-rgb) / x). */
+  --shade-rgb:  3 20 14;
+  --accent-rgb: 53 222 126;
 
-  --lime-2:  #96E252;  /* lime hover */
-  --lime-3:  #C7F5A2;  /* lime tint */
-  --lime-4:  #E7FBD8;  /* lime wash */
+  --accent:   #35DE7E;
+  --accent-2: #22C96B;  /* pressed and hover */
+  --accent-3: #8FEFBB;  /* tint */
+  --accent-4: #DCF8E8;  /* wash */
+
+  /* The old names, kept: they are used in seventy places and renaming them
+     for its own sake is churn rather than clarity. */
+  --lime:    var(--accent);
+  --lime-2:  var(--accent-2);
+  --lime-3:  var(--accent-3);
+  --lime-4:  var(--accent-4);
 
   /* Aliases kept so component rules read naturally */
   --green:   var(--g-mid);
@@ -461,9 +476,9 @@ p:last-child { margin-bottom: 0; }
   height: calc(var(--header-h) + 26px);
   pointer-events: none;
   background: linear-gradient(180deg,
-    rgba(3, 20, 14, .76) 0%,
-    rgba(3, 20, 14, .48) 55%,
-    rgba(3, 20, 14, 0) 100%);
+    rgb(var(--shade-rgb) / .76) 0%,
+    rgb(var(--shade-rgb) / .48) 55%,
+    rgb(var(--shade-rgb) / 0) 100%);
   transition: opacity .35s var(--ease);
 }
 .header--solid::before { opacity: 0; }
@@ -723,7 +738,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .hero__vignette {
   position: absolute; inset: 0; z-index: -3;
   pointer-events: none;
-  background: radial-gradient(118% 92% at 52% 46%, transparent 58%, rgba(3, 20, 14, .26) 100%);
+  background: radial-gradient(118% 92% at 52% 46%, transparent 58%, rgb(var(--shade-rgb) / .26) 100%);
   mix-blend-mode: multiply;
 }
 
@@ -745,33 +760,33 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
      almost untouched, which is the point. */
   background:
     linear-gradient(100deg,
-      rgba(3, 20, 14, .82) 0%,
-      rgba(3, 20, 14, .62) 26%,
-      rgba(3, 20, 14, .30) 46%,
-      rgba(3, 20, 14, .08) 62%,
-      rgba(3, 20, 14, 0) 78%),
+      rgb(var(--shade-rgb) / .82) 0%,
+      rgb(var(--shade-rgb) / .62) 26%,
+      rgb(var(--shade-rgb) / .30) 46%,
+      rgb(var(--shade-rgb) / .08) 62%,
+      rgb(var(--shade-rgb) / 0) 78%),
     linear-gradient(180deg,
-      rgba(3, 20, 14, .44) 0%,
-      rgba(3, 20, 14, .06) 20%,
-      rgba(3, 20, 14, .04) 52%,
+      rgb(var(--shade-rgb) / .44) 0%,
+      rgb(var(--shade-rgb) / .06) 20%,
+      rgb(var(--shade-rgb) / .04) 52%,
       rgba(5, 29, 20, .46) 86%,
-      rgba(3, 20, 14, .78) 100%);
+      rgb(var(--shade-rgb) / .78) 100%);
 }
 
 .hero__content { position: relative; max-width: 720px; }
 /* A soft wide shadow darkens the few pixels around each glyph instead of the
    whole photograph. It is what lets the scrim above be as light as it is. */
 .hero .h-hero { color: #fff; margin-bottom: clamp(.7rem, 1.8vh, 1.2rem);
-  text-shadow: 0 1px 2px rgba(3, 20, 14, .6), 0 2px 28px rgba(3, 20, 14, .62); }
+  text-shadow: 0 1px 2px rgb(var(--shade-rgb) / .6), 0 2px 28px rgb(var(--shade-rgb) / .62); }
 .hero__lead {
   color: #fff;
   font-size: clamp(.95rem, min(1.2vw, 1.9vh), 1.08rem);
   /* Small type over a lit face is the hardest thing in the frame. A tight
      halo plus a wide soft pass carries it without touching the photograph. */
   text-shadow:
-    0 0 2px rgba(3, 20, 14, .92),
-    0 1px 3px rgba(3, 20, 14, .85),
-    0 2px 18px rgba(3, 20, 14, .8);
+    0 0 2px rgb(var(--shade-rgb) / .92),
+    0 1px 3px rgb(var(--shade-rgb) / .85),
+    0 2px 18px rgb(var(--shade-rgb) / .8);
   max-width: 50ch;
   margin-bottom: clamp(1.1rem, 3vh, 2rem);
 }
@@ -813,7 +828,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   margin-bottom: clamp(.8rem, 2.2vh, 1.5rem);
 }
 .hero__lockup {
-  filter: drop-shadow(0 2px 14px rgba(3, 20, 14, .6));
+  filter: drop-shadow(0 2px 14px rgb(var(--shade-rgb) / .6));
   height: clamp(30px, 4.6vh, 42px);
   width: auto;
   display: block;
@@ -821,8 +836,8 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 
 .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.1rem; }
 .hero__call { display: flex; align-items: center; gap: .8rem; margin: 0; }
-.hero__call dt { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.72); text-shadow: 0 1px 10px rgba(3,20,14,.7); }
-.hero__call dd { margin: .15rem 0 0; color: #fff; font-weight: 800; font-size: 1.02rem; letter-spacing: -.01em; text-shadow: 0 1px 12px rgba(3,20,14,.7); }
+.hero__call dt { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.72); text-shadow: 0 1px 10px rgb(var(--shade-rgb) / .7); }
+.hero__call dd { margin: .15rem 0 0; color: #fff; font-weight: 800; font-size: 1.02rem; letter-spacing: -.01em; text-shadow: 0 1px 12px rgb(var(--shade-rgb) / .7); }
 
 /* The picker names the companies rather than numbering pictures, because
    saying who the three are is what the hero is now for. */
@@ -839,7 +854,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 }
 .hero__tab {
   position: relative;
-  text-shadow: 0 1px 10px rgba(3, 20, 14, .65);
+  text-shadow: 0 1px 10px rgb(var(--shade-rgb) / .65);
   display: flex; align-items: flex-start; gap: .6rem;
   padding: clamp(.75rem, 1.9vh, 1.15rem) clamp(.7rem, 1.4vw, 1.05rem);
   background: rgba(9, 53, 34, .62);
@@ -851,7 +866,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   transition: background-color .35s var(--ease);
 }
 .hero__tab:hover { background: rgba(12, 105, 52, .62); }
-.hero__tab.is-active { background: rgba(12, 105, 52, .78); }
+.hero__tab.is-active { background: var(--g-mid); }
 
 /* The rail doubles as the progress bar: it says which company is showing and
    how long is left before it moves on. */
@@ -873,7 +888,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 @keyframes hero-progress-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 
 .hero__tab-n { font-size: .7rem; font-weight: 800; color: rgba(255,255,255,.66); line-height: 1.5; }
-.hero__tab.is-active .hero__tab-n { color: var(--lime); }
+.hero__tab.is-active .hero__tab-n { color: var(--accent-3); }
 .hero__tab-text strong {
   display: block;
   font-size: clamp(.82rem, 1.05vw, .95rem);
@@ -916,32 +931,32 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
      three quarters, the bottom only enough to hand off to the page. */
   background:
     linear-gradient(100deg,
-      rgba(3, 20, 14, .84) 0%,
-      rgba(3, 20, 14, .64) 28%,
-      rgba(3, 20, 14, .32) 48%,
-      rgba(3, 20, 14, .10) 64%,
-      rgba(3, 20, 14, 0) 80%),
+      rgb(var(--shade-rgb) / .84) 0%,
+      rgb(var(--shade-rgb) / .64) 28%,
+      rgb(var(--shade-rgb) / .32) 48%,
+      rgb(var(--shade-rgb) / .10) 64%,
+      rgb(var(--shade-rgb) / 0) 80%),
     linear-gradient(180deg,
-      rgba(3, 20, 14, .46) 0%,
-      rgba(3, 20, 14, .08) 22%,
-      rgba(3, 20, 14, .06) 54%,
+      rgb(var(--shade-rgb) / .46) 0%,
+      rgb(var(--shade-rgb) / .08) 22%,
+      rgb(var(--shade-rgb) / .06) 54%,
       rgba(5, 29, 20, .48) 86%,
-      rgba(3, 20, 14, .78) 100%);
+      rgb(var(--shade-rgb) / .78) 100%);
 }
 /* The type carries its own legibility, as it does in the main hero. */
 .phero .h-1, .phero h1 {
-  text-shadow: 0 1px 2px rgba(3, 20, 14, .6), 0 2px 28px rgba(3, 20, 14, .62);
+  text-shadow: 0 1px 2px rgb(var(--shade-rgb) / .6), 0 2px 28px rgb(var(--shade-rgb) / .62);
 }
 .phero .lead, .phero__lead {
-  text-shadow: 0 0 2px rgba(3, 20, 14, .9), 0 1px 3px rgba(3, 20, 14, .82),
-               0 2px 18px rgba(3, 20, 14, .78);
+  text-shadow: 0 0 2px rgb(var(--shade-rgb) / .9), 0 1px 3px rgb(var(--shade-rgb) / .82),
+               0 2px 18px rgb(var(--shade-rgb) / .78);
 }
-.phero .overline { text-shadow: 0 1px 10px rgba(3, 20, 14, .7); }
+.phero .overline { text-shadow: 0 1px 10px rgb(var(--shade-rgb) / .7); }
 .phero--plain {
   background-color: var(--g-900);
   background-image:
     var(--pat-grid-lt),
-    radial-gradient(60% 90% at 86% 24%, rgba(169, 238, 110, .16) 0%, rgba(169, 238, 110, 0) 64%),
+    radial-gradient(60% 90% at 86% 24%, rgb(var(--accent-rgb) / .16) 0%, rgb(var(--accent-rgb) / 0) 64%),
     var(--ramp-soft);
   background-size: var(--cell) var(--cell), cover, cover;
 }
@@ -1324,38 +1339,134 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   position: absolute; inset: 0;
   background:
     linear-gradient(100deg,
-      rgba(3, 20, 14, .90) 0%,
-      rgba(3, 20, 14, .78) 26%,
-      rgba(3, 20, 14, .60) 46%,
-      rgba(3, 20, 14, .46) 64%,
-      rgba(3, 20, 14, .40) 100%),
+      rgb(var(--shade-rgb) / .90) 0%,
+      rgb(var(--shade-rgb) / .78) 26%,
+      rgb(var(--shade-rgb) / .60) 46%,
+      rgb(var(--shade-rgb) / .46) 64%,
+      rgb(var(--shade-rgb) / .40) 100%),
     linear-gradient(180deg,
-      rgba(3, 20, 14, .46) 0%,
-      rgba(3, 20, 14, .14) 26%,
-      rgba(3, 20, 14, .16) 64%,
-      rgba(3, 20, 14, .62) 100%);
+      rgb(var(--shade-rgb) / .46) 0%,
+      rgb(var(--shade-rgb) / .14) 26%,
+      rgb(var(--shade-rgb) / .16) 64%,
+      rgb(var(--shade-rgb) / .62) 100%);
 }
 .section--photo .h-2,
 .section--photo .h-3,
 .section--photo .shead__title {
-  text-shadow: 0 1px 2px rgba(3, 20, 14, .66), 0 2px 26px rgba(3, 20, 14, .6);
+  text-shadow: 0 1px 2px rgb(var(--shade-rgb) / .66), 0 2px 26px rgb(var(--shade-rgb) / .6);
 }
 .section--photo .lead,
 .section--photo .shead__aside,
 .section--photo p {
-  text-shadow: 0 0 2px rgba(3, 20, 14, .86), 0 1px 3px rgba(3, 20, 14, .8),
-               0 2px 16px rgba(3, 20, 14, .74);
+  text-shadow: 0 0 2px rgb(var(--shade-rgb) / .86), 0 1px 3px rgb(var(--shade-rgb) / .8),
+               0 2px 16px rgb(var(--shade-rgb) / .74);
 }
 /* A phone sees the narrow middle of a wide frame, so the ramp runs down the
    picture instead of across it. */
 @media (max-width: 860px) {
   .secbg::after {
     background: linear-gradient(180deg,
-      rgba(3, 20, 14, .72) 0%,
-      rgba(3, 20, 14, .56) 30%,
-      rgba(3, 20, 14, .62) 64%,
-      rgba(3, 20, 14, .86) 100%);
+      rgb(var(--shade-rgb) / .72) 0%,
+      rgb(var(--shade-rgb) / .56) 30%,
+      rgb(var(--shade-rgb) / .62) 64%,
+      rgb(var(--shade-rgb) / .86) 100%);
   }
+}
+
+/* ---------- Ambient theme bleed ----------
+   The card is tinted by its own photograph. A blurred, saturation boosted
+   copy sits behind the body and the real picture dissolves into it, so the
+   colour appears to bleed down out of the image. Nothing is configured per
+   card: the tint is whatever that photograph happens to be. */
+.dcard--photo { position: relative; isolation: isolate; }
+
+.dcard__bleed {
+  position: absolute;
+  inset: 0;
+  z-index: -1;                 /* above the card's own ground, below its content */
+  width: 100%; height: 100%;
+  object-fit: cover;
+  /* Blur pulls content inward, so the copy is oversized to keep its edges
+     outside the card. */
+  transform: scale(1.25);
+  opacity: .25;
+  filter: blur(38px) saturate(1.6);
+  pointer-events: none;
+  /* Black is visible, transparent is hidden: the wash exists only over the
+     body, which is what makes it read as bleeding down from the picture. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 34%, #000 70%);
+          mask-image: linear-gradient(to bottom, transparent 34%, #000 70%);
+}
+
+/* The real photograph dissolves at its lower edge instead of ending on a
+   line, so there is no seam between picture and body. */
+.dcard--photo .dcard__media {
+  background: none;
+  margin-bottom: 0;
+}
+.dcard--photo .dcard__media img {
+  -webkit-mask-image: linear-gradient(to bottom, #000 76%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 76%, transparent 100%);
+}
+
+/* Prose sits on a tinted ground here rather than on white, so it carries
+   more weight than the body colour used elsewhere. */
+.dcard--photo p,
+.dcard--photo .dcard__list li { color: #455349; }
+
+/* The body climbs into the fade, so the type sits over the dissolve rather
+   than beneath it. */
+.dcard--photo .dcard__ico {
+  position: relative;
+  margin-top: calc(-1 * clamp(1.1rem, 1.8vw, 1.5rem));
+}
+.dcard--photo > :not(.dcard__bleed):not(.dcard__media) { position: relative; }
+
+/* Safari on iOS has repeatedly mis-composited a large blur inside a clipped,
+   rounded container. The wash is decoration, so it is dropped rather than
+   risked where it cannot be relied on. */
+@supports (-webkit-touch-callout: none) {
+  .dcard__bleed { filter: blur(26px) saturate(1.5); opacity: .22; }
+}
+
+/* ---------- Circuitron's page ----------
+   Their mark is #002C77 beside a green that is almost Sentinel's, which is
+   what makes the company read as part of the group. The page shifts to blue
+   without leaving: these tokens are redefined on <main>, so the header, the
+   drawer and the footer stay in the group's green and only the page's own
+   content changes. */
+.theme-circuitron {
+  --shade-rgb:  5 18 41;
+  --accent-rgb: 95 149 242;
+
+  /* The accent: hue 218 at the lightness the dark ground needs. 6.5:1 on
+     that ground, 5.3:1 for ink set on top of it. */
+  --accent:   #5F95F2;
+  --accent-2: #4C88F0;
+  --accent-3: #A8C6F8;
+  --accent-4: #E2ECFD;
+
+  /* The dark grounds lean blue by the same amount the greens leaned green. */
+  --g-950: #051229;
+  --g-900: #07183A;
+  --g-850: #0A1F47;
+  --g-800: #0C2555;
+  --g-750: #123068;
+  --g-700: #16397A;
+  --g-650: #1B4490;
+  --g-mid: #1D4FA8;
+  --g-light: #6C98E5;
+
+  --ink:   #0A1F47;
+  --ink-2: #0C2555;
+  --ink-3: #16397A;
+  --body:    #4A5568;
+  --body-2:  #5C6880;
+  --line:  rgba(10, 31, 71, .14);
+  --cream: #F2F5FB;
+
+  --green:   var(--g-mid);
+  --green-2: #2A62C4;
 }
 
 /* ---------- 15. Accordion ---------- */
@@ -1397,7 +1508,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .field textarea { resize: vertical; min-height: 130px; }
 .field input:focus, .field select:focus, .field textarea:focus {
   outline: none; background: var(--white); border-color: var(--lime-2);
-  box-shadow: 0 0 0 4px rgba(169, 238, 110, .3);
+  box-shadow: 0 0 0 4px rgb(var(--accent-rgb) / .3);
 }
 .field input::placeholder, .field textarea::placeholder { color: #9AA79F; }
 .form-note { margin-top: 1rem; font-size: .85rem; color: var(--body-2); }
@@ -1434,18 +1545,18 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .cta--photo .secbg::after {
   background:
     linear-gradient(100deg,
-      rgba(3, 20, 14, .90) 0%,
-      rgba(3, 20, 14, .74) 32%,
-      rgba(3, 20, 14, .44) 56%,
-      rgba(3, 20, 14, .22) 74%,
-      rgba(3, 20, 14, .12) 88%),
-    linear-gradient(180deg, rgba(3, 20, 14, .34) 0%, rgba(3, 20, 14, .58) 100%);
+      rgb(var(--shade-rgb) / .90) 0%,
+      rgb(var(--shade-rgb) / .74) 32%,
+      rgb(var(--shade-rgb) / .44) 56%,
+      rgb(var(--shade-rgb) / .22) 74%,
+      rgb(var(--shade-rgb) / .12) 88%),
+    linear-gradient(180deg, rgb(var(--shade-rgb) / .34) 0%, rgb(var(--shade-rgb) / .58) 100%);
 }
-.cta--photo .h-2 { text-shadow: 0 1px 2px rgba(3,20,14,.7), 0 2px 24px rgba(3,20,14,.6); }
-.cta--photo .lead, .cta--photo p { text-shadow: 0 0 2px rgba(3,20,14,.88), 0 1px 3px rgba(3,20,14,.8); }
+.cta--photo .h-2 { text-shadow: 0 1px 2px rgb(var(--shade-rgb) / .7), 0 2px 24px rgb(var(--shade-rgb) / .6); }
+.cta--photo .lead, .cta--photo p { text-shadow: 0 0 2px rgb(var(--shade-rgb) / .88), 0 1px 3px rgb(var(--shade-rgb) / .8); }
 @media (max-width: 860px) {
   .cta--photo .secbg::after {
-    background: linear-gradient(180deg, rgba(3,20,14,.74) 0%, rgba(3,20,14,.62) 42%, rgba(3,20,14,.86) 100%);
+    background: linear-gradient(180deg, rgb(var(--shade-rgb) / .74) 0%, rgb(var(--shade-rgb) / .62) 42%, rgb(var(--shade-rgb) / .86) 100%);
   }
 }
 
@@ -1454,7 +1565,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   background-color: var(--g-850);
   background-image:
     var(--pat-grid-lt),
-    radial-gradient(36% 86% at 93% 6%, rgba(169, 238, 110, .13) 0%, rgba(169, 238, 110, 0) 72%),
+    radial-gradient(36% 86% at 93% 6%, rgb(var(--accent-rgb) / .13) 0%, rgb(var(--accent-rgb) / 0) 72%),
     linear-gradient(118deg, var(--g-900) 0%, var(--g-850) 58%, var(--g-800) 100%);
   background-size: var(--cell) var(--cell), cover, cover;
   color: var(--on-dark-soft);
@@ -1571,7 +1682,7 @@ a.byline__person:hover strong { color: var(--g-mid); }
   transition: transform .5s var(--ease); z-index: 1;
 }
 .card--hoverlime:hover::before { transform: scaleX(1); }
-.card--hoverlime:hover { border-color: rgba(169,238,110,.45); background: var(--g-750); transform: translateY(-5px); }
+.card--hoverlime:hover { border-color: rgb(var(--accent-rgb) / .45); background: var(--g-750); transform: translateY(-5px); }
 .card--dark .plink { background: rgba(255,255,255,.06); border-color: var(--line-2); color: #fff; }
 .card--hoverlime:hover .plink { background: var(--lime); border-color: var(--lime); color: var(--g-dark); }
 
@@ -1775,7 +1886,7 @@ a.byline__person:hover strong { color: var(--g-mid); }
   display: grid; place-items: center;
   width: 60px; height: 60px; flex: none;
   border-radius: var(--corner-lg);
-  background: rgba(169, 238, 110, .12);
+  background: rgb(var(--accent-rgb) / .12);
   color: var(--lime);
 }
 .unit h3 { margin: 0; color: #fff; }
@@ -2317,9 +2428,14 @@ a.byline__person:hover strong { color: var(--g-mid); }
   .hero__media {
     position: relative;
     inset: auto;
-    height: 300px;
+    height: 320px;
     z-index: 0;
     border-radius: 0;
+    /* The picture gives out over its last fifth so it dissolves into the
+       block below rather than ending on a line. */
+    -webkit-mask-image: linear-gradient(to bottom, #000 62%, rgba(0,0,0,.55) 84%, transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 62%, rgba(0,0,0,.55) 84%, transparent 100%);
+    background: var(--g-950);
   }
   .hero__slide img {
     filter: saturate(.94) contrast(1.03) brightness(calc(1.04 * var(--expo, 1)));
@@ -2331,12 +2447,15 @@ a.byline__person:hover strong { color: var(--g-mid); }
     /* Top aligned with the media. Anchored to the bottom it covered the copy
        block instead, which quietly greyed the headline to 67% white. */
     inset: 0 0 auto 0;
-    height: 300px;
+    height: 320px;
+    /* Carries the header at the top, then lets the picture breathe, then
+       closes into the block's own colour at the foot. */
     background: linear-gradient(180deg,
-      rgba(3, 20, 14, .72) 0%,
-      rgba(3, 20, 14, .18) 26%,
-      rgba(3, 20, 14, 0) 46%,
-      rgba(3, 20, 14, .34) 84%,
+      rgb(var(--shade-rgb) / .72) 0%,
+      rgb(var(--shade-rgb) / .18) 26%,
+      rgb(var(--shade-rgb) / 0) 44%,
+      rgb(var(--shade-rgb) / .30) 70%,
+      rgb(var(--shade-rgb) / .78) 90%,
       var(--g-950) 100%);
   }
   .hero > .container {
@@ -2381,10 +2500,10 @@ a.byline__person:hover strong { color: var(--g-mid); }
   .phero__media { width: 100%; opacity: 1; }
   .phero__scrim {
     background: linear-gradient(180deg,
-      rgba(3, 20, 14, .64) 0%,
-      rgba(3, 20, 14, .42) 34%,
-      rgba(3, 20, 14, .56) 70%,
-      rgba(3, 20, 14, .84) 100%);
+      rgb(var(--shade-rgb) / .64) 0%,
+      rgb(var(--shade-rgb) / .42) 34%,
+      rgb(var(--shade-rgb) / .56) 70%,
+      rgb(var(--shade-rgb) / .84) 100%);
   }
   .bento__hero { aspect-ratio: 2 / 1; }
 }
@@ -2477,7 +2596,7 @@ a.byline__person:hover strong { color: var(--g-mid); }
     padding: 0;
     color: var(--lime);
     font-size: .95rem;
-    border-bottom: 1px solid rgba(169, 238, 110, .4);
+    border-bottom: 1px solid rgb(var(--accent-rgb) / .4);
   }
   .hero__actions .pbtn--ghost .pbtn__chev { display: none; }
 

@@ -42,7 +42,7 @@ def sheet():
                      % (uses, name, title))
     return """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <title>Sentinel icon proof</title><style>
-:root{--ink:#06291B;--lime:#A9EE6E}
+:root{--ink:#06291B;--lime:#35DE7E}
 body{margin:0;padding:28px;font:14px/1.4 system-ui,sans-serif;background:#F7F7EF;color:var(--ink)}
 h1{font-size:18px;margin:0 0 20px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}

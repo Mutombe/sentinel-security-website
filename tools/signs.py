@@ -38,7 +38,7 @@ from sign_glyphs import GLYPHS, CUTS, EXTRA
 # ------------------------------------------------------------------ colour
 INK = "#051D14"          # g-900, the deterrent field
 DEEP = "#03140E"         # g-950, the foot bar
-LIME = "#A9EE6E"
+LIME = "#35DE7E"
 WHITE = "#FFFFFF"
 HAZARD = "#FFD200"       # ISO safety yellow
 BLACK = "#000000"
