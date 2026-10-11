@@ -105,6 +105,88 @@ def pbtn(label, href, variant="", attrs=""):
         cls, href, attrs, label, CHEV)
 
 
+# ---------------------------------------------------------------- cross links
+# Keyword -> destination. Longest phrases first is handled at match time, so
+# the order here is just readability. Every href is checked against the built
+# pages by the link audit, so a typo cannot ship.
+CROSSLINKS = {
+    # Written from the words the copy uses, not the industry's.
+    "CCTV surveillance":    "services.html#cctv",
+    "CCTV":                 "services.html#cctv",
+    "cameras":              "services.html#cctv",
+    "intruder alarms":      "services.html#alarms",
+    "alarms":               "services.html#alarms",
+    "access control":       "services.html#access",
+    "readers":              "services.html#access",
+    "gate automation":      "services.html#gates",
+    "gates":                "services.html#gates",
+    "fire detection":       "services.html#fire",
+    "detectors":            "services.html#fire",
+    "intercoms":            "services.html#intercoms",
+    "manned guarding":      "security-services.html#manned",
+    "guarding":             "security-services.html#manned",
+    "officers":             "security-services.html#manned",
+    "armed response":       "security-services.html#response",
+    "dog units":            "security-services.html#k9",
+    "dog unit":             "security-services.html#k9",
+    "perimeter":            "security-services.html#perimeter",
+    "investigations":       "security-services.html#investigations",
+    "building automation":  "circuitron.html#automation",
+    "radios":               "circuitron.html#communications",
+    "networks":             "circuitron.html#communications",
+    "CircuitStore":         "circuitron.html#circuitstore",
+    "EcoCircuit":           "circuitron.html#ecocircuit",
+    "Circuitron":           "circuitron.html",
+    "site signage":         "signage.html",
+    "signage":              "signage.html",
+    "solar":                "renewable-energy.html",
+    "backup power":         "renewable-energy.html",
+    "site survey":          "contact.html",
+}
+
+
+_WORD_EDGE = " \t\n,.:;!?()[]\u2014/\u2019'\"-"
+
+
+def autolink(text, max_links=2, exclude=()):
+    """Link known phrases inside a run of prose.
+
+    Only the first occurrence of each phrase is linked, matches may not
+    overlap, and `max_links` caps the whole block: past two or three, a
+    paragraph stops reading as prose and starts reading as a directory.
+    """
+    if not text or "<a " in text:
+        return text
+
+    low = text.lower()
+    taken = []
+    for kw in sorted(CROSSLINKS, key=len, reverse=True):
+        if len(taken) >= max_links or kw in exclude:
+            continue
+        k = kw.lower()
+        at = low.find(k)
+        while at != -1:
+            before = text[at - 1] if at else " "
+            after = text[at + len(k)] if at + len(k) < len(text) else " "
+            edge = before in _WORD_EDGE and after in _WORD_EDGE
+            clash = any(at < e and at + len(k) > b for b, e, _ in taken)
+            if edge and not clash:
+                taken.append((at, at + len(k), kw))
+                break
+            at = low.find(k, at + 1)
+
+    if not taken:
+        return text
+
+    out, end = [], 0
+    for b, e, kw in sorted(taken):
+        out.append(text[end:b])
+        out.append('<a class="clink" href="%s">%s</a>' % (CROSSLINKS[kw], text[b:e]))
+        end = e
+    out.append(text[end:])
+    return "".join(out)
+
+
 def eyebrow(text, variant=""):
     """A section overline. Kept under the old name so every call site still
     reads naturally; the pill it used to render is gone."""
@@ -267,6 +349,7 @@ DIV_PHOTO = {
 
 
 def division_card(c, d):
+    d = dict(d, line=autolink(d["line"], max_links=1))
     """A capability inside a company: what it is, then the actual line items."""
     photo = DIV_PHOTO.get(d["id"])
     media = ""
@@ -294,6 +377,7 @@ UNIT_PHOTO = {
 
 
 def unit_panel(c, u):
+    u = dict(u, blurb=autolink(u.get("blurb", ""), max_links=2)) if u.get("blurb") else u
     """CircuitStore and EcoCircuit: businesses inside a business."""
     f, alt = UNIT_PHOTO[u["id"]]
     media = """          <a class="unit__media" href="contact.html" tabindex="-1" aria-hidden="true">
@@ -472,6 +556,16 @@ def header(active):
 </header>
 
 <div class="drawer" id="drawer">
+  <div class="drawer__top">
+    <a class="drawer__brand" href="index.html" aria-label="%s home">
+      <img src="assets/img/brand/sentinel-logo-white.svg" alt="" width="150" height="40">
+    </a>
+    <button class="drawer__close" type="button" data-drawer-close aria-label="Close menu">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M6 6 18 18M18 6 6 18"/>
+      </svg>
+    </button>
+  </div>
   <nav class="drawer__list" aria-label="Mobile">
 %s
   </nav>
@@ -484,7 +578,7 @@ def header(active):
 </div>
 
 <main id="main">
-""" % (ORG, ORG, items, megapanel(), pbtn("Book a site survey", "contact.html"), drawer,
+""" % (ORG, ORG, items, megapanel(), pbtn("Book a site survey", "contact.html"), ORG, drawer,
        pbtn("Book a site survey", "contact.html", "pbtn--block"))
 
 
@@ -642,6 +736,7 @@ FOOTER = """
 
 
 def phero(label, title, lead, pic=None, alt=""):
+    lead = autolink(lead, max_links=2)
     if pic:
         media = """    <div class="phero__media">
       %s
@@ -685,8 +780,20 @@ def size_images(html):
     return IMG_SRC.sub(one, html)
 
 
+SELF_LINK = re.compile(r'<a class="clink" href="([^"#]*)(?:#[^"]*)?">(.*?)</a>', re.S)
+
+
+def drop_self_links(html, name):
+    """A page that cross links to itself is noise, so the link is unwrapped
+    and the phrase reads as ordinary text."""
+    def one(m):
+        return m.group(2) if m.group(1) in ("", name) else m.group(0)
+    return SELF_LINK.sub(one, html)
+
+
 def write(name, title, desc, body, cta=True):
     html = head(title, desc, name) + topbar() + header(name) + body + (CTA if cta else "") + FOOTER
+    html = drop_self_links(html, name)
     html = size_images(html)
     with io.open(os.path.join(OUT, name), "w", encoding="utf-8", newline="\n") as f:
         f.write(html)
@@ -850,8 +957,9 @@ home = hero_block() + CLIENTS + """
         <p class="overline">Who we are</p>
         <h2 class="h-2">One group, one number to call</h2>
         <p class="lead">
-          An accredited Zimbabwean group covering electronic security, guarding
-          operations and the technology that ties them together.
+          """+ autolink("An accredited Zimbabwean group covering electronic security, "
+                       "guarding operations and the technology that ties them "
+                       "together.", max_links=2) +"""
         </p>
         <p>
           Our own technicians and our own officers do the work, then stay on to maintain
@@ -1081,6 +1189,7 @@ DIV_ICON = {d["id"]: d["icon"] for c in COMPANIES for d in c["divisions"]}
 
 
 def detail(anchor, kicker, title, lead, bullets, photo, alt, flip):
+    lead = autolink(lead, max_links=2)
     lis = "".join("<li>%s</li>" % b for b in bullets)
     media = """        <div data-reveal>
           %s
@@ -1258,6 +1367,15 @@ write("services.html",
 
 
 # ================================================================= SOLAR
+SIGN_LEAD = autolink(
+    "Every sign on every gate in Harare is yellow and black. That does the "
+    "warning job and none of the other one, because nothing distinguishes one "
+    "company&#8217;s sign from the next.", max_links=1)
+
+SOLAR_LEAD = autolink(
+    "Cutting a bill and surviving an outage are the same job. We size, supply "
+    "and maintain systems that carry the loads you actually run.", max_links=2)
+
 solar = phero("Renewable Energy", "Solar PV for homes, businesses and power plants",
   "One of the leading solar PV companies in Zimbabwe. We handle the engineering, "
   "procurement and construction, then the maintenance that keeps it producing.") + """
@@ -1268,8 +1386,7 @@ solar = phero("Renewable Energy", "Solar PV for homes, businesses and power plan
         <h2 class="h-2">Panels that keep your bill down and your site running</h2>
         <p class="script script--lg">towards a #secure world</p>
         <p class="lead">
-          Cutting a bill and surviving an outage are the same job. We size, supply and
-          maintain systems that carry the loads you actually run.
+          %s
         </p>
         <p>
           That covers the whole life of the system, from design and procurement through to
@@ -1289,7 +1406,8 @@ solar = phero("Renewable Energy", "Solar PV for homes, businesses and power plan
 
   <section class="section section--cream">
     <div class="container">
-""" % (eyebrow("Solar PV"), pbtn("Ask for a solar assessment", "contact.html")) + shead(
+""" % (eyebrow("Solar PV"), SOLAR_LEAD,
+       pbtn("Ask for a solar assessment", "contact.html")) + shead(
   "Why Sentinel solar", "Three things a system gets judged on",
   "Once the installers have gone, this is what you are left with.") + """
       <div class="grid g-3">
@@ -1440,7 +1558,7 @@ def group_detail(c, ground):
 """ % (ground, c["id"],
        shead(c["role"], c["name"], kv=kv),
        company_logo(c, h=52, white=(ground == "dark")),
-       c["legal"], c["lead"], c["strap"],
+       c["legal"], autolink(c["lead"], max_links=2), c["strap"],
        ", ".join(c["sectors"]), " &rsaquo; ".join(c["process"]),
        pbtn("Open " + c["short"], c["href"],
             "pbtn--light" if ground == "dark" else "pbtn--dark"),
@@ -1517,7 +1635,8 @@ def company_page(cid, hero_photo, hero_alt, title, desc):
 
   <section class="section section--cream">
     <div class="container">
-""" % (eyebrow("What we carry"), c["headline"], c["strap"], c["blurb"],
+""" % (eyebrow("What we carry"), c["headline"], c["strap"],
+       autolink(c["blurb"], max_links=2),
        pbtn("Book a site survey", "contact.html", "pbtn--dark"),
        company_logo(c, h=58),
        PARENT["name"], c["legal"], ", ".join(c["sectors"]),
@@ -1651,9 +1770,7 @@ sg = phero("Site signage", "The part of the system they actually read",
         <h2 class="h-2">Three registers, and the split is the point</h2>
         <p class="script script--lg">read before anything else</p>
         <p class="lead">
-          Every sign on every gate in Harare is yellow and black. That does the
-          warning job and none of the other one, because nothing distinguishes
-          one company's sign from the next.
+          %s
         </p>
         <p>
           So we split the set. Where there is a genuine hazard the code is kept
@@ -1674,7 +1791,7 @@ sg = phero("Site signage", "The part of the system they actually read",
 
   <section class="section section--cream">
     <div class="container">
-""" % (eyebrow("Why they look like this"),
+""" % (eyebrow("Why they look like this"), SIGN_LEAD,
        pbtn("Ask about signage", "contact.html", "pbtn--dark"),
        len(SIGNS)) + shead(
         "The set", "Eight signs, and where each one goes",

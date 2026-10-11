@@ -205,10 +205,15 @@
       setDrawer(toggle.getAttribute('aria-expanded') !== 'true');
     });
     drawer.addEventListener('click', function (e) {
-      if (e.target.closest('a')) setDrawer(false);
+      if (e.target.closest('a') || e.target.closest('[data-drawer-close]')) {
+        setDrawer(false);
+        if (e.target.closest('[data-drawer-close]')) toggle.focus();
+      }
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') setDrawer(false);
+      if (e.key !== 'Escape' || !drawer.classList.contains('is-open')) return;
+      setDrawer(false);
+      toggle.focus();          // the focus comes back where it left
     });
     window.addEventListener('resize', function () {
       if (window.innerWidth > 980) setDrawer(false);
