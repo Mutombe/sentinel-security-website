@@ -31,7 +31,14 @@ COMPANIES = [
                  "property and commissioned as one system. Our own technicians do "
                  "the work and stay on to service it.",
         "icon": "cam-dome",
-        "logo": "assets/img/brand/mark.svg",
+        # Lockups are different shapes, so each carries the height that makes
+        # its wordmark sit at the same optical size as the others.
+        "logo": "assets/img/brand/sentinel-logo.svg",
+        "logo_wh": (1328, 568),
+        "logo_white": "assets/img/brand/sentinel-logo-white.svg",
+        "logo_small": "assets/img/brand/sentinel-logo-compact.svg",
+        "logo_small_white": "assets/img/brand/sentinel-logo-compact-white.svg",
+        "logo_h": 50,
         "strap": "towards a #secure world",
         "line": "Designs, installs and maintains the electronic systems that watch a "
                 "site: cameras, alarms, access, fire and the gates between them.",
@@ -117,7 +124,10 @@ COMPANIES = [
                  "and answerable to a control room that is staffed at every hour "
                  "of every day.",
         "icon": "guard",
-        "logo": "assets/img/brand/mark.svg",
+        "logo": "assets/img/brand/sentinel-security-services.svg",
+        "logo_wh": (1702, 568),
+        "logo_white": "assets/img/brand/sentinel-security-services-white.svg",
+        "logo_h": 50,
         "strap": "people, dogs and response",
         "line": "Puts trained officers, handlers and response teams on the ground, "
                 "across all ten provinces.",
@@ -207,6 +217,9 @@ COMPANIES = [
                  "recycling route attached.",
         "icon": "network-rack",
         "logo": "assets/img/brand/circuitron-logo.png",
+        "logo_wh": (531, 169),
+        "logo_white": "assets/img/brand/circuitron-logo.png",
+        "logo_h": 34,
         "strap": "Secure. Connect. Power.",
         "line": "Carries the technology business on its own: communications, "
                 "automation, electronics, retail and electronic waste recovery.",

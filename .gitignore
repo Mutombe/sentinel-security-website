@@ -7,3 +7,6 @@ Thumbs.db
 # Python bytecode from tools/
 __pycache__/
 *.pyc
+
+# Generated: the Unsplash contact sheet, rebuilt by tools/photos.py
+tools/photo_candidates.html

@@ -11,9 +11,9 @@
 @font-face { font-family: "Manrope"; src: url("../fonts/manrope-600.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
 @font-face { font-family: "Manrope"; src: url("../fonts/manrope-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
 @font-face { font-family: "Manrope"; src: url("../fonts/manrope-800.woff2") format("woff2"); font-weight: 800; font-style: normal; font-display: swap; }
-/* Grand Hotel (SIL OFL) is an upright connected script, used only for short
+/* Caveat (SIL OFL) is a handwriting face, used only for short
    symbolic phrases. Upright rather than oblique so it sits level with the grid. */
-@font-face { font-family: "Grand Hotel"; src: url("../fonts/grandhotel.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Caveat"; src: url("../fonts/caveat.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
 
 /* ---------- 1. Tokens ---------- */
 :root {
@@ -66,7 +66,7 @@
 
   /* Type */
   --ff:        'Manrope', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --ff-accent: 'Grand Hotel', 'Manrope', cursive;
+  --ff-accent: 'Caveat', 'Manrope', cursive;
 
   /* Shape */
   /* Corner language. Two states only, square or round, never an angled cut.
@@ -186,19 +186,22 @@ p:last-child { margin-bottom: 0; }
 /* Every figure on the site: Manrope, lining and tabular so columns line up. */
 .num { font-variant-numeric: tabular-nums lining-nums; font-feature-settings: "tnum" 1, "lnum" 1; letter-spacing: -.03em; }
 
-/* Ave Fedan: short symbolic phrases only, never numbers. */
+/* Short symbolic phrases only, never numbers. Caveat's cap height is small
+   against Manrope, so every accent line carries its own size bump rather than
+   inheriting the body size. */
 .script {
   font-family: var(--ff-accent);
-  font-weight: 400;
-  letter-spacing: .012em;
+  font-weight: 600;
+  font-size: 1.32em;
+  letter-spacing: 0;
   text-transform: none;
-  line-height: 1.25;
+  line-height: 1.15;
 }
 .script--lg {
   display: block;
-  font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+  font-size: clamp(1.75rem, 3.1vw, 2.45rem);
   color: var(--g-mid);
-  margin: -.35rem 0 1rem;
+  margin: -.2rem 0 1.1rem;
 }
 .section--lime .script--lg { color: var(--g-dark); opacity: .72; }
 
@@ -409,7 +412,7 @@ p:last-child { margin-bottom: 0; }
 .topbar__list i { flex: none; color: var(--g-dark); opacity: .75; }
 .topbar__list a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .topbar__social { margin-left: auto; display: flex; align-items: center; gap: .85rem; }
-.topbar__social span.script { font-size: 1.18rem; white-space: nowrap; opacity: 1; margin-right: .35rem; }
+.topbar__social span.script { font-size: 1.3rem; white-space: nowrap; opacity: 1; margin-right: .45rem; }
 .topbar__social i { display: block; }
 .topbar__social a { opacity: .82; transition: opacity .25s var(--ease), transform .25s var(--ease); }
 .topbar__social a:hover { opacity: 1; transform: translateY(-2px); }
@@ -421,6 +424,24 @@ p:last-child { margin-bottom: 0; }
   z-index: 100;
   transition: background-color .35s var(--ease), box-shadow .35s var(--ease);
 }
+/* The transparent header sits over whichever hero slide is showing, and the
+   client will swap those photographs. A scrim of its own means the navigation
+   keeps its contrast whatever ends up behind it, rather than depending on the
+   picture being dark in the right places. */
+.header::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc(var(--header-h) + 26px);
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    rgba(3, 20, 14, .76) 0%,
+    rgba(3, 20, 14, .48) 55%,
+    rgba(3, 20, 14, 0) 100%);
+  transition: opacity .35s var(--ease);
+}
+.header--solid::before { opacity: 0; }
+.header__inner { position: relative; }
 .header--fixed { position: fixed; top: 0; }
 .header__inner { display: flex; align-items: center; gap: 1.25rem; height: var(--header-h); }
 
@@ -529,9 +550,8 @@ p:last-child { margin-bottom: 0; }
   transition: background-color .3s var(--ease), border-color .3s var(--ease), transform .3s var(--ease);
 }
 .mega__card:hover { background: var(--white); border-color: var(--g-light); transform: translateY(-3px); }
-.mega__icon { display: block; color: var(--g-mid); margin-bottom: .55rem; }
-.mega__card strong { display: block; font-size: 1.02rem; line-height: 1.22; }
-.mega__card small { display: block; margin-top: .15rem; font-size: .8rem; color: var(--body-2); }
+.mega__logo { display: flex; align-items: center; min-height: 38px; margin-bottom: .6rem; }
+.mega__card small { display: block; font-size: .8rem; color: var(--body-2); }
 .mega__chips { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .7rem; }
 .mega__chips i {
   font-style: normal;
@@ -1195,7 +1215,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 /* width:auto or the HTML width attribute stretches these. */
 .footer__brand img { height: 40px; width: auto; margin-bottom: 1.25rem; }
 .footer__brand p { font-size: .95rem; max-width: 34ch; }
-.footer__tagline { font-size: 1.3rem; color: var(--lime); margin: 0 0 .7rem; max-width: none; white-space: nowrap; }
+.footer__tagline { font-size: 1.7rem; color: var(--lime); margin: .2rem 0 .8rem; max-width: none; white-space: nowrap; }
 .footer h4 { font-size: .78rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: #fff; margin-bottom: 1.1rem; }
 .footer__links li + li { margin-top: .55rem; }
 .footer__links a { font-size: .95rem; transition: color .25s var(--ease), padding-left .25s var(--ease); }
@@ -1289,6 +1309,10 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 .step { display: block; color: inherit; }
 .step:hover h3 { color: var(--lime); }
 
+/* A company's own lockup. Sized by height, never stretched, and on dark
+   grounds the white variant rather than a filter. */
+.clogo { width: auto; max-width: 100%; display: block; object-fit: contain; }
+
 /* ---------- 19c. The group structure ---------- */
 /* The chart the Operations Director drew: one parent, three companies, and in
    one case two units below that. The connectors are drawn rather than drawn
@@ -1366,17 +1390,22 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 .section--dark .org__card { background: var(--g-800); border-color: rgba(255,255,255,.1); color: #fff; }
 .section--dark .org__card:hover { background: var(--g-750); }
 
-.org__ico { color: var(--g-mid); }
-.section--dark .org__ico { color: var(--lime); }
+.org__logo {
+  display: flex; align-items: center;
+  min-height: 56px;
+  padding-bottom: 1.1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.section--dark .org__logo { border-color: rgba(255, 255, 255, .14); }
 .org__role {
-  display: block; margin-top: .8rem;
+  display: flex; align-items: center; gap: .4rem;
   font-size: .72rem; font-weight: 800;
   letter-spacing: .1em; text-transform: uppercase;
   color: var(--g-mid);
 }
 .section--dark .org__role { color: var(--lime); }
-.org__name { margin: .25rem 0 .55rem; font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.2; }
-.org__card p { font-size: .92rem; margin: 0; }
+.org__card p { font-size: .92rem; margin: .7rem 0 0; }
 .section--dark .org__card p { color: var(--on-dark-soft); }
 .org__caps { display: flex; flex-wrap: wrap; gap: .32rem; margin: 1rem 0 1.1rem; }
 .org__caps i {
@@ -1453,8 +1482,42 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
   border-radius: var(--corner-xl);
   background: var(--white);
   scroll-margin-top: calc(var(--header-h) + 24px);
+  overflow: hidden;
   transition: transform .35s var(--ease), box-shadow .35s var(--ease);
 }
+/* A capability that has an honest photograph leads with it. The card keeps
+   its padding, so the image is pulled back out to the edges. */
+.dcard--photo { padding-top: 0; }
+.dcard__media {
+  display: block;
+  margin: 0 calc(-1 * clamp(1.3rem, 2.1vw, 1.8rem)) clamp(1.2rem, 2vw, 1.6rem);
+  overflow: hidden;
+  background: var(--g-900);
+}
+.dcard__media img {
+  width: 100%; height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  display: block;
+  transition: transform .6s var(--ease);
+}
+.dcard--photo:hover .dcard__media img { transform: scale(1.04); }
+.dcard--photo .dcard__ico { margin-top: 0; }
+
+.unit__media {
+  display: block;
+  margin: calc(-1 * clamp(1.4rem, 2.3vw, 2rem)) calc(-1 * clamp(1.4rem, 2.3vw, 2rem)) clamp(1.3rem, 2.2vw, 1.8rem);
+  overflow: hidden;
+}
+.unit { overflow: hidden; }
+.unit__media img {
+  width: 100%; height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  transition: transform .6s var(--ease);
+}
+.unit:hover .unit__media img { transform: scale(1.03); }
 .dcard:hover { transform: translateY(-4px); box-shadow: var(--sh-2); }
 .dcard__ico {
   display: grid; place-items: center;
@@ -1506,7 +1569,7 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
   color: var(--lime);
 }
 .unit h3 { margin: 0; color: #fff; }
-.unit__strap { margin: .1rem 0 0; font-size: 1.15rem; color: var(--lime); }
+.unit__strap { margin: .1rem 0 0; font-size: 1.45rem; color: var(--lime); }
 .unit > p { color: var(--on-dark-soft); margin: 0 0 1.2rem; }
 .unit__list { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
 .unit__list li {
@@ -1530,17 +1593,20 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
   transition: transform .3s var(--ease), box-shadow .3s var(--ease);
 }
 .sib:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
-.sib__ico { color: var(--g-mid); flex: none; }
-.sib__body strong { display: block; font-size: .98rem; line-height: 1.2; }
-.sib__body small { font-size: .8rem; color: var(--body-2); }
+.sib { gap: 1.1rem; }
+.sib__logo { display: flex; align-items: center; flex: none; min-height: 34px; }
+.sib__body small { font-size: .82rem; font-weight: 600; color: var(--body-2); }
 .sib__go { margin-left: auto; color: var(--g-mid); transition: transform .3s var(--ease); }
 .sib:hover .sib__go { transform: translateX(4px); }
 .sib--all { background: var(--g-900); color: #fff; border-color: var(--g-900); }
-.sib--all .sib__ico, .sib--all .sib__go { color: var(--lime); }
+.sib--all .sib__ico { color: var(--lime); flex: none; }
+.sib--all .sib__go { color: var(--lime); }
+.sib--all .sib__body strong { display: block; font-size: .98rem; line-height: 1.2; }
 .sib--all .sib__body small { color: var(--on-dark-soft); }
 
 /* ---------- 19g. A company in full, on the group page ---------- */
 .gdetail { display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: clamp(2rem, 4vw, 3.5rem); align-items: start; }
+.gdetail__logo { display: block; margin-bottom: 1.4rem; }
 .gdetail__legal {
   font-size: .74rem; font-weight: 800;
   letter-spacing: .09em; text-transform: uppercase;
@@ -1548,7 +1614,7 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
   margin: 0 0 .9rem;
 }
 .section--dark .gdetail__legal { color: var(--lime); }
-.gdetail__strap { font-size: 1.5rem; margin: .4rem 0 1.4rem; color: var(--g-mid); }
+.gdetail__strap { font-size: 1.85rem; margin: .35rem 0 1.4rem; color: var(--g-mid); }
 .section--dark .gdetail__strap { color: var(--lime); }
 .gdetail__meta { display: grid; gap: .9rem; margin: 0; padding-top: 1.3rem; border-top: 1px solid var(--line); }
 .section--dark .gdetail__meta { border-color: rgba(255,255,255,.14); }
@@ -1646,19 +1712,7 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
   border-radius: var(--corner-lg);
   background: var(--white);
 }
-.cfacts__img { max-width: 100%; height: auto; max-height: 56px; width: auto; }
-.cfacts__mark { width: 40px; height: auto; flex: none; }
-.cfacts__name {
-  font-size: 1.12rem; font-weight: 800; line-height: 1.1;
-  letter-spacing: -.01em; color: var(--ink);
-  text-transform: uppercase;
-}
-.cfacts__name small {
-  display: block;
-  font-size: .8rem; font-weight: 600;
-  letter-spacing: .02em; text-transform: none;
-  color: var(--body-2);
-}
+.cfacts__logo { min-height: 72px; }
 .cfact {
   padding: 1.05rem 1.25rem;
   border: 1px solid var(--line);
@@ -2058,7 +2112,7 @@ a.hero__badge:hover { background: rgba(255,255,255,.18); border-color: rgba(255,
 
   .footer { padding-top: 3rem; }
   .footer__bottom { justify-content: center; text-align: center; }
-  .footer__tagline { font-size: 1.15rem; }
+  .footer__tagline { font-size: 1.45rem; }
 
   .office { padding: 1.25rem 1.2rem; }
   .ministat { padding: 1.25rem 1.2rem; }

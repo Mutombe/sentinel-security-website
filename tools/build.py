@@ -5,7 +5,7 @@ Run:  python tools/build.py
 It writes the six pages in the project root. The site never needs this to run;
 it just keeps the duplicated header, footer and CTA band in sync.
 """
-import io, os, sys
+import io, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, os.pardir)
@@ -34,6 +34,51 @@ def icon(name, size="i-md", style="ph", cls=""):
 
 def duo(name, size="i-2xl"):
     return icon(name, size, "ph-duotone")
+
+
+_DIMS = {}
+
+
+def dim(rel):
+    """The real pixel size of an asset, so width and height never lie."""
+    if rel not in _DIMS:
+        from PIL import Image
+        with Image.open(os.path.join(OUT, rel.replace("/", os.sep))) as im:
+            _DIMS[rel] = im.size
+    return _DIMS[rel]
+
+
+def photo_img(name, alt, sizes, cls="", style="", lazy=True, eager=False):
+    """A responsive photograph whose width and height come from the file.
+
+    A declared size that disagrees with the file is a lie the browser reserves
+    layout against, so these are read rather than typed."""
+    big = "assets/img/photos/%s-1200.jpg" % name
+    small = "assets/img/photos/%s-640.jpg" % name
+    if not os.path.exists(os.path.join(OUT, small.replace("/", os.sep))):
+        small = big
+    w, h = dim(big)
+    bits = ""
+    if cls:
+        bits += ' class="%s"' % cls
+    bits += ' src="%s" srcset="%s 640w, %s 1200w" sizes="%s"' % (big, small, big, sizes)
+    bits += ' alt="%s" width="%d" height="%d"' % (alt, w, h)
+    if style:
+        bits += ' style="%s"' % style
+    if eager:
+        bits += ' fetchpriority="high"'
+    elif lazy:
+        bits += ' loading="lazy"'
+    return "<img%s>" % bits
+
+
+def photo_square(name, alt, sizes, cls="", lazy=True):
+    """A square crop, which has its own file rather than a squeezed wide one."""
+    src = "assets/img/photos/%s-640.jpg" % name
+    w, h = dim(src)
+    return ('<img%s src="%s" alt="%s" width="%d" height="%d"%s>'
+            % ((' class="%s"' % cls) if cls else "", src, alt, w, h,
+               ' loading="lazy"' if lazy else ""))
 
 
 def si(name, size="i-md", cls=""):
@@ -113,16 +158,15 @@ def org_card(c, compact=False):
     body = "" if compact else "<p>%s</p>" % c["line"]
     return """        <div class="org__co">
           <a class="org__card" href="%s">
-            <span class="org__ico">%s</span>
-            <span class="org__role">%s</span>
-            <h3 class="org__name">%s</h3>
+            <span class="org__logo">%s</span>
+            <span class="org__role">%s %s</span>
             %s
             <span class="org__caps">%s</span>
             <span class="org__go">%s %s</span>
           </a>
           %s
         </div>
-""" % (c["href"], si(c["icon"], "i-xl"), c["role"], c["short"], body,
+""" % (c["href"], company_logo(c), si(c["icon"], "i-sm"), c["role"], body,
        "".join("<i>%s</i>" % x for x in c["chips"]),
        "Open " + c["short"], CHEV_SM, subs)
 
@@ -151,34 +195,76 @@ NUMBER_WORD = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six",
                7: "Seven", 8: "Eight"}
 
 
-def company_logo(c):
-    """Circuitron has its own mark. The two Sentinel companies wear the shield,
-    so they get the shield with their descriptor set beside it."""
-    if c["logo"].endswith(".png"):
-        return ('<img class="cfacts__img" src="%s" alt="%s" width="531" height="169" '
-                'loading="lazy">' % (c["logo"], c["name"]))
-    return ('<img class="cfacts__mark" src="%s" alt="" width="44" height="42" '
-            'loading="lazy"><span class="cfacts__name">%s<small>%s</small></span>'
-            % (c["logo"], "Sentinel", c["short"]))
+def company_logo(c, h=None, white=False, cls="", lazy=True):
+    """A company's own lockup, sized by height so three different shapes read
+    at the same optical weight."""
+    px = h or c["logo_h"]
+    key = "logo_small" if (px <= 52 and "logo_small" in c) else "logo"
+    if white:
+        key = key + "_white"
+    src = c[key]
+    iw, ih = c["logo_wh"]
+    return ('<img class="clogo%s" src="%s" alt="%s" width="%d" height="%d" '
+            'style="height:%dpx;width:%dpx"%s>'
+            % ((" " + cls) if cls else "", src, c["name"],
+               round(px * iw / ih), px, px, round(px * iw / ih),
+               ' loading="lazy"' if lazy else ""))
+
+
+DIV_PHOTO = {
+    # A capability only gets a photograph when there is an honest one for it.
+    "k9": ("k9-handler-standing", "A handler with a patrol dog"),
+    "response": ("response-night", "A response vehicle on a wet road at night"),
+    "events": ("officer-radio", "An officer coordinating by radio"),
+    "perimeter": ("vehicle-checkpoint", "A boom barrier at a vehicle entrance"),
+    "manned": ("security-officers", "An officer on post at a public event"),
+    "communications": ("tech-network", "A fibre patch panel in a network cabinet"),
+    "automation": ("tech-smart", "A smart control panel being set"),
+    "electronics": ("tech-retail", "Shelves of electronics in a technology store"),
+    "security-systems": ("sys-cctv", "A dome camera on a wall bracket"),
+    # Loss and shrinkage work happens on a shop floor, so the officer on duty
+    # is the honest frame for it until a dedicated one exists.
+    "investigations": ("officer-on-duty", "An officer working a retail floor"),
+}
 
 
 def division_card(c, d):
     """A capability inside a company: what it is, then the actual line items."""
-    return """        <article class="dcard" id="%s" data-reveal>
-          <span class="dcard__ico">%s</span>
+    photo = DIV_PHOTO.get(d["id"])
+    media = ""
+    if photo:
+        f, alt = photo
+        media = """          <a class="dcard__media" href="contact.html" tabindex="-1" aria-hidden="true">
+            %s
+          </a>
+""" % photo_img(f, alt, "(max-width:720px) 100vw, 30vw")
+    return """        <article class="dcard%s" id="%s" data-reveal>
+%s          <span class="dcard__ico">%s</span>
           <h3 class="h-3">%s</h3>
           <p>%s</p>
           <ul class="dcard__list">%s</ul>
           <a class="dcard__cta" href="contact.html">Ask about this %s</a>
         </article>
-""" % (d["id"], si(d["icon"], "i-xl"), d["name"], d["line"],
+""" % (" dcard--photo" if media else "", d["id"], media, si(d["icon"], "i-xl"),
+       d["name"], d["line"],
        "".join("<li>%s</li>" % i for i in d["items"]), CHEV_SM)
+
+
+UNIT_PHOTO = {
+    "circuitstore": ("tech-retail", "Shelves of electronics in a technology store"),
+    "ecocircuit": ("tech-ewaste", "Mixed electronic scrap waiting to be sorted"),
+}
 
 
 def unit_panel(c, u):
     """CircuitStore and EcoCircuit: businesses inside a business."""
+    f, alt = UNIT_PHOTO[u["id"]]
+    media = """          <a class="unit__media" href="contact.html" tabindex="-1" aria-hidden="true">
+            %s
+          </a>
+""" % photo_img(f, alt, "(max-width:980px) 100vw, 45vw")
     return """        <article class="unit" id="%s" data-reveal>
-          <div class="unit__head">
+%s          <div class="unit__head">
             <span class="unit__ico">%s</span>
             <div>
               <h3 class="h-3">%s</h3>
@@ -188,19 +274,18 @@ def unit_panel(c, u):
           <p>%s</p>
           <ul class="unit__list">%s</ul>
         </article>
-""" % (u["id"], si(u["icon"], "i-xl"), u["name"], u["strap"], u["line"],
+""" % (u["id"], media, si(u["icon"], "i-xl"), u["name"], u["strap"], u["line"],
        "".join("<li>%s%s</li>" % (CHEV_SM, i) for i in u["items"]))
-
 
 def siblings(current):
     """At the foot of a company page: the other two, so nobody dead ends."""
     others = [c for c in COMPANIES if c["id"] != current]
     cards = "".join("""        <a class="sib" href="%s" data-reveal>
-          <span class="sib__ico">%s</span>
-          <span class="sib__body"><strong>%s</strong><small>%s</small></span>
+          <span class="sib__logo">%s</span>
+          <span class="sib__body"><small>%s</small></span>
           <span class="sib__go" aria-hidden="true">%s</span>
         </a>
-""" % (c["href"], si(c["icon"], "i-lg"), c["short"], c["role"], ARROW) for c in others)
+""" % (c["href"], company_logo(c, h=32), c["role"], ARROW) for c in others)
     return """  <section class="section section--cream section--tight">
     <div class="container">
 %s      <div class="sibs">
@@ -287,13 +372,12 @@ def megapanel():
                 '<a href="%s#%s">%s</a>' % (c["href"], u["id"], u["name"])
                 for u in c["units"])
         cards += """        <a class="mega__card" href="%s">
-          <span class="mega__icon">%s</span>
-          <strong>%s</strong>
+          <span class="mega__logo">%s</span>
           <small>%s</small>
           <span class="mega__chips">%s</span>
           %s
         </a>
-""" % (c["href"], si(c["icon"], "i-lg"), c["short"], c["role"],
+""" % (c["href"], company_logo(c, h=34), c["role"],
        "".join("<i>%s</i>" % x for x in c["chips"]), units)
     return """      <div class="mega" id="mega" hidden>
         <div class="container mega__inner">
@@ -456,6 +540,7 @@ FOOTER = """
       <nav aria-label="Legal">
         <a href="privacy.html">Privacy policy</a>
         <a href="contact.html">Contact</a>
+        <a href="https://unsplash.com/?utm_source=sentinel&amp;utm_medium=referral" rel="noopener">Photography: Unsplash</a>
       </nav>
     </div>
   </div>
@@ -517,15 +602,13 @@ FOOTER = """
        icon("whatsapp-logo", "i-md", "ph-fill", "wa__open"), icon("x", "i-md", "ph", "wa__close"))
 
 
-def phero(label, title, lead, photo=None, alt=""):
-    if photo:
+def phero(label, title, lead, pic=None, alt=""):
+    if pic:
         media = """    <div class="phero__media">
-      <img src="assets/img/photos/%s-1200.jpg"
-           srcset="assets/img/photos/%s-640.jpg 640w, assets/img/photos/%s-1200.jpg 1200w"
-           sizes="70vw" alt="%s" width="1200" height="600" fetchpriority="high">
+      %s
     </div>
     <div class="phero__scrim"></div>
-""" % (photo, photo, photo, alt)
+""" % photo_img(pic, alt, "70vw", lazy=False, eager=True)
         cls = "phero"
     else:
         media, cls = "", "phero phero--plain"
@@ -540,8 +623,32 @@ def phero(label, title, lead, photo=None, alt=""):
 """ % (cls, media, label, title, lead)
 
 
+def client_logo(slug, alt, lazy=True):
+    rel = "assets/img/clients/%s.png" % slug
+    w, h = dim(rel)
+    return ('<img src="%s" alt="%s" width="%d" height="%d"%s>'
+            % (rel, alt, w, h, ' loading="lazy"' if lazy else ""))
+
+
+IMG_SRC = re.compile(r'<img\b[^>]*?\bsrc="(assets/[^"]+\.(?:jpg|png))"[^>]*>')
+
+
+def size_images(html):
+    """Give every local <img> the width and height of the file it points at.
+
+    Typed dimensions produced six wrong pairs in one round, including a square
+    tile declared as a 2:1 banner. Reading them removes the whole class."""
+    def one(m):
+        tag, src = m.group(0), m.group(1)
+        w, h = dim(src)
+        tag = re.sub(r'\s+(?:width|height)="\d+"', "", tag)
+        return tag[:-1].rstrip() + ' width="%d" height="%d">' % (w, h)
+    return IMG_SRC.sub(one, html)
+
+
 def write(name, title, desc, body, cta=True):
     html = head(title, desc, name) + topbar() + header(name) + body + (CTA if cta else "") + FOOTER
+    html = size_images(html)
     with io.open(os.path.join(OUT, name), "w", encoding="utf-8", newline="\n") as f:
         f.write(html)
     print("wrote", name, len(html))
@@ -555,16 +662,16 @@ CLIENTS = """
       <div class="marquee">
         <div class="marquee__track">
           <div class="marquee__group">
-            <a href="about.html#clients" aria-label="Ecobank, a Sentinel client"><img src="assets/img/clients/ecobank.png" alt="Ecobank" width="160" height="48" loading="lazy"></a>
-            <a href="about.html#clients" aria-label="Green Fuel, a Sentinel client"><img src="assets/img/clients/green-fuel.png" alt="Green Fuel" width="160" height="48" loading="lazy"></a>
-            <a href="about.html#clients" aria-label="ProBrands, a Sentinel client"><img src="assets/img/clients/probrands.png" alt="ProBrands" width="160" height="48" loading="lazy"></a>
-            <a href="about.html#clients" aria-label="Cottco Holdings, a Sentinel client"><img src="assets/img/clients/cottco.png" alt="Cottco Holdings Limited" width="160" height="48" loading="lazy"></a>
+            <a href="about.html#clients" aria-label="Ecobank, a Sentinel client"><img src="assets/img/clients/ecobank.png" alt="Ecobank" loading="lazy"></a>
+            <a href="about.html#clients" aria-label="Green Fuel, a Sentinel client"><img src="assets/img/clients/green-fuel.png" alt="Green Fuel" loading="lazy"></a>
+            <a href="about.html#clients" aria-label="ProBrands, a Sentinel client"><img src="assets/img/clients/probrands.png" alt="ProBrands" loading="lazy"></a>
+            <a href="about.html#clients" aria-label="Cottco Holdings, a Sentinel client"><img src="assets/img/clients/cottco.png" alt="Cottco Holdings Limited" loading="lazy"></a>
           </div>
           <div class="marquee__group" aria-hidden="true">
-            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/ecobank.png" alt="" width="160" height="48" loading="lazy"></a>
-            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/green-fuel.png" alt="" width="160" height="48" loading="lazy"></a>
-            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/probrands.png" alt="" width="160" height="48" loading="lazy"></a>
-            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/cottco.png" alt="" width="160" height="48" loading="lazy"></a>
+            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/ecobank.png" alt="" loading="lazy"></a>
+            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/green-fuel.png" alt="" loading="lazy"></a>
+            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/probrands.png" alt="" loading="lazy"></a>
+            <a href="about.html#clients" tabindex="-1"><img src="assets/img/clients/cottco.png" alt="" loading="lazy"></a>
           </div>
         </div>
       </div>
@@ -596,22 +703,22 @@ home = """
       <div class="hero__slide is-active" style="--pos:72%% 34%%;--expo:2.45">
         <img  src="assets/img/photos/control-room-monitoring-1200.jpg"
              srcset="assets/img/photos/control-room-monitoring-640.jpg 640w, assets/img/photos/control-room-monitoring-1200.jpg 1200w"
-             sizes="100vw" alt="Sentinel operators watching a live camera wall" width="1200" height="608" fetchpriority="high">
+             sizes="100vw" alt="An operator watching a wall of live camera feeds" width="1200" height="608" fetchpriority="high">
       </div>
       <div class="hero__slide" style="--pos:58%% 38%%;--expo:0.95">
-        <img data-slide-src data-src="assets/img/photos/guards-briefing-1200.jpg"
-             data-srcset="assets/img/photos/guards-briefing-640.jpg 640w, assets/img/photos/guards-briefing-1200.jpg 1200w"
-             sizes="100vw" alt="A Sentinel team briefing before going out to site" width="1200" height="608">
+        <img data-slide-src data-src="assets/img/photos/security-officers-1200.jpg"
+             data-srcset="assets/img/photos/security-officers-640.jpg 640w, assets/img/photos/security-officers-1200.jpg 1200w"
+             sizes="100vw" alt="A security officer on post at a public event" width="1200" height="608">
       </div>
       <div class="hero__slide" style="--pos:70%% 40%%;--expo:0.64">
-        <img data-slide-src data-src="assets/img/photos/dispatch-tablet-1200.jpg"
-             data-srcset="assets/img/photos/dispatch-tablet-640.jpg 640w, assets/img/photos/dispatch-tablet-1200.jpg 1200w"
-             sizes="100vw" alt="A technician checking a site on a tablet" width="1200" height="608">
+        <img data-slide-src data-src="assets/img/photos/technician-panel-1200.jpg"
+             data-srcset="assets/img/photos/technician-panel-640.jpg 640w, assets/img/photos/technician-panel-1200.jpg 1200w"
+             sizes="100vw" alt="A technician wiring an electrical panel on site" width="1200" height="608">
       </div>
       <div class="hero__slide" style="--pos:64%% 34%%;--expo:0.90">
         <img data-slide-src data-src="assets/img/photos/operator-night-shift-1200.jpg"
              data-srcset="assets/img/photos/operator-night-shift-640.jpg 640w, assets/img/photos/operator-night-shift-1200.jpg 1200w"
-             sizes="100vw" alt="A control room operator on night shift" width="1200" height="608">
+             sizes="100vw" alt="A monitoring desk on night shift" width="1200" height="608">
       </div>
     </div>
     <div class="hero__unify" aria-hidden="true"></div>
@@ -696,10 +803,9 @@ home = """
     <div class="container split">
       <div class="bento" data-reveal>
         <a class="bento__hero" href="about.html" aria-label="About Sentinel">
-          <img src="assets/img/photos/guards-briefing-1200.jpg"
-               srcset="assets/img/photos/guards-briefing-640.jpg 640w, assets/img/photos/guards-briefing-1200.jpg 1200w"
-               sizes="(max-width:980px) 100vw, 45vw"
-               alt="A Sentinel team briefing before going out to site" width="1200" height="600" loading="lazy">
+          <img src="assets/img/photos/officer-radio-1200.jpg"
+               srcset="assets/img/photos/officer-radio-640.jpg 640w, assets/img/photos/officer-radio-1200.jpg 1200w"
+               sizes="(max-width:980px) 100vw, 45vw" alt="An officer coordinating a site by radio">
         </a>
         <a class="bento__stat" href="contact.html">
           %s
@@ -707,8 +813,8 @@ home = """
           <span>Someone on the phone<br>at any hour</span>
         </a>
         <a class="bento__tile" href="services.html#access" aria-label="Access control">
-          <img src="assets/img/photos/access-control-desk-640.jpg"
-               alt="Access control at a reception desk" width="640" height="640" loading="lazy">
+          <img src="assets/img/photos/tile-access-640.jpg"
+               alt="A facial recognition reader at an entrance">
         </a>
       </div>
 
@@ -874,19 +980,18 @@ about = phero("About", "A decade of guarding, turned into a group",
   "Sentinel started in 2016 with officers on gates. The technology work grew out of that, "
   "and in 2026 it became a company of its own. Three businesses now, built on the same ten "
   "years of ground truth.",
-  "foot-patrol-street", "A Sentinel officer on foot patrol") + """
+  "officer-on-duty", "A Sentinel officer on foot patrol") + """
   <section class="section section--white">
     <div class="container split">
       <div class="bento" data-reveal>
         <a class="bento__hero" href="services.html" aria-label="Our services">
-          <img src="assets/img/photos/guards-briefing-1200.jpg"
-               srcset="assets/img/photos/guards-briefing-640.jpg 640w, assets/img/photos/guards-briefing-1200.jpg 1200w"
-               sizes="(max-width:980px) 100vw, 45vw"
-               alt="Sentinel team briefing" width="1200" height="600" loading="lazy">
+          <img src="assets/img/photos/security-officers-1200.jpg"
+               srcset="assets/img/photos/security-officers-640.jpg 640w, assets/img/photos/security-officers-1200.jpg 1200w"
+               sizes="(max-width:980px) 100vw, 45vw" alt="A security officer on post">
         </a>
         <a class="bento__tile" href="services.html#cctv" aria-label="CCTV surveillance">
-          <img src="assets/img/photos/operator-night-shift-640.jpg"
-               alt="Control room operator on night shift" width="640" height="640" loading="lazy">
+          <img src="assets/img/photos/tile-night-640.jpg"
+               alt="A monitoring desk on night shift">
         </a>
         <a class="bento__stat" href="index.html#sectors">
           %s
@@ -1040,13 +1145,10 @@ DIV_ICON = {d["id"]: d["icon"] for c in COMPANIES for d in c["divisions"]}
 def detail(anchor, kicker, title, lead, bullets, photo, alt, flip):
     lis = "".join("<li>%s</li>" % b for b in bullets)
     media = """        <div data-reveal>
-          <img src="assets/img/photos/%s-1200.jpg"
-               srcset="assets/img/photos/%s-640.jpg 640w, assets/img/photos/%s-1200.jpg 1200w"
-               sizes="(max-width:980px) 100vw, 45vw"
-               style="border-radius:var(--corner-xl);aspect-ratio:4/3;object-fit:cover;width:100%%"
-               alt="%s" width="1200" height="900" loading="lazy">
+          %s
         </div>
-""" % (photo, photo, photo, alt)
+""" % photo_img(photo, alt, "(max-width:980px) 100vw, 45vw",
+                style="border-radius:var(--corner-xl);aspect-ratio:4/3;object-fit:cover;width:100%")
     text = """        <div data-reveal>
           <span class="dmark">%s</span>
           %s
@@ -1065,7 +1167,7 @@ def detail(anchor, kicker, title, lead, bullets, photo, alt, flip):
 
 _tech = by_id("technologies")
 services = phero(_tech["role"], _tech["name"], _tech["lead"],
-  "access-control-desk", "Access control at a reception desk") + """
+  "sys-access", "A fob presented to a door reader") + """
   <section class="section section--white">
     <div class="container split split--narrow">
       <div data-reveal>
@@ -1086,7 +1188,7 @@ services = phero(_tech["role"], _tech["name"], _tech["lead"],
   </section>
 """ % (eyebrow("What we carry"), _tech["headline"], _tech["strap"], _tech["blurb"],
        pbtn("Book a site survey", "contact.html", "pbtn--dark"),
-       company_logo(_tech), PARENT["name"], _tech["legal"],
+       company_logo(_tech, h=58), PARENT["name"], _tech["legal"],
        ", ".join(_tech["sectors"]), " &rsaquo; ".join(_tech["process"])) + """
   <section class="section section--cream">
     <div class="container">
@@ -1126,42 +1228,42 @@ DETAILS = [
   ["IP and analogue cameras", "Remote viewing from anywhere",
    "Recording and playback", "Camera upgrades on an existing cable run",
    "Optics that work after dark"],
-  "control-room-monitoring", "Operators watching a CCTV wall"),
+  "sys-cctv", "A dome camera on a wall bracket"),
  ("alarms", "Detection", "Intruder and alarm systems",
   "Systems meant to put someone off before they get in, and to record an incident already under way "
   "so you have something to act on afterwards.",
   ["Motion sensors and perimeter beams", "Door and window contacts",
    "Panic and duress buttons", "Zones you can arm separately",
    "Battery backup through an outage"],
-  "operator-night-shift", "Alarm monitoring on night shift"),
+  "sys-alarms", "An external alarm sounder on a building"),
  ("access", "Identity", "Access control and man traps",
   "Door control for a small business upward, making a building both safer and easier to move "
   "around, from one reception door to a group of sites.",
   ["Biometric, card and PIN readers", "Door controllers and interlocks",
    "Man traps for cash areas and strongrooms", "Visitor management and temporary codes",
    "Time and attendance integration"],
-  "access-control-desk", "Access control at a reception desk"),
+  "access-terminal", "Access control at a reception desk"),
  ("gates", "Vehicles", "Gate automation and vehicle control",
   "The gate is the first thing a site is judged on and the first thing that fails, so we fit "
   "motors rated for the traffic you actually put through them.",
   ["Automatic gates and gate motors", "Boom gates and road blockers",
    "Turnstiles and pedestrian lanes", "Safety sensors and remote access",
    "Number plate driven entry"],
-  "k9-vehicle-search", "Vehicle checkpoint search"),
+  "sys-gates", "The motor and gear rack on a sliding gate"),
  ("intercoms", "Entry", "Video intercoms",
   "See who is at the gate before you open it, from the house, the office or a phone anywhere "
   "with a signal.",
   ["Audio and video door stations", "Residential and estate intercoms",
    "Commercial entry systems", "Visitor identification",
    "Wired to the access control system"],
-  "guard-reception-radio", "Reception security and visitor control"),
+  "sys-intercom", "A video door station beside an entrance"),
  ("fire", "Life safety", "Fire detection and perimeter",
   "Fire sensors that buy people time to get out, and an energised perimeter that holds the line "
   "while help is on the way.",
   ["Addressable and conventional panels", "Smoke, heat and flame detection",
    "Sounders and evacuation systems", "Electric fencing and perimeter beams",
    "Testing and certification on a schedule"],
-  "guards-briefing", "Security team briefing"),
+  "sys-fire", "A fire sounder and call point on a ceiling"),
 ]
 for i, d in enumerate(DETAILS):
     services += detail(*d, flip=(i % 2 == 1))
@@ -1240,9 +1342,11 @@ solar = phero("Renewable Energy", "Solar PV for homes, businesses and power plan
         <div style="margin-top:2rem">%s</div>
       </div>
       <div data-reveal>
-        <img src="assets/img/photos/residential-electr-services.jpg"
-             style="border-radius:var(--corner-xl);aspect-ratio:4/3;object-fit:cover;width:100%%"
-             alt="An electrical distribution board being commissioned" width="600" height="450" loading="lazy">
+        <img src="assets/img/photos/power-solar-1200.jpg"
+             srcset="assets/img/photos/power-solar-640.jpg 640w, assets/img/photos/power-solar-1200.jpg 1200w"
+             sizes="(max-width:980px) 100vw, 45vw"
+             style="border-radius:var(--corner-xl);aspect-ratio:3/2;object-fit:cover;width:100%%"
+             alt="A rooftop solar array above a city" width="1200" height="800" loading="lazy">
       </div>
     </div>
   </section>
@@ -1382,6 +1486,7 @@ def group_detail(c, ground):
     <div class="container">
 %s      <div class="gdetail">
         <div class="gdetail__intro" data-reveal>
+          <span class="gdetail__logo">%s</span>
           <p class="gdetail__legal">%s</p>
           <p class="lead">%s</p>
           <p class="script gdetail__strap">%s</p>
@@ -1398,6 +1503,7 @@ def group_detail(c, ground):
   </section>
 """ % (ground, c["id"],
        shead(c["role"], c["name"], kv=kv),
+       company_logo(c, h=52, white=(ground == "dark")),
        c["legal"], c["lead"], c["strap"],
        ", ".join(c["sectors"]), " &rsaquo; ".join(c["process"]),
        pbtn("Open " + c["short"], c["href"],
@@ -1477,7 +1583,7 @@ def company_page(cid, hero_photo, hero_alt, title, desc):
     <div class="container">
 """ % (eyebrow("What we carry"), c["headline"], c["strap"], c["blurb"],
        pbtn("Book a site survey", "contact.html", "pbtn--dark"),
-       company_logo(c),
+       company_logo(c, h=58),
        PARENT["name"], c["legal"], ", ".join(c["sectors"]),
        " &rsaquo; ".join(c["process"])) + shead(
         "Capabilities", "What this company does",
@@ -1504,14 +1610,14 @@ def company_page(cid, hero_photo, hero_alt, title, desc):
     write(c["href"], title, desc, body)
 
 
-company_page("guarding", "guards-briefing",
-  "Sentinel officers at a shift briefing",
+company_page("guarding", "security-officers",
+  "A Sentinel officer on post at a public event",
   "Sentinel Security Services: manned guarding, dog units and armed response | " + ORG,
   "Manned guarding, event security, 24 hour alarm monitoring and armed response, dog "
   "units, perimeter protection and investigations across all ten provinces of Zimbabwe.")
 
-company_page("circuitron", "dispatch-tablet",
-  "A Circuitron technician commissioning a system on site",
+company_page("circuitron", "circuitron-bench",
+  "Patch cabling in a Circuitron network cabinet",
   "Circuitron Systems: technology, communications and electronics | " + ORG,
   "Circuitron Systems delivers security systems, two way radio and networking, smart "
   "building automation, computers and power, plus CircuitStore retail and EcoCircuit "
@@ -1521,7 +1627,7 @@ company_page("circuitron", "dispatch-tablet",
 contact = phero("Contact", "Tell us about your site",
   "A free survey and risk assessment, anywhere in Zimbabwe. Send the details and our "
   "technical team will come back to you.",
-  "dispatch-tablet", "A technician checking a site on a tablet") + """
+  "technician-panel", "A technician checking a site on a tablet") + """
   <section class="section section--white">
     <div class="container contact-grid">
       <div data-reveal>

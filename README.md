@@ -18,7 +18,7 @@ privacy.html               Privacy policy
 robots.txt, sitemap.xml    SEO
 assets/css/style.css       The whole design system (one file, sectioned and commented)
 assets/js/main.js          Header, group panel, drawer, reveals, carousel, accordion, form
-assets/fonts/              Manrope (body, headings, numbers), Grand Hotel (accents)
+assets/fonts/              Manrope (body, headings, numbers), Caveat (accents)
 assets/icons/phosphor.css  Phosphor, subset to the glyphs in use
 assets/icons/sentinel.svg  The drawn icon set, 35 glyphs (see "The icon set")
 assets/img/                brand, clients, photos
@@ -95,6 +95,49 @@ at icon size: the first dome camera read as an eye, the first motion sensor as
 a handbag, the first dog as a hand. A PTZ camera was cut altogether because at
 24px it was indistinguishable from the dome.
 
+## The photography
+
+Every photograph has a named slot in `tools/photo_plan.py`. The slot says what
+has to be in the frame for the picture to be honest there, which queries find
+it, and the exact pixel sizes the markup declares, so nothing is ever scaled or
+letterboxed.
+
+```
+python tools/photos.py search      one Unsplash query per slot, one request each
+python tools/photos.py more <slot> the slot's remaining queries, when one is thin
+python tools/photos.py fetch       download the chosen photos at both sizes
+python tools/photos.py triggers    acknowledge the downloads to Unsplash
+python tools/photos.py credits     rewrite assets/img/photos/CREDITS.md
+```
+
+`tools/photos.py search` writes `tools/photo_candidates.html`, a contact sheet.
+Pick an id per slot, put it in `CHOICES` at the foot of `tools/photo_plan.py`,
+then fetch.
+
+**Three things to know before running it again.**
+
+1. **The Unsplash key in use is a demo key: 50 requests an hour.** The search
+   spends one request per slot and saves after each, so it resumes where it
+   stopped. Thumbnails and the downloads themselves come from the image CDN and
+   do not count.
+2. **`triggers` is outstanding.** Unsplash asks an API client to call a photo's
+   download endpoint when the photo is actually used. The bulk fetch exhausted
+   the hourly budget before it reached them, so 22 are still unacknowledged. Run
+   `python tools/photos.py triggers` once the window resets; it is idempotent
+   and records what it has done.
+3. **Check the picture, not the alt text.** Unsplash alt text is generated and
+   frequently wrong: the gate motor is described as "rusty gears covered in
+   spiderwebs" and a fire sounder as "a glass jar with orange liquid". It is
+   also right often enough to catch a misread thumbnail, which is how a photo of
+   a woman at an ATM was caught standing in for a camera installation. Look at
+   both.
+
+**What was ruled out and why.** Searches for guards and dog units return mostly
+police and military imagery. None of it is used. A private Zimbabwean security
+company showing police livery or camouflage would be claiming something it is
+not, so every frame with a police car, a police vest or camouflage was passed
+over, even where it was the best photograph in the set.
+
 ## The logo
 
 `assets/img/brand/sentinel-logo.svg` is vector, not a trace of a screenshot.
@@ -142,14 +185,11 @@ Three roles, all self hosted. Nothing is fetched from Google.
 | Role | Face | Files |
 |---|---|---|
 | Body, headings and every number | **Manrope** 400/500/600/700/800 | `assets/fonts/manrope-*.woff2` |
-| Symbolic accents | **Grand Hotel** | `assets/fonts/grandhotel.woff2` |
+| Symbolic accents | **Caveat** | `assets/fonts/caveat.woff2` |
 
-Grand Hotel is an upright connected script, chosen over an oblique brush face so
-it sits level with the grid rather than leaning across it. It appears only on
-short symbolic phrases (the `towards a #secure_world` tagline in the utility bar
-and footer, and one accent line on the solar sections) through the `.script`
-class. Numbers carry `.num`, which switches on Manrope's lining and tabular
-figures so columns of figures line up.
+Caveat is a handwriting face. It carries six short lines on the whole site, so `tools/fetch_accent.py` pulls it from Google Fonts, pins the weight axis at 600 and subsets it to the 31 characters those lines use: 75KB becomes 16KB. Re run that script after changing any accent copy, or a character will be missing and fall back to Manrope.
+
+Caveat's x-height is small against Manrope, so every accent slot carries its own size rather than inheriting the body size.
 
 Both faces are SIL OFL, so both are free to use commercially.
 
@@ -342,19 +382,22 @@ matching row, and the clients strip and recognition section have `#clients` and
 
 ## Before it goes live
 
-**1. The stock photography and the hero video are watermarked.** Every file in
-`assets/img/photos/` except `residential-electr-services.jpg` is an unlicensed
-iStock comp, and so is `assets/video/hero.mp4`, which carries a baked in
-"iStock by Getty Images" mark across the middle of the frame.
+**1. The photography is stock, and should not stay that way.** The watermarked
+iStock comps are gone: all 22 photographs now come from Unsplash under its
+licence, chosen against a written brief per slot and credited in
+`assets/img/photos/CREDITS.md`.
 
-That watermark is the reason the hero video is panned the way it is: the centre
-of the clip is parked under the darkest part of the scrim so the mark does not
-read. A licensed copy of the same clip would allow a much stronger composition,
-with the guard placed in the clear right hand side of the frame rather than
-hidden behind the headline. These must be replaced with licensed images, or
-better, with real photographs of Sentinel's own installations and team. Drop
+They are still pictures of other people's buildings. The cover of the Sentinel
+Security Services profile has a photograph of Sentinel's own officers outside a
+Sentinel branded office, and it is better than anything in this set because it
+is true. Ask the client for that shoot, or commission one: officers on post, a
+technician on a ladder, the control room, a gate install, a dog unit. Drop
 replacements in at the same filenames and the site picks them up with no code
-change. Each photo is referenced at two sizes: `name-640.jpg` and `name-1200.jpg`.
+change. Each photo is referenced at two sizes, `name-640.jpg` and
+`name-1200.jpg`, and `tools/photo_plan.py` records the exact dimensions.
+
+Also outstanding: `python tools/photos.py triggers` has 22 downloads still to
+acknowledge to Unsplash, blocked by the demo key's hourly limit.
 
 **2. Sentinel Security Services has no logo of its own.** The supplied artwork
 covers Sentinel Integrated Technologies and Circuitron Systems. Where the
