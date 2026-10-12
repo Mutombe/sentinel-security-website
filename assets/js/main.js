@@ -113,6 +113,18 @@
       document.dispatchEvent(new CustomEvent('sentinel:slidechange'));
     };
 
+    /* One of the three companies has colours of its own. The panel says so,
+       and the hero takes the same word, so a bloom in that company's blue
+       can fade up behind the whole frame while its slide is showing and lift
+       again after it. The panel carries the theme class itself, so the copy
+       and the buttons change with the panel's own fade. */
+    var brand = function () {
+      var b = panels[index].getAttribute('data-brand');
+      if (b) hero.setAttribute('data-brand', b);
+      else hero.removeAttribute('data-brand');
+    };
+    brand();
+
     var show = function (next, focusTab) {
       next = (next + panels.length) % panels.length;
       if (next === index) return;
@@ -131,6 +143,7 @@
       tabs[index].setAttribute('aria-selected', 'true');
       tabs[index].tabIndex = 0;
       if (focusTab) tabs[index].focus();
+      brand();             // a company with its own colours washes the frame
       announce();          // the newly shown photograph gets framed
 
       // Restart the drift and the progress rail on what just became visible.
@@ -493,6 +506,92 @@
 
     window.__frameAll = frameAll;        /* the QA script calls this */
   }
+
+  /* ---- Interior hero: two pictures, slowly ----
+     No controls and no captions. The pictures are decorative, the heading
+     carries the meaning, and a reader who has asked for less motion gets the
+     first picture and nothing else. */
+  var pheros = document.querySelectorAll('.phero__media[data-phero]');
+  if (pheros.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    pheros.forEach(function (media) {
+      var shots = Array.prototype.slice.call(media.querySelectorAll('.phero__slide'));
+      if (shots.length < 2) return;
+      var at = 0;
+      var tick = function () {
+        shots[at].classList.remove('is-active');
+        at = (at + 1) % shots.length;
+        shots[at].classList.add('is-active');
+        /* Restart the drift on whatever just came up. */
+        var img = shots[at].querySelector('img');
+        if (img) { img.style.animation = 'none'; void img.offsetWidth; img.style.animation = ''; }
+        /* The newly shown photograph gets framed for the frame it now has. */
+        document.dispatchEvent(new CustomEvent('sentinel:slidechange'));
+      };
+      var timer = setInterval(tick, 7000);
+      /* A hero scrolled past is a timer burning battery for nobody. */
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) {
+          es.forEach(function (e) {
+            if (e.isIntersecting && !timer) timer = setInterval(tick, 7000);
+            else if (!e.isIntersecting && timer) { clearInterval(timer); timer = null; }
+          });
+        }, { threshold: 0 }).observe(media);
+      }
+    });
+  }
+
+
+  /* ---- Pages, before they are asked for ----
+     Everything but the HTML is already cached across the site, so a page
+     change is one small document plus a round trip. Starting that fetch when
+     a reader aims at a link, rather than when they hit it, removes most of
+     the wait: the gap between pointing and clicking is usually longer than
+     the trip. */
+  (function () {
+    var conn = navigator.connection || {};
+    if (conn.saveData) return;                    /* they asked for less data */
+    if (/(^|-)2g$/.test(conn.effectiveType || '')) return;
+    if (!document.createElement('link').relList.supports('prefetch')) return;
+
+    var asked = Object.create(null);
+    var here = location.href.split('#')[0];
+
+    var want = function (url) {
+      if (!url || asked[url] || url === here) return;
+      asked[url] = 1;
+      var l = document.createElement('link');
+      l.rel = 'prefetch';
+      l.href = url;
+      document.head.appendChild(l);
+    };
+
+    var from = function (a) {
+      if (!a || !a.href) return null;
+      if (a.origin !== location.origin) return null;   /* ours only */
+      if (a.hasAttribute('download') || a.target === '_blank') return null;
+      if (!/\.html$/.test(a.pathname) && a.pathname !== '/') return null;
+      return a.href.split('#')[0];
+    };
+
+    /* Aiming at a link is intent enough. */
+    var aim = function (e) {
+      var a = e.target.closest && e.target.closest('a[href]');
+      if (a) want(from(a));
+    };
+    document.addEventListener('pointerover', aim, { passive: true, capture: true });
+    document.addEventListener('touchstart', aim, { passive: true, capture: true });
+    /* Keyboard: tabbing onto a link is the same intent. */
+    document.addEventListener('focusin', aim, { passive: true, capture: true });
+
+    /* Once the page has gone quiet, take the header: whatever a reader does
+       next, it is usually one of those. */
+    var idle = window.requestIdleCallback || function (f) { setTimeout(f, 1400); };
+    idle(function () {
+      var nav = document.querySelectorAll('.nav__link, .drawer__list a[href]');
+      for (var i = 0; i < nav.length && i < 8; i++) want(from(nav[i]));
+    });
+  })();
+
 
   /* ---- Accordion ---- */
   document.querySelectorAll('.acc__btn').forEach(function (btn) {

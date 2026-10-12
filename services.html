@@ -137,8 +137,9 @@
 <main id="main">
 
   <section class="phero">
-    <div class="phero__media">
-      <img src="assets/img/photos/sys-access-1200.jpg" srcset="assets/img/photos/sys-access-640.jpg 640w, assets/img/photos/sys-access-1200.jpg 1200w" sizes="70vw" alt="A reader being used at a door" data-focus="46 17 93 43" fetchpriority="high" width="1200" height="900">
+    <div class="phero__media" data-phero>
+      <div class="phero__slide is-active"><img src="assets/img/photos/sys-access-1200.jpg" srcset="assets/img/photos/sys-access-640.jpg 640w, assets/img/photos/sys-access-1200.jpg 1200w" sizes="70vw" alt="A reader being used at a door" data-focus="46 17 93 43" fetchpriority="high" width="1200" height="900"></div>
+      <div class="phero__slide"><img src="assets/img/photos/sys-cctv-1200.jpg" srcset="assets/img/photos/sys-cctv-640.jpg 640w, assets/img/photos/sys-cctv-1200.jpg 1200w" sizes="70vw" alt="A camera covering an approach" data-focus="47 21 85 63" loading="lazy" width="1200" height="900"></div>
     </div>
     <div class="phero__scrim"></div>
     <div class="container" data-obstacle>
@@ -148,7 +149,7 @@
     </div>
   </section>
 
-  <section class="section section--white">
+  <section class="section section--white pat pat-grid">
     <div class="container split split--narrow">
       <div data-reveal>
         <p class="overline">What we carry</p>
@@ -167,7 +168,7 @@
     </div>
   </section>
 
-  <section class="section section--cream">
+  <section class="section section--cream pat pat-trace">
     <div class="container">
       <div class="shead" data-reveal>
         <div>
@@ -178,7 +179,7 @@
       </div>
 
       <div class="grid g-3">
-        <article class="ncard ncard--white" id="residential" data-reveal>
+        <article class="ncard ncard--white pat-graph" id="residential" data-reveal>
           <div class="ncard__main">
             <span class="ncard__icon"><i class="ph-duotone ph-house-line i-2xl" aria-hidden="true"></i></span>
             <h3 class="h-3">Residential</h3>
@@ -186,11 +187,11 @@
             <ul class="card__list" style="margin-top:1.25rem"><li><span class="li-ico" aria-hidden="true"><svg class="si i-sm" aria-hidden="true" focusable="false"><use href="#si-alarm-panel"/></svg></span><span>Intruder alarm on call day and night</span></li><li><span class="li-ico" aria-hidden="true"><i class="ph ph-device-mobile-camera i-sm" aria-hidden="true"></i></span><span>CCTV you can check from your phone</span></li><li><span class="li-ico" aria-hidden="true"><svg class="si i-sm" aria-hidden="true" focusable="false"><use href="#si-gate-motor"/></svg></span><span>Electric gate motors</span></li><li><span class="li-ico" aria-hidden="true"><i class="ph ph-lightbulb i-sm" aria-hidden="true"></i></span><span>Driveway lighting</span></li></ul>
           </div>
           <div class="ncard__foot">
-            <a class="ncard__cta" href="contact.html">Get a price <i class="ph ph-caret-double-right i-xs" aria-hidden="true"></i></a>
+            <a class="ncard__cta stretch" href="contact.html">Get a price <i class="ph ph-caret-double-right i-xs" aria-hidden="true"></i></a>
             <span class="ncard__fill" aria-hidden="true"></span>
           </div>
         </article>
-        <article class="ncard ncard--lime" id="commercial" data-reveal>
+        <article class="ncard ncard--lime pat-hatch" id="commercial" data-reveal>
           <div class="ncard__main">
             <span class="ncard__icon"><i class="ph-duotone ph-buildings i-2xl" aria-hidden="true"></i></span>
             <h3 class="h-3">Commercial</h3>
@@ -198,11 +199,11 @@
             <ul class="card__list" style="margin-top:1.25rem"><li><span class="li-ico" aria-hidden="true"><i class="ph ph-compass-tool i-sm" aria-hidden="true"></i></span><span>Security design and installation</span></li><li><span class="li-ico" aria-hidden="true"><svg class="si i-sm" aria-hidden="true" focusable="false"><use href="#si-biometric"/></svg></span><span>Biometric and card access control</span></li><li><span class="li-ico" aria-hidden="true"><svg class="si i-sm" aria-hidden="true" focusable="false"><use href="#si-turnstile"/></svg></span><span>Turnstiles and boom gates</span></li><li><span class="li-ico" aria-hidden="true"><i class="ph ph-plugs-connected i-sm" aria-hidden="true"></i></span><span>Systems talking to each other</span></li></ul>
           </div>
           <div class="ncard__foot">
-            <a class="ncard__cta" href="contact.html">Get a price <i class="ph ph-caret-double-right i-xs" aria-hidden="true"></i></a>
+            <a class="ncard__cta stretch" href="contact.html">Get a price <i class="ph ph-caret-double-right i-xs" aria-hidden="true"></i></a>
             <span class="ncard__fill" aria-hidden="true"></span>
           </div>
         </article>
-        <article class="ncard ncard--dark" id="industrial" data-reveal>
+        <article class="ncard ncard--dark pat-grid" id="industrial" data-reveal>
           <div class="ncard__main">
             <span class="ncard__icon"><i class="ph-duotone ph-factory i-2xl" aria-hidden="true"></i></span>
             <h3 class="h-3">Industrial</h3>
@@ -210,7 +211,7 @@
             <ul class="card__list" style="margin-top:1.25rem"><li><span class="li-ico" aria-hidden="true"><svg class="si i-sm" aria-hidden="true" focusable="false"><use href="#si-video-wall"/></svg></span><span>Video management systems</span></li><li><span class="li-ico" aria-hidden="true"><i class="ph ph-scan i-sm" aria-hidden="true"></i></span><span>Number plate readers</span></li><li><span class="li-ico" aria-hidden="true"><svg class="si i-sm" aria-hidden="true" focusable="false"><use href="#si-boom-gate"/></svg></span><span>Gate automation and parking</span></li><li><span class="li-ico" aria-hidden="true"><i class="ph ph-pulse i-sm" aria-hidden="true"></i></span><span>Health monitoring on devices</span></li></ul>
           </div>
           <div class="ncard__foot">
-            <a class="ncard__cta" href="contact.html">Get a price <i class="ph ph-caret-double-right i-xs" aria-hidden="true"></i></a>
+            <a class="ncard__cta stretch" href="contact.html">Get a price <i class="ph ph-caret-double-right i-xs" aria-hidden="true"></i></a>
             <span class="ncard__fill" aria-hidden="true"></span>
           </div>
         </article>
@@ -218,7 +219,7 @@
     </div>
   </section>
 
-  <section class="section section--white">
+  <section class="section section--white pat pat-rings">
     <div class="container">
       <div class="shead" data-reveal>
         <div>
@@ -313,15 +314,15 @@
         <div class="shead__aside">Four stages, the same on every job whatever the scale.</div>
       </div>
       <div class="steps" data-anim="zip">
-        <a class="step" href="contact.html" data-reveal><span class="step__n num">01</span><h3>Survey</h3><p>We walk the site with you and write up where you are exposed. This costs you nothing, whether or not you go ahead with us.</p></a>
-        <a class="step" href="contact.html" data-reveal><span class="step__n num">02</span><h3>Specify</h3><p>You get the camera positions, cable routes, power requirements and coverage in writing, with a price against each line.</p></a>
-        <a class="step" href="contact.html" data-reveal><span class="step__n num">03</span><h3>Install</h3><p>Our own technicians do the work, commission the system and train whoever will be using it every day.</p></a>
-        <a class="step" href="contact.html" data-reveal><span class="step__n num">04</span><h3>Maintain</h3><p>Servicing on a schedule, health checks on the equipment, and a number you can call at any hour.</p></a>
+        <a class="step pat pat-scan" href="contact.html" data-reveal><span class="step__n num">01</span><h3>Survey</h3><p>We walk the site with you and write up where you are exposed. This costs you nothing, whether or not you go ahead with us.</p></a>
+        <a class="step pat pat-cross" href="contact.html" data-reveal><span class="step__n num">02</span><h3>Specify</h3><p>You get the camera positions, cable routes, power requirements and coverage in writing, with a price against each line.</p></a>
+        <a class="step pat pat-trace" href="contact.html" data-reveal><span class="step__n num">03</span><h3>Install</h3><p>Our own technicians do the work, commission the system and train whoever will be using it every day.</p></a>
+        <a class="step pat pat-weave" href="contact.html" data-reveal><span class="step__n num">04</span><h3>Maintain</h3><p>Servicing on a schedule, health checks on the equipment, and a number you can call at any hour.</p></a>
       </div>
     </div>
   </section>
 
-  <section class="section section--cream">
+  <section class="section section--cream pat pat-graph">
     <div class="container container--narrow">
       <div class="shead shead--center" data-reveal>
         <div>
@@ -375,7 +376,7 @@
       </div>
     </div>
   </section>
-  <section class="section section--cream section--tight">
+  <section class="section section--cream section--tight pat pat-weave">
     <div class="container">
       <div class="shead" data-reveal>
         <div>
@@ -405,7 +406,7 @@
   </section>
 
   <!-- ===== CTA ===== -->
-  <section class="section section--tight">
+  <section class="section section--tight pat pat-hatch">
     <div class="container">
       <div class="cta cta--photo" data-reveal>
     <div class="secbg" data-reveal data-anim="scale" style="--pos:54% 46%"><img src="assets/img/photos/response-night-1200.jpg" srcset="assets/img/photos/response-night-640.jpg 640w, assets/img/photos/response-night-1200.jpg 1200w" sizes="100vw" alt="" data-focus="43 35 63 59" loading="lazy" width="1200" height="800"></div>        <div class="cta__inner" data-obstacle>
@@ -426,7 +427,7 @@
 </main>
 
 <!-- ===== Footer ===== -->
-<footer class="footer">
+<footer class="footer pat pat-rings">
   <div class="container">
     <div class="footer__top">
       <div class="footer__brand">

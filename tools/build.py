@@ -286,6 +286,29 @@ def crosslink(html, name):
     return before + PROSE_P.sub(one, body) + after
 
 
+def award_seam():
+    """The three laurels, centred on the join between two bands.
+
+    The artwork already reads "Best Service Award" and the year, so the
+    plate adds only what the laurels cannot say: that it was three years in
+    a row. White, because it has to sit on the light band above and the dark
+    one below at the same time.
+    """
+    marks = "".join(
+        '<img src="assets/img/brand/award-%d.png" alt="" aria-hidden="true" '
+        'loading="lazy" width="120" height="118">' % y
+        for y in (2014, 2015, 2016))
+    return """  <a class="seam" href="about.html#recognition"
+     aria-label="Best Service Award in 2014, 2015 and 2016. Read about our recognition.">
+    <span class="seam__plate">
+      <span class="seam__marks">%s</span>
+      <span class="seam__note">Best Service Award<strong>three years running</strong></span>
+      <span class="seam__go" aria-hidden="true">%s</span>
+    </span>
+  </a>
+""" % (marks, CHEV_SM)
+
+
 def secbg(name, alt="", pos="50% 45%"):
     """The photographic ground behind a section.
 
@@ -331,7 +354,7 @@ def ncard(variant, ico, title, text, bullets, href, cta="See the detail"):
             %s
           </div>
           <div class="ncard__foot">
-            <a class="ncard__cta" href="%s">%s %s</a>
+            <a class="ncard__cta stretch" href="%s">%s %s</a>
             <span class="ncard__fill" aria-hidden="true"></span>
           </div>
         </article>
@@ -341,6 +364,11 @@ def ncard(variant, ico, title, text, bullets, href, cta="See the detail"):
 
 # -------------------------------------------------- the group, as components
 ORG_FIELD = {"technologies": "org--a", "guarding": "org--b", "circuitron": "org--c"}
+
+# A company whose own identity differs from the group's. The value is the
+# theme class, and the same table drives the hero panel, the hero tab and the
+# column in the chart, so the three cannot disagree about what blue is.
+BRAND_THEME = {"circuitron": "theme-circuitron"}
 
 
 def org_chart(compact=False):  # noqa: the flag is kept for call sites
@@ -352,22 +380,27 @@ def org_chart(compact=False):  # noqa: the flag is kept for call sites
     heads = rows_role = rows_line = rows_serves = rows_trades = rows_go = ""
     for c in COMPANIES:
         f = ORG_FIELD[c["id"]]
-        mark = (c["logo"] if c["id"] == "circuitron"
-                else c.get("logo_small_white", c["logo_white"]))
-        heads += ('        <a class="org__col %s" href="%s" aria-label="%s">'
+        # Every plate carries a white mark on a colour. Circuitron used to
+        # carry its full colour mark on green, where its own blue vanished.
+        mark = c.get("logo_small_white", c["logo_white"])
+        # The theme travels down the whole column, not just the plate: the
+        # chart is read down as well as across, and a blue plate over four
+        # green rows would look like a mistake rather than like a company.
+        t = (" " + BRAND_THEME[c["id"]]) if c["id"] in BRAND_THEME else ""
+        heads += ('        <a class="org__col %s%s" href="%s" aria-label="%s">'
                   '<span class="org__field"><img src="%s" alt="%s" width="%d" height="%d" '
                   'loading="lazy"></span></a>\n'
-                  % (f, c["href"], c["name"], mark, c["name"],
+                  % (f, t, c["href"], c["name"], mark, c["name"],
                      round(42 * c["logo_wh"][0] / c["logo_wh"][1]), 42))
-        rows_role += '        <span class="org__role">%s</span>\n' % c["role"]
-        rows_line += '        <p class="org__line">%s</p>\n' % c["chart_line"]
-        rows_serves += '        <p class="org__serves">%s</p>\n' % (
-            " &middot; ".join(c["sectors"][:3]))
-        rows_trades += '        <p class="org__trades">%s</p>\n' % (
-            " &middot; ".join(u["name"] for u in c["units"]) if c.get("units")
+        rows_role += '        <span class="org__role%s">%s</span>\n' % (t, c["role"])
+        rows_line += '        <p class="org__line%s">%s</p>\n' % (t, c["chart_line"])
+        rows_serves += '        <p class="org__serves%s">%s</p>\n' % (
+            t, " &middot; ".join(c["sectors"][:3]))
+        rows_trades += '        <p class="org__trades%s">%s</p>\n' % (
+            t, " &middot; ".join(u["name"] for u in c["units"]) if c.get("units")
             else '<span class="org__none">&mdash;</span>')
-        rows_go += ('        <a class="org__go" href="%s">%s %s</a>\n'
-                    % (c["href"], c["short"], CHEV_SM))
+        rows_go += ('        <a class="org__go%s" href="%s">%s %s</a>\n'
+                    % (t, c["href"], c["short"], CHEV_SM))
 
     return """      <div class="org" data-reveal>
         <div class="org__row org__row--head">
@@ -407,7 +440,9 @@ def org_list():
           </span>
           <span class="orgrow__go" aria-hidden="true">%s</span>
         </a>
-""" % (ORG_FIELD[c["id"]], c["href"], c["role"], c["short"], CHEV_SM)
+""" % (ORG_FIELD[c["id"]]
+       + ((" " + BRAND_THEME[c["id"]]) if c["id"] in BRAND_THEME else ""),
+       c["href"], c["role"], c["short"], CHEV_SM)
     return '      <div class="orglist" data-reveal>\n%s      </div>\n' % out
 
 
@@ -471,24 +506,38 @@ def division_card(c, d):
     d = dict(d, line=autolink(d["line"], max_links=1))
     """A capability inside a company: what it is, then the actual line items."""
     photo = DIV_PHOTO.get(d["id"])
+    href = DIV_HREF.get(d["id"], DIV_HREF_DEFAULT)
     media = ""
     if photo:
         f, alt = photo
-        media = """          <a class="dcard__media" href="contact.html" tabindex="-1" aria-hidden="true">
+        # Not an anchor. The card already has one, on its heading, and a
+        # second one over the picture would be a tab stop that announces
+        # nothing and goes to the same place.
+        media = """          <div class="dcard__media">
             %s
-          </a>
+          </div>
 """ % photo_img(f, alt, "(max-width:720px) 100vw, 30vw")
     return """        <article class="dcard%s" id="%s" data-reveal>
           %s%s          <span class="dcard__ico" data-obstacle>%s</span>
-          <h3 class="h-3">%s</h3>
+          <h3 class="h-3"><a class="stretch" href="%s">%s</a></h3>
           <p>%s</p>
           <ul class="dcard__list">%s</ul>
         </article>
 """ % (" dcard--photo" if media else "", d["id"],
        ambient(DIV_PHOTO[d["id"]][0]) if media else "",
        media, si(d["icon"], "i-xl"),
-       d["name"], d["line"],
+       href, d["name"], d["line"],
        "".join("<li>%s</li>" % i for i in d["items"]))
+
+
+# Where a capability card goes when it is clicked. Most lead to the survey,
+# because that is the next step for someone reading about a capability; two
+# have a better home on the site itself.
+DIV_HREF = {
+    "security-systems": "services.html",
+    "electronics":      "circuitron.html#circuitstore",
+}
+DIV_HREF_DEFAULT = "contact.html"
 
 
 UNIT_PHOTO = {
@@ -501,15 +550,15 @@ def unit_panel(c, u):
     u = dict(u, blurb=autolink(u.get("blurb", ""), max_links=2)) if u.get("blurb") else u
     """CircuitStore and EcoCircuit: businesses inside a business."""
     f, alt = UNIT_PHOTO[u["id"]]
-    media = """          <a class="unit__media" href="contact.html" tabindex="-1" aria-hidden="true">
+    media = """          <div class="unit__media">
             %s
-          </a>
+          </div>
 """ % photo_img(f, alt, "(max-width:980px) 100vw, 45vw")
     return """        <article class="unit" id="%s" data-reveal>
 %s          <div class="unit__head">
             <span class="unit__ico">%s</span>
             <div>
-              <h3 class="h-3">%s</h3>
+              <h3 class="h-3"><a class="stretch" href="contact.html">%s</a></h3>
               <p class="script unit__strap">%s</p>
             </div>
           </div>
@@ -858,14 +907,40 @@ FOOTER = """
        icon("whatsapp-logo", "i-md", "ph-fill", "wa__open"), icon("x", "i-md", "ph", "wa__close"))
 
 
+# The second photograph in each interior hero, keyed on the first. Chosen so
+# the pair says something the single picture could not: the team and then the
+# dog unit, the reader and then the camera, the bench and then the rack.
+PHERO_PAIR = {
+    "officer-on-duty":         ("officers-warehouse",
+                                "Officers on a warehouse contract"),
+    "sys-access":              ("sys-cctv",
+                                "A camera covering an approach"),
+    "officers-team":           ("k9-handler-standing",
+                                "A handler and dog on a site patrol"),
+    "circuitron-bench":        ("tech-network",
+                                "A patch panel in a network cabinet"),
+    "control-room-monitoring": ("security-officers",
+                                "Two officers at the start of a shift"),
+    "sys-cctv":                ("sys-gates",
+                                "An automated gate on a commercial entrance"),
+    "technician-panel":        ("vehicle-checkpoint",
+                                "An officer checking a vehicle at a gate"),
+}
+
+
 def phero(label, title, lead, pic=None, alt=""):
     lead = autolink(lead, max_links=2)
     if pic:
-        media = """    <div class="phero__media">
-      %s
-    </div>
+        shots = ['      <div class="phero__slide is-active">%s</div>\n'
+                 % photo_img(pic, alt, "70vw", lazy=False, eager=True)]
+        second = PHERO_PAIR.get(pic)
+        if second:
+            shots.append('      <div class="phero__slide">%s</div>\n'
+                         % photo_img(second[0], second[1], "70vw"))
+        media = """    <div class="phero__media"%s>
+%s    </div>
     <div class="phero__scrim"></div>
-""" % photo_img(pic, alt, "70vw", lazy=False, eager=True)
+""" % (" data-phero" if second else "", "".join(shots))
         cls = "phero"
     else:
         media, cls = "", "phero phero--plain"
@@ -1038,6 +1113,77 @@ def bullet_icons(html):
     return BULLET_UL.sub(lambda m: BULLET_LI.sub(one_li, m.group(0)), html)
 
 
+# The texture order. Read down, it alternates between line work and point
+# work so no two neighbours feel the same even before the page rotates it.
+PATTERNS = ["graph", "weave", "hatch", "cross", "scan", "grid", "trace", "rings"]
+
+# Where each page starts in that list, so the home page and the about page
+# do not open with the same grain. Primes against the length, so a page
+# stepping through the list never falls into another page's phase.
+PAT_START = {
+    "index.html": 0, "about.html": 3, "services.html": 5,
+    "security-services.html": 2, "circuitron.html": 6, "group.html": 1,
+    "signage.html": 4, "renewable-energy.html": 7, "contact.html": 2,
+    "privacy.html": 5,
+}
+
+SECTION_TAG = re.compile(r'<section class="(section[^"]*)"')
+
+
+def patterns(html, name):
+    """One texture per band, in sequence, no two neighbours alike."""
+    at = [PAT_START.get(name, 0)]
+
+    def one(m):
+        cls = m.group(1)
+        if "section--photo" in cls or "pat-" in cls:
+            return m.group(0)          # a photograph is texture enough
+        p = PATTERNS[at[0] % len(PATTERNS)]
+        at[0] += 1
+        return '<section class="%s pat pat-%s"' % (cls, p)
+
+    html = SECTION_TAG.sub(one, html)
+
+    # The repeated components inside the bands. The four process steps read
+    # left to right through four textures, which is the one place on the
+    # site where a sequence of patterns means something: it is a sequence of
+    # stages. The rest take one each, so a grid of identical cards stops
+    # being a grid of identical surfaces.
+    # "after" where the component already draws a rule on ::before.
+    for cls, pats, where in (
+            ("step", ["scan", "cross", "trace", "weave"], "pat"),
+            # On the article, not on the main: the custom property then
+            # inherits to the card body AND to the filler beside the tab, so
+            # both halves of the silhouette carry the same material instead
+            # of meeting at a visible seam.
+            ("ncard ncard--white", ["graph"], ""),
+            ("ncard ncard--lime", ["hatch"], ""),
+            ("ncard ncard--dark", ["grid"], ""),
+            ("ncard ncard--green", ["trace"], ""),
+            ("bento__stat", ["hatch"], "pat"),
+            ("unit", ["trace", "rings"], "pat"),
+            ("card card--dark", ["weave", "scan", "cross", "grid"], "pat pat--after")):
+        k = [0]
+
+        def one(m, pats=pats, k=k, where=where):
+            p = pats[k[0] % len(pats)]
+            k[0] += 1
+            return m.group(0)[:-1] + ' %spat-%s"' % (
+                (where + " ") if where else "", p)
+
+        html = re.sub(r'class="%s(?: [A-Za-z0-9 _-]+)?"' % re.escape(cls),
+                      one, html)
+
+    # The two bands that are not .section but are still bands.
+    html = html.replace('<section class="cta"',
+                        '<section class="cta pat pat-trace"', 1)
+    html = html.replace('<footer class="footer"',
+                        '<footer class="footer pat pat-rings"', 1)
+    html = html.replace('<section class="clients section--white"',
+                        '<section class="clients section--white pat pat-scan"', 1)
+    return html
+
+
 # A page may carry its own company's colours. The class goes on <main>, so the
 # group's header and footer keep the group's green.
 THEMES = {"circuitron.html": "theme-circuitron"}
@@ -1053,6 +1199,7 @@ def theme(html, name):
 def write(name, title, desc, body, cta=True):
     html = head(title, desc, name) + topbar() + header(name) + body + (CTA if cta else "") + FOOTER
     html = photo_bands(html, name)
+    html = patterns(html, name)
     html = crosslink(html, name)
     html = bullet_icons(html)
     html = theme(html, name)
@@ -1129,8 +1276,11 @@ def hero_block():
                    '\n        %s\n      </div>\n'
                    % (' is-active' if on else '', h['pos'], h['expo'], img))
 
+        # A company with colours of its own says so, and the theme class
+        # does the rest: accent word, both buttons, the phone icon.
+        brand = BRAND_THEME.get(c["id"], "")
         panels += ("""
-          <div class="hero__panel%s" id="hp-%d" role="tabpanel" aria-labelledby="ht-%d">
+          <div class="hero__panel%s%s" id="hp-%d" role="tabpanel" aria-labelledby="ht-%d"%s>
             <div class="hero__id">
               <img class="hero__lockup" src="%s" alt="%s" width="%d" height="%d" loading="%s">
             </div>
@@ -1145,7 +1295,9 @@ def hero_block():
               </dl>
             </div>
           </div>
-""" % (' is-active' if on else '', i + 1, i + 1,
+""" % (' is-active' if on else '', (' ' + brand) if brand else '',
+       i + 1, i + 1,
+       (' data-brand="%s"' % c['id']) if brand else '',
        c.get('logo_small_white', c['logo_white']), c['name'],
        round(40 * c['logo_wh'][0] / c['logo_wh'][1]), 40,
        'eager' if on else 'lazy',
@@ -1157,13 +1309,14 @@ def hero_block():
        icon('phone-call', 'i-md')))
 
         tabs += ("""
-          <button class="hero__tab%s" type="button" role="tab" id="ht-%d"
+          <button class="hero__tab%s%s" type="button" role="tab" id="ht-%d"
                   aria-controls="hp-%d" aria-selected="%s" tabindex="%d" data-hero-tab>
             <span class="hero__tab-rail" aria-hidden="true"><i></i></span>
             <span class="hero__tab-n num">%02d</span>
             <span class="hero__tab-text"><strong>%s</strong><small>%s</small></span>
           </button>
-""" % (' is-active' if on else '', i + 1, i + 1,
+""" % (' is-active' if on else '', (' ' + brand) if brand else '',
+       i + 1, i + 1,
        'true' if on else 'false', 0 if on else -1, i + 1,
        c['tab'][0], c['tab'][1]))
 
@@ -1175,6 +1328,7 @@ def hero_block():
     <div class="hero__unify" aria-hidden="true"></div>
     <div class="hero__vignette" aria-hidden="true"></div>
     <div class="hero__grid" aria-hidden="true"></div>
+    <div class="hero__tint" aria-hidden="true"></div>
     <div class="hero__scrim"></div>
 
     <div class="container">
@@ -1243,6 +1397,7 @@ home = hero_block() + CLIENTS + """
     </div>
   </section>
 
+""" + award_seam() + """
   <!-- ===== Process ===== -->
   <section class="section section--dark">
     <div class="container">
@@ -2011,7 +2166,7 @@ def sign_card(sign, note=None):
                  width="%d" height="%d" style="width:%gpx" loading="lazy">
           </div>
           <figcaption>
-            <strong>%s</strong>
+            <strong><a class="stretch" href="contact.html">%s</a></strong>
             <span class="signcard__meta">%s &middot; %d &times; %d mm</span>
             <small>%s</small>
           </figcaption>
