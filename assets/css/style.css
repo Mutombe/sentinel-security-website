@@ -129,10 +129,9 @@
                    linear-gradient(90deg, rgba(6, 41, 27, .05) 1px, transparent 1px);
   --pat-grid-lt:   linear-gradient(rgba(255, 255, 255, .045) 1px, transparent 1px),
                    linear-gradient(90deg, rgba(255, 255, 255, .045) 1px, transparent 1px);
-  --pat-dots-ink:  radial-gradient(rgba(6, 41, 27, .10) 1px, transparent 1.6px);
-  --pat-dots-lt:   radial-gradient(rgba(255, 255, 255, .10) 1px, transparent 1.6px);
-  --pat-diag-ink:  repeating-linear-gradient(135deg, rgba(6, 41, 27, .05) 0 1px, transparent 1px 9px);
-  --pat-diag-lt:   repeating-linear-gradient(135deg, rgba(255, 255, 255, .06) 0 1px, transparent 1px 9px);
+  /* The dot and hatch tokens that used to live here are now .pat-dots and
+     .pat-hatch in the pattern library, which draws both from one colour
+     token instead of keeping an ink copy and a light copy of each. */
   --cell: 34px;
 }
 
