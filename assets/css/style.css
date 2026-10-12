@@ -74,6 +74,13 @@
   --line:    #E4E6DA;
   --line-2:  rgba(255, 255, 255, .14);
 
+  /* Links in running text. Two colours, because a link that only changes its
+     underline on hover gives nothing back; one that brightens does.
+     The resting colour is the logo green itself. */
+  --link:      var(--g-mid);   /* #0C6934 - 6.3:1 on cream, 6.8:1 on white */
+  --link-hi:   #0C522E;        /* firmer, 8.2:1 over the wash below */
+  --link-wash: var(--accent-4);/* the pale mint highlighter */
+
   /* Text */
   --body:    #55655B;  /* 5.7:1 on cream */
   --body-2:  #647269;  /* muted, still 4.7:1 on cream. Anything lighter fails AA. */
@@ -301,6 +308,35 @@ p:last-child { margin-bottom: 0; }
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+/* ---------- 3c. The mark on a line item ----------
+   Every line in a capability list names a specific thing, so it is marked
+   with the glyph for that thing: a dome against the cameras, a beam sensor
+   against the beams, a lorry against the delivery. A repeated chevron or a
+   repeated square says only "this is a list", which the layout already said.
+
+   The glyph sits in a fixed slot so the text edges stay straight however wide
+   the icons draw, and the slot is as tall as one line so the mark centres on
+   the first line of a wrapped item rather than drifting to the middle of it.
+
+   Marked aria-hidden in the markup: the line already says what it is, and a
+   screen reader announcing "dome camera, CCTV surveillance systems" is worse
+   than one announcing the line. */
+.card__list li,
+.dcard__list li,
+.unit__list li { display: flex; align-items: flex-start; gap: .62rem; }
+
+.li-ico {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 1.5em;              /* one line of the item's own leading */
+  color: var(--bullet, var(--green));
+  transition: color .4s var(--ease);
+}
+.li-ico .si  { font-size: 18px; stroke-width: 1.65; }
+.li-ico .ph  { font-size: 17px; }
 
 .i-xs { font-size: 14px; }
 .i-sm { font-size: 17px; }
@@ -1014,7 +1050,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .ncard__main h3 { color: var(--fg); margin-bottom: .6rem; max-width: 15ch; }
 .ncard__main p { color: var(--fg); opacity: .74; font-size: .95rem; margin: 0; }
 .ncard .card__list li { color: var(--fg); opacity: .78; }
-.ncard .card__list li::before { background: currentColor; }
+.ncard .card__list { --bullet: currentColor; }
 
 .ncard__foot { display: flex; align-items: stretch; gap: var(--gap-tab); min-height: calc(46px + var(--tab-drop)); }
 
@@ -1056,20 +1092,16 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .ncard--green { --c: var(--green); --fg: #fff; }
 .ncard--white .ncard__main { box-shadow: var(--sh-1); }
 
-/* A decorative arc in the corner, as in the reference's lime card */
+/* The coloured cards carry a fine grid and nothing else.
+   There used to be a large tinted circle in the bottom corner here. A circle
+   bigger than its container has a hard edge somewhere, and this one's ran
+   diagonally through the body copy and stopped dead at the seam between the
+   card and its foot: two straight tonal steps that read as a rendering fault
+   rather than as depth. Texture that reaches every corner evenly cannot do
+   that, so the grid stays and the circle goes. */
 .ncard--lime .ncard__main, .ncard--dark .ncard__main, .ncard--green .ncard__main { position: relative; overflow: hidden; }
 .ncard--dark .ncard__main { background-image: var(--pat-grid-lt); background-size: 28px 28px; }
 .ncard--lime .ncard__main { background-image: var(--pat-grid-ink); background-size: 28px 28px; }
-.ncard--lime .ncard__main::after {
-  content: ""; position: absolute; right: -14%; bottom: -66%;
-  width: 82%; aspect-ratio: 1; border-radius: 50%;
-  background: rgba(6, 41, 27, .07);
-}
-.ncard--dark .ncard__main::after, .ncard--green .ncard__main::after {
-  content: ""; position: absolute; right: -14%; bottom: -66%;
-  width: 82%; aspect-ratio: 1; border-radius: 50%;
-  background: rgba(255, 255, 255, .05);
-}
 
 /* ---------- 10. Plain cards ---------- */
 .card {
@@ -1109,21 +1141,13 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .card--hoverdark:hover p { color: rgba(255,255,255,.66); }
 .card--hoverdark:hover .card__icon { background: var(--lime); color: var(--ink); transform: rotate(-6deg); }
 .card--hoverdark:hover .card__list li { color: rgba(255,255,255,.66); }
-.card--hoverdark:hover .card__list li::before { background: var(--lime); }
+.card--hoverdark:hover .card__list .li-ico { color: var(--lime); }
 .card--hoverdark:hover .plink { background: var(--lime); border-color: var(--lime); color: var(--ink); }
 
-.card__list { margin-top: 1.1rem; display: grid; gap: .45rem; }
+.card__list { margin-top: 1.1rem; display: grid; gap: .5rem; }
 .card__list li {
-  position: relative; padding-left: 1.4rem;
-  font-size: .92rem; color: var(--body);
+  font-size: .92rem; line-height: 1.5; color: var(--body);
   transition: color .4s var(--ease);
-}
-.card__list li::before {
-  content: ""; position: absolute; left: 0; top: .5em;
-  width: 10px; height: 8px;
-  background: var(--green);
-  clip-path: polygon(0 0, 42% 0, 100% 50%, 42% 100%, 0 100%, 58% 50%);
-  transition: background-color .4s var(--ease);
 }
 .card .plink { margin-top: auto; align-self: flex-start; padding-top: .6rem; }
 .card .plink { margin-top: 1.5rem; }
@@ -1135,7 +1159,7 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 .card--dark h3 { color: #fff; }
 .card--dark p, .card--dark .card__list li { color: var(--on-dark-soft); }
 .card--dark .card__icon { background: rgba(255,255,255,.08); color: var(--lime); }
-.card--dark .card__list li::before { background: var(--lime); }
+.card--dark .card__list { --bullet: var(--lime); }
 
 /* Award laurels. The source art is only 120x118, so it is given a fixed box and
    object-fit:contain: it can never be squashed by a parent, whatever the layout. */
@@ -1275,44 +1299,86 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
 @keyframes marquee { to { transform: translateX(-50%); } }
 
 /* ---------- Cross links in running text ----------
-   A dotted rule so a linked phrase is visible without shouting, going solid
-   and picking up a tint on hover. Inline links in prose should read as part
-   of the sentence until you reach for them. */
-.clink {
-  color: inherit;
+   A linked phrase takes the brand colour outright. The previous treatment
+   inherited the body colour and marked itself with a grey dotted rule, which
+   is the typographic equivalent of a whisper: on a page this green, a link
+   should read as the one warm thing in the paragraph.
+
+   Each ground gives a link three things - a resting colour, a hover colour
+   and a wash to light up behind it - so the same rule can serve the cream
+   pages, the dark bands, the accent cards and the blue theme.
+
+   Hover does not mean "brighter" everywhere. On the dark bands the link
+   brightens, because there is headroom above the accent. On the light ones
+   brightening is the wrong direction: the resting colour is already deep,
+   and a lighter green against cream would hand back the contrast the link
+   needs. There the ink firms up and a pale mint highlighter comes on behind
+   it, so the link gains contrast on hover rather than losing it. Measured:
+   6.3:1 at rest on cream, 8.2:1 hovered.
+
+   The underline stays at rest, thin and tinted rather than dotted and grey.
+   It has to: these links sit 1.10:1 against the surrounding body colour, far
+   under the 3:1 that would let colour identify them on its own, so colour
+   alone would leave them invisible to anyone who cannot separate the hues.
+
+   Written as a.clink rather than .clink: a container that colours its own
+   paragraphs, as the office block does, matches at (0,1,1) and would
+   otherwise take the link's colour straight back off it. */
+a.clink {
+  color: var(--link);
   text-decoration: underline;
-  text-decoration-style: dotted;
-  text-decoration-color: color-mix(in srgb, var(--g-mid) 55%, transparent);
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: color-mix(in srgb, var(--link) 42%, transparent);
   text-underline-offset: 3px;
-  border-radius: 3px;
-  padding: 0 .12em;
-  margin: 0 -.12em;
-  font-weight: 600;
-  transition: text-decoration-color .2s var(--ease), background-color .2s var(--ease),
-              color .2s var(--ease);
+  text-decoration-skip-ink: auto;
+  border-radius: 4px;
+  padding: 0 .16em;
+  margin: 0 -.16em;
+  font-weight: 650;
+  transition: color .2s var(--ease), text-decoration-color .2s var(--ease),
+              background-color .2s var(--ease);
 }
-.clink:hover,
-.clink:focus-visible {
-  text-decoration-style: solid;
+a.clink:hover,
+a.clink:focus-visible {
+  color: var(--link-hi);
+  text-decoration-color: currentColor;
   text-decoration-thickness: 2px;
-  text-decoration-color: var(--g-mid);
-  background: color-mix(in srgb, var(--g-mid) 9%, transparent);
-  color: var(--g-900);
+  background: var(--link-wash);
 }
-.section--dark .clink,
-.phero .clink,
-.hero .clink {
-  text-decoration-color: color-mix(in srgb, var(--lime) 55%, transparent);
+
+/* The dark bands: the other end of the same ramp. Set on the ground rather
+   than on the link, so a link anywhere inside one is right without asking. */
+.section--dark,
+.section--photo,
+.phero,
+.hero,
+.card--dark,
+.ncard--dark,
+.unit {
+  --link:      var(--accent);        /* 8.9:1 on the lightest dark ground */
+  --link-hi:   var(--accent-3);      /* 7.1:1 even over its own wash */
+  --link-wash: rgb(var(--accent-rgb) / .15);
 }
-.section--dark .clink:hover, .section--dark .clink:focus-visible,
-.phero .clink:hover, .phero .clink:focus-visible,
-.hero .clink:hover, .hero .clink:focus-visible {
-  text-decoration-color: var(--lime);
-  background: color-mix(in srgb, var(--lime) 14%, transparent);
-  color: #fff;
+
+/* A card whose ground IS the accent. The logo green reaches only 3.86:1 on
+   it, so the link goes the other way: deeper than the copy, not lighter,
+   and the wash is white rather than mint. */
+.ncard--lime,
+.ncard--green {
+  --link:      var(--g-950);         /* 10.7:1 on the accent */
+  --link-hi:   var(--g-950);
+  --link-wash: rgb(255 255 255 / .22);
 }
-@media (prefers-reduced-motion: reduce) { .clink { transition: none; } }
+.ncard--lime a.clink,
+.ncard--green a.clink {
+  text-decoration-color: color-mix(in srgb, var(--g-950) 55%, transparent);
+}
+
+/* Over a photograph the type already carries a shadow; the link keeps it, or
+   the one coloured phrase in the sentence is the one that stops being legible. */
+.hero a.clink, .phero a.clink, .section--photo a.clink { text-shadow: inherit; }
+
+@media (prefers-reduced-motion: reduce) { a.clink { transition: none; } }
 
 /* ---------- Photographic section grounds ----------
    Every other band carries a picture. Same treatment as the heroes: full
@@ -1462,11 +1528,33 @@ body.is-locked .fab-rail { opacity: 0; visibility: hidden; }
   --ink-3: #16397A;
   --body:    #4A5568;
   --body-2:  #5C6880;
+
+  /* Links, the same three steps in this theme's hue: 7.0:1 at rest,
+     8.5:1 hovered over the wash. */
+  --link:      #1D4FA8;
+  --link-hi:   #163F86;
+  --link-wash: var(--accent-4);
   --line:  rgba(10, 31, 71, .14);
   --cream: #F2F5FB;
 
   --green:   var(--g-mid);
   --green-2: #2A62C4;
+  --green-3: var(--g-light);
+
+  /* A token whose value is written as var() of another token computes where
+     it is DECLARED, not where it is used: --lime: var(--accent) on :root
+     resolved to green once, and that green then inherited straight through
+     this theme. Every alias has to be redeclared here or the page comes out
+     blue in the places that name --accent and green in the places that name
+     its alias - which is exactly what the capability lists were doing. */
+  --lime:    var(--accent);
+  --lime-2:  var(--accent-2);
+  --lime-3:  var(--accent-3);
+  --lime-4:  var(--accent-4);
+
+  --g-dark:  var(--g-850);
+  --ramp:      linear-gradient(118deg, var(--g-950) 0%, var(--g-800) 22%, var(--g-mid) 52%, var(--g-light) 78%, var(--lime) 100%);
+  --ramp-soft: linear-gradient(118deg, var(--g-950) 0%, var(--g-800) 26%, var(--g-mid) 60%, var(--g-light) 94%, var(--lime) 124%);
 }
 
 /* ---------- 15. Accordion ---------- */
@@ -1858,19 +1946,11 @@ a.byline__person:hover strong { color: var(--g-mid); }
 }
 .dcard h3 { margin: 0 0 .5rem; }
 .dcard > p { margin: 0 0 1.1rem; font-size: .95rem; }
-.dcard__list { display: grid; gap: .42rem; margin: 0 0 1.3rem; padding: 0; list-style: none; }
+.dcard__list { display: grid; gap: .5rem; margin: 0 0 1.3rem; padding: 0; list-style: none; }
 .dcard__list li {
-  position: relative;
-  padding-left: 1.15rem;
   font-size: .9rem;
+  line-height: 1.5;
   color: var(--body);
-}
-.dcard__list li::before {
-  content: "";
-  position: absolute; left: 0; top: .52em;
-  width: 7px; height: 7px;
-  border-radius: 2px;
-  background: var(--g-light);
 }
 
 /* ---------- 19e. A business inside a business ---------- */
@@ -1900,7 +1980,8 @@ a.byline__person:hover strong { color: var(--g-mid); }
   border-radius: var(--corner-md);
   background: rgba(255, 255, 255, .05);
 }
-.unit__list li i { color: var(--lime); }
+.unit__list li { --bullet: var(--lime); }
+.unit__list .li-ico { align-self: center; }
 
 /* ---------- 19f. The rest of the group ---------- */
 .sibs { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(.8rem, 1.4vw, 1.2rem); }

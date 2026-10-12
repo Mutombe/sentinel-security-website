@@ -15,6 +15,7 @@ from group import PARENT, COMPANIES, by_id, BRANDS, LEADERS, CONTACT
 from signs import SIGNS
 from focus import attr as focus_attr
 from build_icons import sprite as icon_sprite
+import bullets
 
 ORG = "Sentinel Integrated Technologies"
 TAGLINE = "towards a #secure world"
@@ -114,45 +115,92 @@ def pbtn(label, href, variant="", attrs=""):
 # the order here is just readability. Every href is checked against the built
 # pages by the link audit, so a typo cannot ship.
 CROSSLINKS = {
-    # Written from the words the copy uses, not the industry's.
-    "CCTV surveillance":    "services.html#cctv",
-    "CCTV":                 "services.html#cctv",
-    "cameras":              "services.html#cctv",
-    "intruder alarms":      "services.html#alarms",
-    "alarms":               "services.html#alarms",
-    "access control":       "services.html#access",
-    "readers":              "services.html#access",
-    "gate automation":      "services.html#gates",
-    "gates":                "services.html#gates",
-    "fire detection":       "services.html#fire",
-    "detectors":            "services.html#fire",
-    "intercoms":            "services.html#intercoms",
-    "manned guarding":      "security-services.html#manned",
-    "guarding":             "security-services.html#manned",
-    "officers":             "security-services.html#manned",
-    "armed response":       "security-services.html#response",
-    "dog units":            "security-services.html#k9",
-    "dog unit":             "security-services.html#k9",
-    "perimeter":            "security-services.html#perimeter",
-    "investigations":       "security-services.html#investigations",
-    "building automation":  "circuitron.html#automation",
-    "radios":               "circuitron.html#communications",
-    "networks":             "circuitron.html#communications",
-    "CircuitStore":         "circuitron.html#circuitstore",
-    "EcoCircuit":           "circuitron.html#ecocircuit",
-    "Circuitron":           "circuitron.html",
-    "site signage":         "signage.html",
-    "signage":              "signage.html",
-    "solar":                "renewable-energy.html",
-    "backup power":         "renewable-energy.html",
-    "site survey":          "contact.html",
+    # Written from the words the copy uses, not the industry's. Longest
+    # phrase wins, so "access control" is read before "access".
+
+    # ---- electronic security: services.html ----------------------------
+    "CCTV surveillance":      "services.html#cctv",
+    "CCTV":                   "services.html#cctv",
+    "camera systems":         "services.html#cctv",
+    "cameras":                "services.html#cctv",
+    "intruder detection":     "services.html#alarms",
+    "intruder alarms":        "services.html#alarms",
+    "alarms":                 "services.html#alarms",
+    "access control":         "services.html#access",
+    "plate readers":          "services.html#access",
+    "visitor passes":         "services.html#access",
+    "turnstiles":             "services.html#access",
+    "readers":                "services.html#access",
+    "gate automation":        "services.html#gates",
+    "gate motors":            "services.html#gates",
+    "gates":                  "services.html#gates",
+    "fire detection":         "services.html#fire",
+    "fire sensors":           "services.html#fire",
+    "detectors":              "services.html#fire",
+    "video intercoms":        "services.html#intercoms",
+    "intercoms":              "services.html#intercoms",
+    "residential security":   "services.html#residential",
+    "commercial security":    "services.html#commercial",
+    "integrated security":    "services.html",
+    "security systems":       "services.html",
+
+    # ---- guarding: security-services.html -------------------------------
+    "manned guarding":        "security-services.html#manned",
+    "guarding":               "security-services.html#manned",
+    "officers":               "security-services.html#manned",
+    "event security":         "security-services.html#events",
+    "crowd management":       "security-services.html#events",
+    "armed response":         "security-services.html#response",
+    "alarm monitoring":       "security-services.html#response",
+    "control room":           "security-services.html#response",
+    "dog units":              "security-services.html#k9",
+    "dog unit":               "security-services.html#k9",
+    "electric fencing":       "security-services.html#perimeter",
+    "perimeter":              "security-services.html#perimeter",
+    "investigations":         "security-services.html#investigations",
+    "risk assessment":        "security-services.html#investigations",
+
+    # ---- technology: circuitron.html -------------------------------------
+    "building automation":    "circuitron.html#automation",
+    "home automation":        "circuitron.html#automation",
+    "smart home":             "circuitron.html#automation",
+    "two way radios":         "circuitron.html#communications",
+    "radios":                 "circuitron.html#communications",
+    "networking":             "circuitron.html#communications",
+    "networks":               "circuitron.html#communications",
+    "structured cabling":     "circuitron.html#communications",
+    "network hardware":       "circuitron.html#electronics",
+    "CircuitStore":           "circuitron.html#circuitstore",
+    "EcoCircuit":             "circuitron.html#ecocircuit",
+    "old electronics":        "circuitron.html#ecocircuit",
+    "recycling":              "circuitron.html#ecocircuit",
+    "Circuitron":             "circuitron.html",
+
+    # ---- the rest of the group -------------------------------------------
+    "site signage":           "signage.html",
+    "signage":                "signage.html",
+    "safety signs":           "signage.html",
+    "solar":                  "renewable-energy.html",
+    "renewable energy":       "renewable-energy.html",
+    "battery backup":         "renewable-energy.html",
+    "backup power":           "renewable-energy.html",
+    "the group":              "group.html",
+    "three companies":        "group.html",
+    "our accreditations":     "about.html#recognition",
+    "accredited":             "about.html#recognition",
+    "our clients":            "about.html#clients",
+    "site survey":            "contact.html",
+    "free survey":            "contact.html",
+    # Not place names. "Eastlea" was linked here once and landed inside a
+    # postal address, where a link to the contact page is noise rather than
+    # a cross reference.
 }
 
 
 _WORD_EDGE = " \t\n,.:;!?()[]\u2014/\u2019'\"-"
 
 
-def autolink(text, max_links=2, exclude=()):
+def autolink(text, max_links=2, exclude=(), only=None):
     """Link known phrases inside a run of prose.
 
     Only the first occurrence of each phrase is linked, matches may not
@@ -164,7 +212,8 @@ def autolink(text, max_links=2, exclude=()):
 
     low = text.lower()
     taken = []
-    for kw in sorted(CROSSLINKS, key=len, reverse=True):
+    allowed = CROSSLINKS if only is None else [k for k in CROSSLINKS if k in only]
+    for kw in sorted(allowed, key=len, reverse=True):
         if len(taken) >= max_links or kw in exclude:
             continue
         k = kw.lower()
@@ -175,6 +224,8 @@ def autolink(text, max_links=2, exclude=()):
             edge = before in _WORD_EDGE and after in _WORD_EDGE
             clash = any(at < e and at + len(k) > b for b, e, _ in taken)
             if edge and not clash:
+                if any(CROSSLINKS[t] == CROSSLINKS[kw] for _, _, t in taken):
+                    break
                 taken.append((at, at + len(k), kw))
                 break
             at = low.find(k, at + 1)
@@ -189,6 +240,50 @@ def autolink(text, max_links=2, exclude=()):
         end = e
     out.append(text[end:])
     return "".join(out)
+
+
+# Running prose that may carry a cross link: a plain paragraph, or a lead.
+# Not an overline, not a script line, not the hero copy over a photograph,
+# and not the small meta lines under an organisation chart - a link in those
+# reads as a mistake.
+PROSE_P = re.compile(r'<p(| class="lead")>(.*?)</p>', re.S)
+ANY_A = re.compile(r"<a\b[^>]*>.*?</a>", re.S)
+
+
+def crosslink(html, name):
+    """Link known phrases through every paragraph of prose on the page.
+
+    One destination per page, so a reader meeting "cameras" three times is
+    not offered the same door three times; at most two links in a paragraph,
+    past which prose starts reading as a directory; and nothing that points
+    at the page already being read.
+    """
+    i, j = html.find("<main"), html.find("</main>")
+    if i < 0 or j < 0:
+        return html
+    before, body, after = html[:i], html[i:j], html[j:]
+
+    # Destinations already spent, plus every destination on this very page.
+    spent = set(re.findall(r'<a class="clink" href="([^"]+)"', body))
+    spent.update(h for h in CROSSLINKS.values() if h.split("#")[0] == name)
+
+    # A paragraph already inside a link cannot hold another one: a card that
+    # is itself an anchor would nest them, which no browser forgives.
+    inside = [(m.start(), m.end()) for m in ANY_A.finditer(body)]
+
+    def one(m):
+        text = m.group(2)
+        if "<a " in text or any(b <= m.start() and m.end() <= e for b, e in inside):
+            return m.group(0)
+        free = [k for k in CROSSLINKS if CROSSLINKS[k] not in spent]
+        if not free:
+            return m.group(0)
+        linked = autolink(text, max_links=2, only=free)
+        for h in re.findall(r'<a class="clink" href="([^"]+)"', linked):
+            spent.add(h)
+        return "<p%s>%s</p>" % (m.group(1), linked)
+
+    return before + PROSE_P.sub(one, body) + after
 
 
 def secbg(name, alt="", pos="50% 45%"):
@@ -422,7 +517,7 @@ def unit_panel(c, u):
           <ul class="unit__list">%s</ul>
         </article>
 """ % (u["id"], media, si(u["icon"], "i-xl"), u["name"], u["strap"], u["line"],
-       "".join("<li>%s%s</li>" % (CHEV_SM, i) for i in u["items"]))
+       "".join("<li>%s</li>" % i for i in u["items"]))
 
 def siblings(current):
     """At the foot of a company page: the other two, so nobody dead ends."""
@@ -917,6 +1012,32 @@ def gestures(html):
                          m.group(2), m.group(3), m.group(4)), html)
     return html
 
+# Every line item carries the glyph for the thing it names. One pass over the
+# finished page rather than four call sites, so a list written as literal
+# markup is marked the same way as one built from a table.
+BULLET_UL = re.compile(
+    r'<ul class="(?:card__list|dcard__list|unit__list)[^"]*"[^>]*>.*?</ul>', re.S)
+BULLET_LI = re.compile(r"<li>(.*?)</li>", re.S)
+TAGS = re.compile(r"<[^>]+>")
+
+
+def bullet_icons(html):
+    """Prepend each line item's own icon, chosen in bullets.py."""
+    def one_li(m):
+        inner = m.group(1)
+        if 'class="li-ico"' in inner:
+            return m.group(0)
+        spec = bullets.pick(TAGS.sub("", inner).strip())
+        if not spec:
+            return m.group(0)                      # the build refuses these below
+        kind, glyph = spec.split(":", 1)
+        mark = si(glyph, "i-sm") if kind == "si" else icon(glyph, "i-sm")
+        return ('<li><span class="li-ico" aria-hidden="true">%s</span>'
+                "<span>%s</span></li>" % (mark, inner))
+
+    return BULLET_UL.sub(lambda m: BULLET_LI.sub(one_li, m.group(0)), html)
+
+
 # A page may carry its own company's colours. The class goes on <main>, so the
 # group's header and footer keep the group's green.
 THEMES = {"circuitron.html": "theme-circuitron"}
@@ -932,6 +1053,8 @@ def theme(html, name):
 def write(name, title, desc, body, cta=True):
     html = head(title, desc, name) + topbar() + header(name) + body + (CTA if cta else "") + FOOTER
     html = photo_bands(html, name)
+    html = crosslink(html, name)
+    html = bullet_icons(html)
     html = theme(html, name)
     html = gestures(html)
     html = drop_self_links(html, name)
@@ -2170,5 +2293,13 @@ write("privacy.html",
       "Privacy Policy | Sentinel Integrated Technologies",
       "How Sentinel Integrated Technologies collects, uses and protects the information you share with us.",
       privacy, cta=False)
+
+# A line item with no icon means a line nobody chose a glyph for. That is the
+# exact failure this was built to prevent, so it stops the build rather than
+# shipping a bullet that silently falls back to nothing.
+_missed = bullets.missed()
+if _missed:
+    raise SystemExit("no icon chosen for these line items:\n  "
+                     + "\n  ".join(sorted(set(_missed))))
 
 print("done")

@@ -1,5 +1,5 @@
 # Build a trimmed, subsetted Phosphor bundle: only the icons this site uses.
-import re, os, urllib.request
+import re, os, sys, urllib.request
 from fontTools.ttLib import TTFont
 from fontTools import subset
 
@@ -22,6 +22,13 @@ handshake target compass shield-check sun lightning wrench solar-panel map-pin p
 envelope-simple clock whatsapp-logo facebook-logo linkedin-logo caret-double-right
 arrow-right arrow-up check-circle star asterisk eye scan-smiley identification-badge
 chat-circle-dots users-three x caret-down""".split()
+
+# The glyphs the line-item lexicon reaches for, taken from the lexicon itself.
+# Naming them twice is how a font ends up missing the one icon a new line
+# needed, so they are read rather than retyped.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__))))
+import bullets
+ICONS = sorted(set(ICONS) | set(bullets.PHOSPHOR))
 
 STYLES = [
     ("regular", "regular.css", "Phosphor.woff2",         "Phosphor",         "ph"),
