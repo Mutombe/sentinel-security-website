@@ -487,11 +487,13 @@ server endpoint, and delete the `data-contact-form` handler at the bottom of
 
 ## Also worth a look
 
-- **Social icons** used to point at the `facebook.com` and `linkedin.com`
-  homepages, which are dead ends. They now carry WhatsApp, email and phone,
-  which all reach Sentinel. Put Facebook and LinkedIn back once you have the
-  real profile URLs: they go in the `topbar()` and `FOOTER` blocks of
-  `tools/build.py`.
+- **Social links.** The real profiles are now in, as `FACEBOOK` and `LINKEDIN`
+  near the top of `tools/build.py`: the utility bar and the footer carry the
+  logos, and the contact page names them in full under "Follow us". They open
+  in a new tab through the shared `OFFSITE` attribute string. If a page moves,
+  change the two constants and rebuild; nothing else holds the address. The
+  Facebook URL is the numeric `profile.php?id=` form, which is what the page
+  itself hands out: if a vanity name is ever claimed, swap it in.
 - **Copy.** Every page was swept for the tells of machine written text. There
   are no em dashes, en dashes or hyphenated compounds anywhere in the visible
   copy. If you edit a page, keep to commas, colons and full stops.

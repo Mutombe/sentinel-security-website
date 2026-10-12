@@ -98,6 +98,16 @@ WA_ENQUIRY = ("https://wa.me/263773589461?text="
 # Placeholder: swap for the real chat.whatsapp.com invite link once it exists.
 WA_COMMUNITY = "https://chat.whatsapp.com/"
 
+# The group's own pages. Facebook's numeric form is what the page itself
+# hands out; LinkedIn's "viewAsMember" parameter is a preview flag for the
+# person who owns the page and means nothing to a visitor, so it is dropped.
+FACEBOOK = "https://www.facebook.com/profile.php?id=61594591624503"
+LINKEDIN = "https://www.linkedin.com/company/sentinelzw/"
+
+# Offsite, so each one opens beside the page rather than taking a reader off
+# it, and rel keeps the new tab from reaching back into this one.
+OFFSITE = ' target="_blank" rel="noopener"'
+
 CHEV = '<span class="pbtn__chev">%s</span>' % icon("caret-double-right", "i-sm")
 CHEV_SM = icon("caret-double-right", "i-xs")
 ARROW = icon("arrow-right", "i-sm")
@@ -648,13 +658,18 @@ def topbar():
     <div class="topbar__social">
       <span class="script">towards a #secure world</span>
       <a href="https://wa.me/263773589461" aria-label="Message Sentinel on WhatsApp" rel="noopener">%s</a>
-      <a href="mailto:info@sentinel.co.zw" aria-label="Email Sentinel">%s</a>
-      <a href="tel:+263773589461" aria-label="Call Sentinel">%s</a>
+      <a href="%s" aria-label="Sentinel on Facebook"%s>%s</a>
+      <a href="%s" aria-label="Sentinel on LinkedIn"%s>%s</a>
+      <a class="topbar__hide-sm" href="mailto:info@sentinel.co.zw" aria-label="Email Sentinel">%s</a>
+      <a class="topbar__hide-sm" href="tel:+263773589461" aria-label="Call Sentinel">%s</a>
     </div>
   </div>
 </div>
 """ % (icon("buildings", "i-xs"), icon("envelope-simple", "i-xs"), icon("phone-call", "i-xs"),
-       icon("whatsapp-logo", "i-sm", "ph-fill"), icon("envelope-simple", "i-sm", "ph-fill"),
+       icon("whatsapp-logo", "i-sm", "ph-fill"),
+       FACEBOOK, OFFSITE, icon("facebook-logo", "i-sm", "ph-fill"),
+       LINKEDIN, OFFSITE, icon("linkedin-logo", "i-sm", "ph-fill"),
+       icon("envelope-simple", "i-sm", "ph-fill"),
        icon("phone-call", "i-sm", "ph-fill"))
 
 
@@ -801,6 +816,8 @@ FOOTER = """
         <p>A Zimbabwean security group: electronic systems, guarding operations and technology, run as three companies under one standard.</p>
         <div class="socials">
           <a href="https://wa.me/263773589461" aria-label="Message Sentinel on WhatsApp" rel="noopener">%s</a>
+          <a href="%s" aria-label="Sentinel on Facebook"%s>%s</a>
+          <a href="%s" aria-label="Sentinel on LinkedIn"%s>%s</a>
           <a href="mailto:info@sentinel.co.zw" aria-label="Email Sentinel">%s</a>
           <a href="tel:+263773589461" aria-label="Call Sentinel">%s</a>
         </div>
@@ -905,7 +922,10 @@ FOOTER = """
 </body>
 </html>
 """ % (ORG, ORG,
-       icon("whatsapp-logo", "i-sm", "ph-fill"), icon("envelope-simple", "i-sm", "ph-fill"),
+       icon("whatsapp-logo", "i-sm", "ph-fill"),
+       FACEBOOK, OFFSITE, icon("facebook-logo", "i-sm", "ph-fill"),
+       LINKEDIN, OFFSITE, icon("linkedin-logo", "i-sm", "ph-fill"),
+       icon("envelope-simple", "i-sm", "ph-fill"),
        icon("phone-call", "i-sm", "ph-fill"),
        icon("map-pin", "i-sm"), icon("phone-call", "i-sm"), icon("envelope-simple", "i-sm"),
        icon("arrow-up", "i-sm"),
@@ -2336,6 +2356,13 @@ contact = phero("Contact", "Tell us about your site",
           <span class="cinfo__icon">%s</span>
           <div><h3>Hours</h3><p class="num">Monday to Friday, 08:00 to 17:00<br><span class="accent">Support runs at any hour</span></p></div>
         </div>
+        <div class="cinfo">
+          <span class="cinfo__icon">%s</span>
+          <div><h3>Follow us</h3>
+            <a class="cinfo__social" href="%s"%s>%s Sentinel on Facebook</a>
+            <a class="cinfo__social" href="%s"%s>%s Sentinel on LinkedIn</a>
+          </div>
+        </div>
 
         <div style="margin-top:2rem">%s</div>
       </div>
@@ -2383,6 +2410,9 @@ contact = phero("Contact", "Tell us about your site",
 """ % (eyebrow("Get in touch"),
        duo("map-pin", "i-md"), duo("phone-call", "i-md"),
        duo("envelope-simple", "i-md"), duo("clock", "i-md"),
+       duo("users-three", "i-md"),
+       FACEBOOK, OFFSITE, icon("facebook-logo", "i-sm", "ph-fill"),
+       LINKEDIN, OFFSITE, icon("linkedin-logo", "i-sm", "ph-fill"),
        pbtn("Message us on WhatsApp", "https://wa.me/263773589461", attrs=' rel="noopener"'),
        CHEV) + shead("Our locations", "Two addresses in Harare") + """
       <div class="grid g-2">
