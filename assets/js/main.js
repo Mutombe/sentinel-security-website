@@ -321,36 +321,9 @@
        The element already holds its final value, so this only animates the
        text between zero and what is already there. Anything it cannot parse
        is left exactly as authored. */
-    var counters = Array.prototype.slice.call(document.querySelectorAll('[data-count]'));
-    if (counters.length) {
-      var runCount = function (el) {
-        var target = parseFloat(String(el.getAttribute('data-count')).replace(/[^0-9.\-]/g, ''));
-        if (!isFinite(target)) return;
-        var final = el.textContent;
-        var prefix = (final.match(/^[^0-9]*/) || [''])[0];
-        var suffix = (final.match(/[^0-9]*$/) || [''])[0];
-        var dur = 1100, t0 = 0;
-        var step = function (ts) {
-          if (!t0) t0 = ts;
-          var p = Math.min((ts - t0) / dur, 1);
-          var eased = 1 - Math.pow(1 - p, 3);
-          el.textContent = prefix + Math.round(target * eased) + suffix;
-          if (p < 1) requestAnimationFrame(step);
-          else el.textContent = final;
-        };
-        requestAnimationFrame(step);
-      };
-
-      var countObserver = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (!entry.isIntersecting) return;
-          countObserver.unobserve(entry.target);
-          runCount(entry.target);
-        });
-      }, { threshold: 0.6 });
-
-      counters.forEach(function (el) { countObserver.observe(el); });
-    }
+    /* The figures used to have a counter of their own here. They are
+       numbers like any other now, handled by the numerals module above,
+       which also knows the difference between a quantity and a label. */
 
     // Safety net: a fast flick or End key can scroll past an element between two
     // IntersectionObserver deliveries, which would strand it invisible forever.
@@ -516,18 +489,45 @@
     pheros.forEach(function (media) {
       var shots = Array.prototype.slice.call(media.querySelectorAll('.phero__slide'));
       if (shots.length < 2) return;
+      var segs = Array.prototype.slice.call(
+        (media.parentNode || document).querySelectorAll('[data-phero-go]'));
       var at = 0;
-      var tick = function () {
+
+      var show = function (next) {
+        if (next === at) return;
         shots[at].classList.remove('is-active');
-        at = (at + 1) % shots.length;
+        at = (next + shots.length) % shots.length;
         shots[at].classList.add('is-active');
+        segs.forEach(function (b, i) {
+          b.classList.toggle('is-active', i === at);
+          b.setAttribute('aria-pressed', i === at ? 'true' : 'false');
+        });
         /* Restart the drift on whatever just came up. */
         var img = shots[at].querySelector('img');
         if (img) { img.style.animation = 'none'; void img.offsetWidth; img.style.animation = ''; }
         /* The newly shown photograph gets framed for the frame it now has. */
         document.dispatchEvent(new CustomEvent('sentinel:slidechange'));
       };
+      var tick = function () { show(at + 1); };
       var timer = setInterval(tick, 7000);
+
+      /* Pressing the switch moves the picture and restarts the dwell, so
+         the one just chosen gets a full turn rather than the remainder of
+         somebody else's. */
+      segs.forEach(function (b, i) {
+        b.addEventListener('click', function () {
+          show(i);
+          if (timer) { clearInterval(timer); timer = setInterval(tick, 7000); }
+        });
+        b.addEventListener('keydown', function (e) {
+          var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+          if (!d) return;
+          e.preventDefault();
+          var n = (i + d + segs.length) % segs.length;
+          segs[n].focus();
+          segs[n].click();
+        });
+      });
       /* A hero scrolled past is a timer burning battery for nobody. */
       if ('IntersectionObserver' in window) {
         new IntersectionObserver(function (es) {
@@ -690,6 +690,136 @@
     }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
 
     prose.forEach(function (p) { io.observe(p); });
+  })();
+
+
+  /* ---- Numbers arrive ----
+     A quantity counts; anything else rolls. See the note in the stylesheet
+     for why the two are different. */
+  (function () {
+    var nums = document.querySelectorAll('.num, [data-count], .signcard__meta');
+    if (!nums.length) return;
+    var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still || !('IntersectionObserver' in window)) return;
+
+    var FIGSP = '\u2007';           /* a space the width of a digit */
+
+    /* The real value, carried by a hidden twin while the visible one is
+       mid flight, so nothing ever reads a half finished number aloud.
+
+       The returned function also arms a backstop. requestAnimationFrame is
+       not a promise: it is throttled in a background tab, starved under
+       load, and stopped outright in some headless contexts - and a roll
+       that stops half way leaves a phone number that is not the phone
+       number. So the end state is also scheduled on a plain timer, and
+       whichever arrives first wins. */
+    function shield(el, text, dur) {
+      el.setAttribute('aria-hidden', 'true');
+      var twin = document.createElement('span');
+      twin.className = 'sr-only';
+      twin.textContent = text;
+      el.parentNode.insertBefore(twin, el.nextSibling);
+      var finished = false;
+      var land = function () {
+        if (finished) return true;
+        finished = true;
+        el.textContent = text;
+        el.removeAttribute('aria-hidden');
+        if (twin.parentNode) twin.parentNode.removeChild(twin);
+        return false;
+      };
+      setTimeout(land, dur + 400);
+      land.done = function () { return finished; };
+      return land;
+    }
+
+    function countUp(el, final) {
+      var target = parseFloat(final.replace(/[^0-9.]/g, ''));
+      if (!isFinite(target)) return;
+      var pre = (final.match(/^[^0-9]*/) || [''])[0];
+      var post = (final.match(/[^0-9]*$/) || [''])[0];
+      var width = String(Math.round(target)).length;
+      var dur = 1100;
+      var land = shield(el, final, dur);
+      var t0 = 0;
+      (function step(ts) {
+        if (land.done()) return;                  /* the backstop got there */
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        var v = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
+        while (v.length < width) v = FIGSP + v;   /* no reflow while counting */
+        el.textContent = pre + v + post;
+        if (p < 1) requestAnimationFrame(step);
+        else land();
+      })(0);
+    }
+
+    function roll(el, final) {
+      var chars = final.split('');
+      var spots = [];
+      for (var i = 0; i < chars.length; i++) if (/[0-9]/.test(chars[i])) spots.push(i);
+      if (!spots.length) return;
+      var dur = Math.min(90 * spots.length, 1200);
+      var land = shield(el, final, dur);
+      var t0 = 0, lastShuffle = 0, shown = chars.slice();
+      (function step(ts) {
+        if (land.done()) return;                  /* the backstop got there */
+        if (!t0) { t0 = ts; lastShuffle = ts; }
+        var p = Math.min((ts - t0) / dur, 1);
+        var settled = Math.floor(p * spots.length);
+        /* The unsettled digits change six times a second, not sixty: any
+           faster and it is a grey blur rather than digits. */
+        if (ts - lastShuffle > 60) {
+          lastShuffle = ts;
+          for (var k = settled; k < spots.length; k++)
+            shown[spots[k]] = String((Math.random() * 10) | 0);
+        }
+        for (var j = 0; j < settled; j++) shown[spots[j]] = chars[spots[j]];
+        el.textContent = shown.join('');
+        if (p < 1) requestAnimationFrame(step);
+        else land();
+      })(0);
+    }
+
+    var seen = new WeakSet();
+    function play(el) {
+      if (seen.has(el)) return;
+      seen.add(el);
+      var final = (el.getAttribute('data-count')
+                   ? el.textContent : el.textContent).replace(/\s+/g, ' ');
+      if (!/[0-9]/.test(final)) return;
+      if (final.length > 24) return;              /* a sentence, not a number */
+      el.textContent = final;
+      /* A bare integer of up to four digits is a quantity. A leading zero
+         is a label - 01, 02 - and a label does not count up to itself. */
+      if (/^[0-9]{1,4}$/.test(final.trim()) && !/^0[0-9]/.test(final.trim()))
+        countUp(el, final);
+      else
+        roll(el, final);
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        play(e.target);
+      });
+    }, { threshold: 0.6 });
+    nums.forEach(function (el) { io.observe(el); });
+
+    /* A fast flick can carry an element past the observer between two
+       deliveries. The same safety net the reveals have. */
+    var sweepTimer;
+    addEventListener('scroll', function () {
+      clearTimeout(sweepTimer);
+      sweepTimer = setTimeout(function () {
+        nums.forEach(function (el) {
+          if (seen.has(el)) return;
+          var r = el.getBoundingClientRect();
+          if (r.top < innerHeight && r.bottom > 0) { io.unobserve(el); play(el); }
+        });
+      }, 180);
+    }, { passive: true });
   })();
 
 

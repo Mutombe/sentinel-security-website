@@ -186,7 +186,36 @@ LINES = {
     "Sounders and evacuation systems":        "si:siren",
     "Electric fencing and perimeter beams":   "si:electric-fence",
     "Testing and certification on a schedule": "ph:calendar-check",
+    # ---- the footer columns ----------------------------------------------
+    "How we are structured":                  "si:group-tree",
+    "Sentinel Integrated Technologies":       "si:cam-dome",
+    "Sentinel Security Services":             "si:guard",
+    "Circuitron Systems":                     "si:network-rack",
+    "CircuitStore":                           "si:storefront",
+    "EcoCircuit":                             "ph:recycle",
+    "CCTV surveillance":                      "si:cam-bullet",
+    "Intruder alarms":                        "si:alarm-panel",
+    "Access control":                         "si:access-reader",
+    "Gate automation":                        "si:gate-motor",
+    "Manned guarding":                        "si:guard",
+    "Alarm response":                         "si:patrol",
+    "Solar and backup power":                 "si:solar",
+    "Site signage":                           "ph:signpost",
+    "About the group":                        "ph:buildings",
+
+    # ---- what a leader has read ------------------------------------------
+    # A degree, a master's, a diploma and a certificate are four different
+    # things and the list is read faster when they look it.
+    "Executive MBA, Africa University":                               "ph:graduation-cap",
+    "BSc Management Information Systems, Midlands State University":  "ph:graduation-cap",
+    "BSc Marketing Communications, IMM":                              "ph:graduation-cap",
+    "BSc Political Science, University of Zimbabwe":                  "ph:graduation-cap",
+    "MSc Peace Leadership and Conflict Management, ZOU":              "ph:medal",
+    "Professional Diploma in Risk and Security Management, CIRSM":    "ph:certificate",
+    "Certificates in financial crimes investigation":                 "ph:certificate",
+    "Reading towards CISSP":                                          "ph:book-open-text",
 }
+
 
 
 # ------------------------------------------------------------------ keywords
@@ -230,6 +259,11 @@ KEYWORDS = [
     ("retail",            "si:storefront"),
     ("recorder",          "si:nvr"),
     ("training",          "ph:graduation-cap"),
+    ("bsc ",              "ph:graduation-cap"),
+    ("msc ",              "ph:medal"),
+    ("mba",               "ph:graduation-cap"),
+    ("diploma",           "ph:certificate"),
+    ("certificate",       "ph:certificate"),
     ("schedule",          "ph:calendar-check"),
     ("monitor",           "ph:gauge"),
     ("support",           "ph:headset"),

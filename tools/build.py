@@ -853,7 +853,7 @@ FOOTER = """
         <a href="privacy.html">Privacy policy</a>
         <a href="contact.html">Contact</a>
         <a href="about.html#recognition">Best Service Award 2014, 2015, 2016</a>
-        <a href="https://unsplash.com/?utm_source=sentinel&amp;utm_medium=referral" rel="noopener">Photography: Unsplash</a>
+        <a class="footer__by" href="https://bitstudio.co.zw" rel="noopener">Engineered by <strong>Bit Studio</strong></a>
       </nav>
     </div>
   </div>
@@ -945,10 +945,28 @@ def phero(label, title, lead, pic=None, alt=""):
         if second:
             shots.append('      <div class="phero__slide">%s</div>\n'
                          % photo_img(second[0], second[1], "70vw"))
+        switcher = ""
+        if second:
+            switcher = (
+                # A group of toggles, not a tablist: a tablist promises tab
+                # panels and there are none here, only two pictures behind
+                # the same heading.
+                '    <div class="pswitch" role="group" '
+                'aria-label="Hero picture">\n'
+                + "".join(
+                    '      <button class="pswitch__seg%s" type="button" '
+                    'aria-pressed="%s" '
+                    'aria-label="Show picture %d of 2" data-phero-go="%d">'
+                    '<span class="num">%02d</span></button>\n'
+                    % (" is-active" if k == 0 else "",
+                       "true" if k == 0 else "false",
+                       k + 1, k, k + 1)
+                    for k in (0, 1))
+                + "    </div>\n")
         media = """    <div class="phero__media"%s>
 %s    </div>
     <div class="phero__scrim"></div>
-""" % (" data-phero" if second else "", "".join(shots))
+%s""" % (" data-phero" if second else "", "".join(shots), switcher)
         cls = "phero"
     else:
         media, cls = "", "phero phero--plain"
@@ -1099,7 +1117,8 @@ def gestures(html):
 # finished page rather than four call sites, so a list written as literal
 # markup is marked the same way as one built from a table.
 BULLET_UL = re.compile(
-    r'<ul class="(?:card__list|dcard__list|unit__list)[^"]*"[^>]*>.*?</ul>', re.S)
+    r'<ul class="(?:card__list|dcard__list|unit__list|footer__links'
+    r'|leader__quals)[^"]*"[^>]*>.*?</ul>', re.S)
 BULLET_LI = re.compile(r"<li>(.*?)</li>", re.S)
 TAGS = re.compile(r"<[^>]+>")
 

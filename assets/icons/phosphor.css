@@ -7,11 +7,13 @@
 .ph.ph-arrow-up:before{content: "\e08e";}
 .ph.ph-asterisk:before{content: "\e0aa";}
 .ph.ph-battery-charging:before{content: "\e0ba";}
+.ph.ph-book-open-text:before{content: "\e8f2";}
 .ph.ph-broadcast:before{content: "\e0f2";}
 .ph.ph-buildings:before{content: "\e102";}
 .ph.ph-calendar-check:before{content: "\e712";}
 .ph.ph-caret-double-right:before{content: "\e12a";}
 .ph.ph-caret-down:before{content: "\e136";}
+.ph.ph-certificate:before{content: "\e766";}
 .ph.ph-chart-line-up:before{content: "\e156";}
 .ph.ph-chat-circle-dots:before{content: "\e16c";}
 .ph.ph-check-circle:before{content: "\e184";}
@@ -41,6 +43,7 @@
 .ph.ph-lock-key:before{content: "\e2fe";}
 .ph.ph-magnifying-glass:before{content: "\e30c";}
 .ph.ph-map-pin:before{content: "\e316";}
+.ph.ph-medal:before{content: "\e320";}
 .ph.ph-moon-stars:before{content: "\e58e";}
 .ph.ph-package:before{content: "\e390";}
 .ph.ph-phone-call:before{content: "\e3ba";}
@@ -52,6 +55,7 @@
 .ph.ph-scan:before{content: "\ebb6";}
 .ph.ph-scan-smiley:before{content: "\ebb4";}
 .ph.ph-shield-check:before{content: "\e40c";}
+.ph.ph-signpost:before{content: "\e89c";}
 .ph.ph-solar-panel:before{content: "\ed7a";}
 .ph.ph-star:before{content: "\e46a";}
 .ph.ph-sun:before{content: "\e472";}
@@ -77,6 +81,8 @@
 .ph-duotone.ph-asterisk:after{content: "\e0ab"; margin-left: -1em;}
 .ph-duotone.ph-battery-charging:before{content: "\e0ba"; opacity: 0.2;}
 .ph-duotone.ph-battery-charging:after{content: "\e0bb"; margin-left: -1em;}
+.ph-duotone.ph-book-open-text:before{content: "\e8f2"; opacity: 0.2;}
+.ph-duotone.ph-book-open-text:after{content: "\e8f3"; margin-left: -1em;}
 .ph-duotone.ph-broadcast:before{content: "\e0f2"; opacity: 0.2;}
 .ph-duotone.ph-broadcast:after{content: "\e0f3"; margin-left: -1em;}
 .ph-duotone.ph-buildings:before{content: "\e102"; opacity: 0.2;}
@@ -87,6 +93,8 @@
 .ph-duotone.ph-caret-double-right:after{content: "\e12b"; margin-left: -1em;}
 .ph-duotone.ph-caret-down:before{content: "\e136"; opacity: 0.2;}
 .ph-duotone.ph-caret-down:after{content: "\e137"; margin-left: -1em;}
+.ph-duotone.ph-certificate:before{content: "\e766"; opacity: 0.2;}
+.ph-duotone.ph-certificate:after{content: "\e767"; margin-left: -1em;}
 .ph-duotone.ph-chart-line-up:before{content: "\e156"; opacity: 0.2;}
 .ph-duotone.ph-chart-line-up:after{content: "\e157"; margin-left: -1em;}
 .ph-duotone.ph-chat-circle-dots:before{content: "\e16c"; opacity: 0.2;}
@@ -145,6 +153,8 @@
 .ph-duotone.ph-magnifying-glass:after{content: "\e30d"; margin-left: -1em;}
 .ph-duotone.ph-map-pin:before{content: "\e316"; opacity: 0.2;}
 .ph-duotone.ph-map-pin:after{content: "\e317"; margin-left: -1em;}
+.ph-duotone.ph-medal:before{content: "\e320"; opacity: 0.2;}
+.ph-duotone.ph-medal:after{content: "\e321"; margin-left: -1em;}
 .ph-duotone.ph-moon-stars:before{content: "\e58e"; opacity: 0.2;}
 .ph-duotone.ph-moon-stars:after{content: "\e58f"; margin-left: -1em;}
 .ph-duotone.ph-package:before{content: "\e390"; opacity: 0.2;}
@@ -167,6 +177,8 @@
 .ph-duotone.ph-scan-smiley:after{content: "\ebb5"; margin-left: -1em;}
 .ph-duotone.ph-shield-check:before{content: "\e40c"; opacity: 0.2;}
 .ph-duotone.ph-shield-check:after{content: "\e40f"; margin-left: -1em;}
+.ph-duotone.ph-signpost:before{content: "\e89c"; opacity: 0.2;}
+.ph-duotone.ph-signpost:after{content: "\e89d"; margin-left: -1em;}
 .ph-duotone.ph-solar-panel:before{content: "\ed7a"; opacity: 0.2;}
 .ph-duotone.ph-solar-panel:after{content: "\ed7e"; margin-left: -1em;}
 .ph-duotone.ph-star:before{content: "\e46a"; opacity: 0.2;}
@@ -202,11 +214,13 @@
 .ph-fill.ph-arrow-up:before{content: "\e08e";}
 .ph-fill.ph-asterisk:before{content: "\e0aa";}
 .ph-fill.ph-battery-charging:before{content: "\e0ba";}
+.ph-fill.ph-book-open-text:before{content: "\e8f2";}
 .ph-fill.ph-broadcast:before{content: "\e0f2";}
 .ph-fill.ph-buildings:before{content: "\e102";}
 .ph-fill.ph-calendar-check:before{content: "\e712";}
 .ph-fill.ph-caret-double-right:before{content: "\e12a";}
 .ph-fill.ph-caret-down:before{content: "\e136";}
+.ph-fill.ph-certificate:before{content: "\e766";}
 .ph-fill.ph-chart-line-up:before{content: "\e156";}
 .ph-fill.ph-chat-circle-dots:before{content: "\e16c";}
 .ph-fill.ph-check-circle:before{content: "\e184";}
@@ -236,6 +250,7 @@
 .ph-fill.ph-lock-key:before{content: "\e2fe";}
 .ph-fill.ph-magnifying-glass:before{content: "\e30c";}
 .ph-fill.ph-map-pin:before{content: "\e316";}
+.ph-fill.ph-medal:before{content: "\e320";}
 .ph-fill.ph-moon-stars:before{content: "\e58e";}
 .ph-fill.ph-package:before{content: "\e390";}
 .ph-fill.ph-phone-call:before{content: "\e3ba";}
@@ -247,6 +262,7 @@
 .ph-fill.ph-scan:before{content: "\ebb6";}
 .ph-fill.ph-scan-smiley:before{content: "\ebb4";}
 .ph-fill.ph-shield-check:before{content: "\e40c";}
+.ph-fill.ph-signpost:before{content: "\e89c";}
 .ph-fill.ph-solar-panel:before{content: "\ed7a";}
 .ph-fill.ph-star:before{content: "\e46a";}
 .ph-fill.ph-sun:before{content: "\e472";}
