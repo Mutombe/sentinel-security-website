@@ -104,8 +104,16 @@ ARROW = icon("arrow-right", "i-sm")
 STAR = icon("star", "i-xs", "ph-fill")
 
 
-def pbtn(label, href, variant="", attrs=""):
+def pbtn(label, href, variant="", attrs="", brief=None):
+    """A pill. `brief` gives a shorter wording for narrow screens.
+
+    Both are in the markup and one is display:none at a time, which hides it
+    from a screen reader too - so the announced name always matches the one
+    on screen, which is what a voice user reading the button aloud needs."""
     cls = "pbtn" + ((" " + variant) if variant else "")
+    if brief:
+        label = ('<span class="lbl-full">%s</span>'
+                 '<span class="lbl-brief">%s</span>' % (label, brief))
     return '<a class="%s" href="%s"%s><span class="pbtn__label">%s</span>%s</a>' % (
         cls, href, attrs, label, CHEV)
 
@@ -749,7 +757,7 @@ def header(active):
 </div>
 
 <main id="main">
-""" % (ORG, ORG, items, megapanel(), pbtn("Book a site survey", "contact.html"), ORG, drawer,
+""" % (ORG, ORG, items, megapanel(), pbtn("Book a site survey", "contact.html", brief="Free survey"), ORG, drawer,
        pbtn("Book a site survey", "contact.html", "pbtn--block"))
 
 
@@ -1144,32 +1152,28 @@ def patterns(html, name):
 
     html = SECTION_TAG.sub(one, html)
 
-    # The repeated components inside the bands. The four process steps read
-    # left to right through four textures, which is the one place on the
-    # site where a sequence of patterns means something: it is a sequence of
-    # stages. The rest take one each, so a grid of identical cards stops
-    # being a grid of identical surfaces.
-    # "after" where the component already draws a rule on ::before.
-    for cls, pats, where in (
-            ("step", ["scan", "cross", "trace", "weave"], "pat"),
-            # On the article, not on the main: the custom property then
-            # inherits to the card body AND to the filler beside the tab, so
-            # both halves of the silhouette carry the same material instead
-            # of meeting at a visible seam.
-            ("ncard ncard--white", ["graph"], ""),
-            ("ncard ncard--lime", ["hatch"], ""),
-            ("ncard ncard--dark", ["grid"], ""),
-            ("ncard ncard--green", ["trace"], ""),
-            ("bento__stat", ["hatch"], "pat"),
-            ("unit", ["trace", "rings"], "pat"),
-            ("card card--dark", ["weave", "scan", "cross", "grid"], "pat pat--after")):
+    # The notched card takes its texture on the article rather than on the
+    # body, because it is two surfaces - the body and the filler beside the
+    # tab - and the property has to inherit to both or they meet at a seam.
+    for cls, pat in (("ncard ncard--white", "graph"),
+                     ("ncard ncard--lime", "hatch"),
+                     ("ncard ncard--dark", "grid"),
+                     ("ncard ncard--green", "trace")):
+        html = html.replace('class="%s"' % cls, 'class="%s pat-%s"' % (cls, pat))
+
+    # The components that paint their own. The four process steps read left
+    # to right through four textures, which is the one place on the site
+    # where a sequence of patterns means something: it is a sequence of
+    # stages.
+    for cls, pats in (("step", ["scan", "cross", "trace", "weave"]),
+                      ("unit", ["trace", "rings"]),
+                      ("bento__stat", ["hatch"])):
         k = [0]
 
-        def one(m, pats=pats, k=k, where=where):
+        def one(m, pats=pats, k=k):
             p = pats[k[0] % len(pats)]
             k[0] += 1
-            return m.group(0)[:-1] + ' %spat-%s"' % (
-                (where + " ") if where else "", p)
+            return m.group(0)[:-1] + ' pat pat-%s"' % p
 
         html = re.sub(r'class="%s(?: [A-Za-z0-9 _-]+)?"' % re.escape(cls),
                       one, html)
@@ -1182,6 +1186,17 @@ def patterns(html, name):
     html = html.replace('<section class="clients section--white"',
                         '<section class="clients section--white pat pat-scan"', 1)
     return html
+
+
+# The paragraphs that arrive a word at a time: a band's opening sentence and
+# the aside beside a section heading. Not body copy - a hundred words
+# arriving one by one is a wait, not an effect.
+STREAM = re.compile(r'<(p|div) class="(lead|shead__aside)"(?![^>]*data-stream)')
+
+
+def streaming(html):
+    return STREAM.sub(lambda m: '<%s class="%s" data-stream'
+                      % (m.group(1), m.group(2)), html)
 
 
 # A page may carry its own company's colours. The class goes on <main>, so the
@@ -1201,6 +1216,7 @@ def write(name, title, desc, body, cta=True):
     html = photo_bands(html, name)
     html = patterns(html, name)
     html = crosslink(html, name)
+    html = streaming(html)
     html = bullet_icons(html)
     html = theme(html, name)
     html = gestures(html)

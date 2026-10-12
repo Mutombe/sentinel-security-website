@@ -593,6 +593,106 @@
   })();
 
 
+  /* ---- Text that arrives a word at a time ----
+     Wrapped by walking text nodes, never by rewriting innerHTML: these
+     paragraphs contain cross links, and rebuilding the HTML would throw
+     away their markup. Each word becomes an inline-block span; the spaces
+     stay as text nodes between them, so the line breaks exactly where it
+     did before.
+
+     The resting state is applied here rather than in the stylesheet, so a
+     reader whose script never arrives gets the paragraph rather than an
+     empty box. */
+  (function () {
+    var prose = document.querySelectorAll('[data-stream]');
+    if (!prose.length) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!('IntersectionObserver' in window)) return;
+
+    var STEP = 26;        /* ms between words */
+    var CAP = 1500;       /* no paragraph takes longer than this to finish */
+
+    function wrap(root) {
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+      var nodes = [], n;
+      while ((n = walker.nextNode())) nodes.push(n);
+
+      var words = [];
+      nodes.forEach(function (node) {
+        var parts = node.nodeValue.split(/(\s+)/);
+        if (parts.length < 2 && !parts[0].trim()) return;
+        var frag = document.createDocumentFragment();
+        parts.forEach(function (part) {
+          if (!part) return;
+          if (/^\s+$/.test(part)) {
+            frag.appendChild(document.createTextNode(part));
+          } else {
+            var sp = document.createElement('span');
+            sp.className = 'wd';
+            sp.textContent = part;
+            frag.appendChild(sp);
+            words.push(sp);
+          }
+        });
+        node.parentNode.replaceChild(frag, node);
+      });
+      return words;
+    }
+
+    var seen = new WeakSet();
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting || seen.has(e.target)) return;
+        seen.add(e.target);
+        io.unobserve(e.target);
+
+        var el = e.target;
+        var words = wrap(el);
+        if (!words.length) return;
+
+        var step = Math.min(STEP, CAP / words.length);
+        words.forEach(function (w, i) {
+          w.style.setProperty('--d', Math.round(i * step) + 'ms');
+        });
+        /* is-streaming puts the words away; is-on, one frame later, is
+           what they transition towards. Two classes, because the one that
+           hides them has to be removed for them to arrive. */
+        el.classList.add('is-streaming');
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { el.classList.add('is-on'); });
+        });
+
+        /* The caret rides in front of the word currently arriving. No text
+           content and hidden from assistive technology, so the sentence
+           reads the same with it there as without. */
+        var caret = document.createElement('span');
+        caret.className = 'caret';
+        caret.setAttribute('aria-hidden', 'true');
+        var at = 0;
+        var tick = setInterval(function () {
+          at++;
+          if (at >= words.length) {
+            clearInterval(tick);
+            if (caret.parentNode) caret.parentNode.removeChild(caret);
+            return;
+          }
+          words[at].parentNode.insertBefore(caret, words[at]);
+        }, step);
+        words[0].parentNode.insertBefore(caret, words[0]);
+
+        setTimeout(function () {
+          clearInterval(tick);
+          if (caret.parentNode) caret.parentNode.removeChild(caret);
+          el.classList.remove('is-streaming', 'is-on');
+          words.forEach(function (w) { w.style.removeProperty('--d'); });
+        }, words.length * step + 600);
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
+
+    prose.forEach(function (p) { io.observe(p); });
+  })();
+
+
   /* ---- Accordion ---- */
   document.querySelectorAll('.acc__btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
