@@ -40,6 +40,19 @@ FOCUS = {
     "tile-night":              (45, 21, 63, 56),   # his face
     "sys-access":              (46, 17, 93, 43),   # the panel and her face
 
+    # ---- the phone photography, shown at the shape it was shot at --------
+    # A 3:4 frame of a 3:4 original crops nothing, so these boxes never bind
+    # today. They are drawn anyway: the slot outlives the layout, and the
+    # first time one of these is asked for in a wide frame the engine should
+    # already know what in it must survive.
+    "team-office":             (12, 36, 78, 46),   # the four faces
+    "team-pair":               (27, 31, 53, 45),   # both faces
+    "team-site":               (26, 29, 75, 41),   # both faces
+    "install-cabling":         (26, 27, 78, 47),   # the cabinet and his hands
+    "install-camera":          (61, 4, 85, 20),    # the camera head
+    "sign-wall":               (28, 28, 77, 57),   # the sign face
+    "sign-entrance":           (18, 28, 73, 40),   # both faces
+
     # ---- objects: the readable part --------------------------------------
     "access-terminal":         (44, 14, 71, 61),   # the terminal screen
     "tile-access":             (41, 21, 71, 63),   # the device screen

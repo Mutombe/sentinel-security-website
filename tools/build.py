@@ -78,6 +78,71 @@ def photo_img(name, alt, sizes, cls="", style="", lazy=True, eager=False):
     return "<img%s>" % bits
 
 
+PORTRAIT_W = (405, 608, 810)
+
+
+def photo_portrait(name, alt, sizes, cls=""):
+    """A photograph kept in the shape it was taken in.
+
+    These came off a phone at 810 by 1080 and are shown at 3:4, so nothing is
+    cropped and nothing is enlarged past what the camera recorded. Three
+    steps rather than two because the widest of them is where the bytes are,
+    and a phone asking for a 170px column should not be sent it."""
+    src = "assets/img/photos/%s-810.jpg" % name
+    w, h = dim(src)
+    sets = ", ".join("assets/img/photos/%s-%d.jpg %dw" % (name, x, x)
+                     for x in PORTRAIT_W)
+    return ('<img%s src="%s" srcset="%s" sizes="%s" alt="%s" '
+            'width="%d" height="%d"%s loading="lazy">'
+            % ((' class="%s"' % cls) if cls else "", src, sets, sizes, alt,
+               w, h, focus_attr(name)))
+
+
+def wall(items, cols=None):
+    """Photographs from Sentinel's own sites, in a row, each saying what it is.
+
+    The pictures are portrait and small, which is what honest phone
+    photography off a site looks like. Rather than stretch them into the
+    wide frames the stock photography uses, they are given a shape of their
+    own: a row of tall frames with a caption under each, so the caption can
+    do the work of placing the picture in the page it sits on."""
+    n = cols or len(items)
+    figs = ""
+    for i, (slot, ico, cap) in enumerate(items):
+        # The sizes hint has to agree with what the stylesheet actually does
+        # on a phone, or the browser picks a file for a column that is not
+        # the column it gets: a pair stacks, and a row of three leads with
+        # the first one across the full width.
+        wide = n == 2 or i == 0
+        figs += """        <figure class="wall__fig" data-reveal>
+          <div class="wall__frame">
+            %s
+          </div>
+          <figcaption class="wall__cap">
+            <span class="wall__ico" aria-hidden="true">%s</span>
+            <span>%s</span>
+          </figcaption>
+        </figure>
+""" % (photo_portrait(slot, PHOTO_ALT[slot],
+                      "(max-width:640px) %dvw, %dvw"
+                      % (92 if wide else 46, 84 // n)),
+       ico, cap)
+    return '      <div class="wall wall--n%d">\n%s      </div>\n' % (n, figs)
+
+
+# The alt text lives with the photograph rather than with each use of it, so
+# the same picture cannot end up described two different ways.
+PHOTO_ALT = {
+    "team-office":     "Four of the Sentinel team outside the office",
+    "team-pair":       "Two Sentinel colleagues outside the office",
+    "team-site":       "Two Sentinel staff talking through a site under construction",
+    "install-cabling": "A technician running cable into a wall mounted equipment cabinet",
+    "install-camera":  "A dome camera and floodlight under an eave, with the warning sign below",
+    "sign-wall":       "A Sentinel CCTV warning sign fixed to a brick wall",
+    "sign-entrance":   "Two Sentinel staff at a building entrance, the CCTV sign on the wall beside them",
+}
+
+
 def photo_square(name, alt, sizes, cls="", lazy=True):
     """A square crop, which has its own file rather than a squeezed wide one."""
     src = "assets/img/photos/%s-640.jpg" % name
@@ -1041,7 +1106,10 @@ def drop_self_links(html, name):
 # tuned without unpicking the markup.
 PHOTO_BANDS = {
     "index.html":            [("technician-panel", "58% 42%")],
-    "about.html":            [("officers-team", "50% 34%")],
+    # None skips a band: the team section is dark but carries photographs of
+    # its own, and a photograph behind photographs is just noise. The
+    # recognition band keeps the picture.
+    "about.html":            [None, ("officers-team", "50% 34%")],
     "services.html":         [("sys-cctv", "54% 44%")],
     "renewable-energy.html": [("power-solar", "50% 48%")],
     "circuitron.html":       [("tech-retail", "52% 46%")],
@@ -1575,6 +1643,21 @@ about = phero("About", "A decade of guarding, turned into a group",
     </div>
   </section>
 
+  <section class="section section--dark">
+    <div class="container">
+""" + shead("The team", "The people who do the work",
+            "Not models and not stock. Our own staff, at our own office and "
+            "on a client's site, photographed this October.",
+            kv="eyebrow--dark") + wall([
+    ("team-office", icon("users-three", "i-sm", "ph-fill"),
+     "Four of the team outside the office, Harare"),
+    ("team-pair", icon("handshake", "i-sm", "ph-fill"),
+     "Technical and operations, between jobs"),
+    ("team-site", icon("map-pin", "i-sm", "ph-fill"),
+     "A site walk before a quotation is written"),
+]) + """    </div>
+  </section>
+
   <section class="section section--cream">
     <div class="container">
 """ + shead(
@@ -1796,6 +1879,18 @@ services += """    </div>
     <div class="container">
 """ + shead("How we work", "From the first call to the handover",
             "Four stages, the same on every job whatever the scale.", kv="eyebrow--dark") + steps_block() + """    </div>
+  </section>
+
+  <section class="section section--white">
+    <div class="container">
+""" + shead("On site", "What the work actually looks like",
+            "A cabinet being cabled, a camera under an eave, and the sign "
+            "that tells people it is there.") + wall([
+    ("install-cabling", icon("wrench", "i-sm", "ph-fill"),
+     "Running cable into a wall cabinet on a fit out"),
+    ("install-camera", icon("eye", "i-sm", "ph-fill"),
+     "A dome camera and floodlight, sign below"),
+]) + """    </div>
   </section>
 
   <section class="section section--cream">
@@ -2302,6 +2397,18 @@ for _i, (_place, _sid, _note) in enumerate(WALK, 1):
 
 sg += """      </div>
     </div>
+  </section>
+
+  <section class="section section--cream">
+    <div class="container">
+""" + shead("On a real wall", "Where these end up",
+            "The drawings above are the artwork. This is the same sign on a "
+            "client's wall, which is the only place it has to work.") + wall([
+    ("sign-wall", icon("shield-check", "i-sm", "ph-fill"),
+     "The CCTV warning sign fixed at eye height on a brick wall"),
+    ("sign-entrance", icon("scan-smiley", "i-sm", "ph-fill"),
+     "The same sign at a building entrance, read on the way in"),
+]) + """    </div>
   </section>
 
   <section class="section section--white">

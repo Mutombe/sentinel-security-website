@@ -12,7 +12,7 @@ import io, json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, os.pardir)
 sys.path.insert(0, HERE)
-from photos_local import LOCAL
+from photos_local import LOCAL, PORTRAIT
 
 
 def main():
@@ -23,6 +23,11 @@ def main():
 
     client = {k for k, v in LOCAL.items() if v[0].startswith(("Sentinel", "176f250b"))}
     licensed = set(LOCAL) - client
+    # The phone batch is the client's own too, but it arrived a different way
+    # and is held at a different size, so it is listed on its own rather than
+    # mixed in with the studio frames.
+    phone = {k for k in client if LOCAL[k][3] is PORTRAIT}
+    client -= phone
     rest = sorted(f for f in by_file if f not in LOCAL)
 
     L = ["# Photography credits", "",
@@ -33,6 +38,15 @@ def main():
          "biggest improvement still available to it.", "",
          "| File | Source |", "|---|---|"]
     L += ["| `%s` | `%s` |" % (k, LOCAL[k][0]) for k in sorted(client)]
+
+    L += ["", "### Taken on a phone, October 2026", "",
+          "Sent over WhatsApp, so they arrive already compressed and only 810",
+          "by 1080. That is why they are shown portrait at the size they were",
+          "taken: a wide frame would mean inventing pixels. Staff, a site",
+          "visit, a technician working, and the company's own signs where they",
+          "ended up.", "",
+          "| File | Source |", "|---|---|"]
+    L += ["| `%s` | `%s` |" % (k, LOCAL[k][0]) for k in sorted(phone)]
 
     L += ["", "## Licensed stock, supplied by the client", "",
           "Used only where no Sentinel frame exists for the subject.", "",

@@ -2611,6 +2611,55 @@ a.byline__person:hover strong { color: var(--g-mid); }
 .leader__quals { display: grid; gap: .4rem; margin: 0; padding: 1.1rem 0 0; list-style: none; border-top: 1px solid var(--line); }
 .leader__quals li { font-size: .86rem; line-height: 1.45; color: var(--body-2); }
 
+/* ---------- 19h2. Photographs off our own sites ----------
+   Phone pictures, portrait, shown at the shape the camera recorded rather
+   than stretched into the wide frames the stock photography uses. The frame
+   holds 3:4 whatever the column does, so the subject engine always has the
+   same box to work against and nothing is ever cropped.
+
+   The caption sits under the picture, not over it. Over a photograph it
+   would need a scrim, and a scrim across somebody's face to carry eight
+   words is a bad trade. */
+.wall { display: grid; gap: clamp(.9rem, 1.8vw, 1.5rem); }
+/* Two portraits across a 1280px container would be two metre tall people.
+   The pair is held to about the width three would take, which keeps the
+   frames the same size as everywhere else they appear on the site. */
+.wall--n2 { grid-template-columns: repeat(2, 1fr); max-width: 900px; }
+.wall--n3 { grid-template-columns: repeat(3, 1fr); }
+.wall__fig { margin: 0; }
+.wall__frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--corner-xl);
+  background: var(--g-800);
+  box-shadow: var(--sh-1);
+}
+.wall__frame img {
+  display: block;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  /* The same balance the photographic bands get, for the same reason:
+     midday sun on red soil and jacaranda is far more saturated than the
+     rest of the set, and the page should read as one set of pictures. */
+  filter: saturate(.92) contrast(1.03);
+  transition: transform .7s var(--ease);
+}
+.wall__fig:hover .wall__frame img { transform: scale(1.035); }
+.wall__cap {
+  display: flex;
+  align-items: flex-start;
+  gap: .55rem;
+  margin-top: .9rem;
+  font-size: .88rem;
+  line-height: 1.45;
+  color: var(--body-2);
+}
+.wall__ico { flex: none; margin-top: .08rem; color: var(--green); }
+.wall__ico i { display: block; }
+.section--dark .wall__cap { color: var(--on-dark-soft); }
+.section--dark .wall__ico { color: var(--lime); }
+
 /* ---------- 19i. Company page facts ---------- */
 .cfacts { display: grid; gap: .6rem; }
 .cfacts__logo {
@@ -3030,6 +3079,14 @@ a.byline__person:hover strong { color: var(--g-mid); }
   /* A 26px dot grid behind 16px body copy is noise on a phone. */
   .section--cream { background-image: none; }
   .dgrid, .signgrid { grid-template-columns: 1fr; }
+  /* A portrait two up on a phone is about 165px wide, which is a thumbnail
+     of a face rather than a photograph of one. Two pictures stack; three
+     lead with the first at full width and pair the other two, which keeps
+     the section from becoming a column of three tall frames. */
+  .wall--n2 { grid-template-columns: 1fr; max-width: none; }
+  .wall--n3 { grid-template-columns: repeat(2, 1fr); }
+  .wall--n3 .wall__fig:first-child { grid-column: 1 / -1; }
+  .wall__cap { font-size: .84rem; }
   .walkstep { grid-template-columns: auto 1fr; }
   .walkstep__sign { grid-column: 2; justify-self: start; margin-top: .6rem; }
   .spec__row { grid-template-columns: 1fr; gap: .4rem; }

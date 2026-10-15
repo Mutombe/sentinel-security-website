@@ -18,6 +18,24 @@ biggest improvement still available to it.
 | `security-officers` | `Sentinel Security Patrol at Sunset.png` |
 | `vehicle-checkpoint` | `176f250b-72fd-4da4-a46e-21bf026940f8.png` |
 
+### Taken on a phone, October 2026
+
+Sent over WhatsApp, so they arrive already compressed and only 810
+by 1080. That is why they are shown portrait at the size they were
+taken: a wide frame would mean inventing pixels. Staff, a site
+visit, a technician working, and the company's own signs where they
+ended up.
+
+| File | Source |
+|---|---|
+| `install-cabling` | `Sentinel Technician Cabling 2026-10-15.jpeg` |
+| `install-camera` | `Sentinel Camera And Sign Installed 2026-10-15.jpeg` |
+| `sign-entrance` | `Sentinel Staff At Client Entrance 2026-10-15.jpeg` |
+| `sign-wall` | `Sentinel CCTV Sign On Wall 2026-10-15.jpeg` |
+| `team-office` | `Sentinel Team Outside Office 2026-10-15.jpeg` |
+| `team-pair` | `Sentinel Pair Outside Office 2026-10-15.jpeg` |
+| `team-site` | `Sentinel Site Visit 2026-10-15.jpeg` |
+
 ## Licensed stock, supplied by the client
 
 Used only where no Sentinel frame exists for the subject.

@@ -33,6 +33,19 @@ PHERO = [(640, 320), (1200, 600)]
 DETAIL = [(640, 480), (1200, 900)]
 TILE = [(640, 640)]
 WIDE = [(640, 427), (1200, 800)]
+# Phone photography, held in the shape it was taken in. The originals are
+# 810 x 1080, so a 3:4 frame crops nothing and nothing is enlarged past what
+# the camera actually recorded. A wide slot would have meant inventing
+# pixels, which is why these have a shape of their own rather than being
+# squeezed into the frames the stock photography uses.
+PORTRAIT = [(405, 540), (608, 810), (810, 1080)]
+
+# Phone pictures of brickwork and foliage are all detail, so they encode
+# large. They are also already compressed once by the phone and again by the
+# messaging app, so a high quality setting spends bytes preserving somebody
+# else's compression artefacts. Eighty is where these stop getting visibly
+# better, and it is roughly a third off the file.
+PORTRAIT_Q = 80
 
 # slot file -> (source, focus x, focus y, sizes, note)
 # The focus point is where the crop keeps its subject when the aspect changes:
@@ -60,6 +73,34 @@ LOCAL = {
     "vehicle-checkpoint": (
         "176f250b-72fd-4da4-a46e-21bf026940f8.png", 0.44, 0.46, WIDE,
         "An officer and a dog unit at an estate gate"),
+
+    # ---- Sentinel's own, taken on a phone in October 2026 ----------------
+    # Not staged and not retouched: staff at the office, a site visit, a
+    # technician working, and the company's own signs where they ended up.
+    # The focus point is academic here, since a 3:4 frame of a 3:4 original
+    # crops nothing, but it is kept so a different frame could be asked for
+    # later without the subject sliding out of it.
+    "team-office": (
+        "Sentinel Team Outside Office 2026-10-15.jpeg", 0.50, 0.42, PORTRAIT,
+        "Four of the Sentinel team outside the office"),
+    "team-pair": (
+        "Sentinel Pair Outside Office 2026-10-15.jpeg", 0.44, 0.40, PORTRAIT,
+        "Two Sentinel colleagues outside the office"),
+    "team-site": (
+        "Sentinel Site Visit 2026-10-15.jpeg", 0.50, 0.44, PORTRAIT,
+        "Two Sentinel staff talking through a site under construction"),
+    "install-cabling": (
+        "Sentinel Technician Cabling 2026-10-15.jpeg", 0.56, 0.42, PORTRAIT,
+        "A technician running cable into a wall mounted equipment cabinet"),
+    "install-camera": (
+        "Sentinel Camera And Sign Installed 2026-10-15.jpeg", 0.60, 0.30, PORTRAIT,
+        "A dome camera and floodlight under an eave, with the warning sign below"),
+    "sign-wall": (
+        "Sentinel CCTV Sign On Wall 2026-10-15.jpeg", 0.50, 0.44, PORTRAIT,
+        "A Sentinel CCTV warning sign fixed to a brick wall"),
+    "sign-entrance": (
+        "Sentinel Staff At Client Entrance 2026-10-15.jpeg", 0.50, 0.44, PORTRAIT,
+        "Two Sentinel staff at a building entrance, the CCTV sign on the wall beside them"),
 
     # ---- licensed stock, where no Sentinel frame exists for the subject ----
     "control-room-monitoring": (
@@ -119,9 +160,10 @@ def main(only=None):
             missing.append(src)
             continue
         im = Image.open(path).convert("RGB")
+        q = PORTRAIT_Q if sizes is PORTRAIT else 84
         for w, h in sizes:
             out = os.path.join(PHOTOS, "%s-%d.jpg" % (name, w))
-            crop_to(im, w, h, fx, fy).save(out, "JPEG", quality=84,
+            crop_to(im, w, h, fx, fy).save(out, "JPEG", quality=q,
                                            optimize=True, progressive=True)
             print("%-26s %-28s %4dx%-4d %5dKB"
                   % (name, os.path.basename(out), w, h,
