@@ -124,23 +124,23 @@ COMPANIES = [
         "process": ["Assess", "Design", "Install", "Integrate", "Monitor", "Maintain"],
     },
 
-    # --------------------------------------------------------- 2. guarding
+    # -------------------------------------------------- 2. manned security
     {
         "id": "guarding",
         "href": "security-services.html",
         "name": "Sentinel Security Services",
         "short": "Security Services",
-        "tab": ("Guarding", "Officers and response"),
+        "tab": ("Manned security", "Officers and response"),
         "legal": "Sentinel Security Services",
         "role": "Security operations",
         "headline": "The people who hold the ground",
         "chart_line": "Officers, dog units and armed response, in all ten provinces.",
         "hero": {
             "h1": ("The officers who ", "hold", " the ground"),
-            "lead": "Guarding, dog units and armed response across all ten "
+            "lead": "Manned security, dog units and armed response across all ten "
                     "provinces, answering to a control room that is staffed at "
                     "every hour.",
-            "cta": ("See guarding", "security-services.html"),
+            "cta": ("See manned security", "security-services.html"),
             "cta2": ("Request a quotation", "contact.html"),
             "photo": "security-officers",
             "pos": "52% 42%", "expo": "0.92",
@@ -160,15 +160,15 @@ COMPANIES = [
         "lead": "Security operations since 2016. Officers, dog units and armed "
                 "response, backed by a control room that answers at three in the "
                 "morning as readily as at three in the afternoon.",
-        "chips": ["Guarding", "Dog units", "Response", "Investigations"],
+        "chips": ["Manned security", "Dog units", "Response", "Investigations"],
         "divisions": [
             {
                 "id": "manned",
                 "icon": "guard",
-                "name": "Manned guarding",
+                "name": "Protective asset management",
                 "line": "Officers trained past the basics, posted to protect premises, "
                         "assets and the people inside them, around the clock.",
-                "items": ["Round the clock guarding", "Access and egress control",
+                "items": ["Round the clock manned security", "Access and egress control",
                           "Residential and estate posts", "Commercial and industrial sites",
                           "Incident response", "Supervision and site visits"],
             },

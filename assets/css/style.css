@@ -670,8 +670,8 @@ p:last-child { margin-bottom: 0; }
 .header--solid .header__inner { height: 70px; }
 
 .brand { display: flex; align-items: center; flex: none; }
-.brand img { height: 44px; width: auto; transition: height .35s var(--ease); }
-.header--solid .brand img { height: 37px; }
+.brand img { height: 50px; width: auto; transition: height .35s var(--ease); }
+.header--solid .brand img { height: 42px; }
 .brand__light { display: block; }
 .brand__dark { display: none; }
 .header--solid .brand__light { display: none; }
@@ -814,7 +814,7 @@ p:last-child { margin-bottom: 0; }
   margin-bottom: 1.5rem;
 }
 .drawer__brand { display: inline-flex; align-items: center; }
-.drawer__brand img { height: 34px; width: auto; display: block; }
+.drawer__brand img { height: 40px; width: auto; display: block; }
 .drawer__close {
   flex: none;
   display: grid; place-items: center;
@@ -2929,6 +2929,26 @@ a.byline__person:hover strong { color: var(--g-mid); }
   .hero { height: auto; min-height: 0; padding-block: calc(var(--header-h) + 2rem) 3rem; }
 }
 
+/* The laptop band, between the drawer appearing at 980 and the width where
+   the full row fits. The six labels, the mark, the two header gaps and the
+   button come to about 1120px of content, so the row needs roughly 1240px of
+   window before it can be set at full size. Below that it wants more room
+   than it has, and
+   a nav that wraps to two lines is worse than one set a shade smaller: the
+   links tighten and the button falls back to its short wording, the same one
+   the phone header already uses. */
+@media (min-width: 981px) and (max-width: 1240px) {
+  .nav__list { flex-wrap: nowrap; gap: .22rem; }
+  /* nowrap on the link too: without it the list holds one line by breaking a
+     two word label down the middle, which is the same ugliness one level in. */
+  .nav__link { font-size: .87rem; padding: .5rem .34rem; white-space: nowrap; }
+  .header__cta { margin-left: .35rem; }
+  .header__cta .lbl-full { display: none; }
+  .header__cta .lbl-brief { display: inline; }
+  .header__cta .pbtn__label { padding: .62rem .9rem; font-size: .9rem; }
+  .header__cta .pbtn__chev { display: none; }
+}
+
 @media (max-width: 980px) {
   .nav, .mega { display: none; }
   .nav-toggle { display: grid; margin-left: .35rem; }
@@ -3110,6 +3130,10 @@ a.byline__person:hover strong { color: var(--g-mid); }
     --cell: 26px;
   }
 
+  /* The bar itself shortens to 64px here, so the mark cannot follow the
+     desktop size all the way down; it keeps the same share of the bar. */
+  .brand img, .header--solid .brand img { height: 46px; }
+
   /* One column for prose, two for anything that reads as a tile. Collapsing
      everything to one column makes the page taller and flatter than it needs. */
   .g-3, .g-4, .form-grid, .steps { grid-template-columns: 1fr; }
@@ -3290,7 +3314,7 @@ a.byline__person:hover strong { color: var(--g-mid); }
 @media (max-width: 380px) {
   /* Three things on one line at 320px: the lockup gives up a few pixels and
      the action gives up its padding, rather than the action being dropped. */
-  .brand img, .header--solid .brand img { height: 30px; }
+  .brand img, .header--solid .brand img { height: 34px; }
   .header__cta .pbtn { padding: 3px .45rem 3px 3px; }
   .header__cta .pbtn__label { padding: .55rem .7rem; font-size: .8rem; }
   .nav-toggle { width: 38px; margin-left: .15rem; }

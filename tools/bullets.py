@@ -84,43 +84,43 @@ LINES = {
     "Inverter and battery health checks":     "ph:battery-charging",
     "Fault response and spares":              "ph:wrench",
 
-    # ---- Guarding: manned ----------------------------------------------
-    "Round the clock guarding":               "si:guard",
+    # ---- Manned security: protective asset management ------------------
+    "Round the clock manned security":        "si:guard",
     "Access and egress control":              "si:access-reader",
     "Residential and estate posts":           "ph:house-line",
     "Commercial and industrial sites":        "ph:factory",
     "Incident response":                      "si:siren",
     "Supervision and site visits":            "ph:clipboard-text",
 
-    # ---- Guarding: events ----------------------------------------------
+    # ---- Manned security: events ----------------------------------------------
     "Access control and screening":           "ph:scan-smiley",
     "Crowd management":                       "ph:users-three",
     "VIP protection":                         "si:guard",
     "Emergency response":                     "si:patrol",
     "Radio coordinated teams":                "si:radio",
 
-    # ---- Guarding: alarm monitoring and response ------------------------
+    # ---- Manned security: alarm monitoring and response ------------------------
     "24 hour alarm monitoring":               "si:control-room",
     "Rapid armed response":                   "ph:lightning",
     "Real time breach detection":             "si:motion-sensor",
     "Patrol vehicles":                        "si:patrol",
     "Escalation to the control room":         "ph:phone-call",
 
-    # ---- Guarding: dog units -------------------------------------------
+    # ---- Manned security: dog units -------------------------------------------
     "Patrol dog teams":                       "si:k9",
     "Site and yard patrols":                  "si:perimeter",
     "Night deployments":                      "ph:moon-stars",
     "Handler training":                       "ph:graduation-cap",
     "Support to static posts":                "ph:handshake",
 
-    # ---- Guarding: perimeter -------------------------------------------
+    # ---- Manned security: perimeter -------------------------------------------
     "Layered perimeter design":               "si:perimeter",
     "Integration with CCTV":                  "si:cam-bullet",
     "Integration with intruder detection":    "si:motion-sensor",
     "Integration with access control":        "si:access-reader",
     "Delay and response planning":            "ph:clock-countdown",
 
-    # ---- Guarding: investigations ---------------------------------------
+    # ---- Manned security: investigations ---------------------------------------
     "Incident investigation":                 "si:investigate",
     "Loss and shrinkage enquiries":           "ph:trend-down",
     "Security audits":                        "ph:clipboard-text",
@@ -197,7 +197,7 @@ LINES = {
     "Intruder alarms":                        "si:alarm-panel",
     "Access control":                         "si:access-reader",
     "Gate automation":                        "si:gate-motor",
-    "Manned guarding":                        "si:guard",
+    "Protective asset management":            "si:guard",
     "Alarm response":                         "si:patrol",
     "Solar and backup power":                 "si:solar",
     "Site signage":                           "ph:signpost",

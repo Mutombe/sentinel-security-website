@@ -24,7 +24,7 @@ NAV = [
     ("index.html", "Home"),
     ("group.html", "The group"),
     ("services.html", "Security systems"),
-    ("security-services.html", "Guarding"),
+    ("security-services.html", "Manned security"),
     ("circuitron.html", "Circuitron"),
     ("contact.html", "Contact"),
 ]
@@ -227,9 +227,9 @@ CROSSLINKS = {
     "integrated security":    "services.html",
     "security systems":       "services.html",
 
-    # ---- guarding: security-services.html -------------------------------
-    "manned guarding":        "security-services.html#manned",
-    "guarding":               "security-services.html#manned",
+    # ---- manned security: security-services.html ------------------------
+    "protective asset management": "security-services.html#manned",
+    "manned security":        "security-services.html#manned",
     "officers":               "security-services.html#manned",
     "event security":         "security-services.html#events",
     "crowd management":       "security-services.html#events",
@@ -878,7 +878,7 @@ FOOTER = """
           <img src="assets/img/brand/sentinel-logo-white.svg" alt="%s" width="328" height="140" loading="lazy">
         </a>
         <p class="script footer__tagline">towards a #secure world</p>
-        <p>A Zimbabwean security group: electronic systems, guarding operations and technology, run as three companies under one standard.</p>
+        <p>A Zimbabwean security group: electronic systems, manned security and technology, run as three companies under one standard.</p>
         <div class="socials">
           <a href="https://wa.me/263773589461" aria-label="Message Sentinel on WhatsApp" rel="noopener">%s</a>
           <a href="%s" aria-label="Sentinel on Facebook"%s>%s</a>
@@ -907,7 +907,7 @@ FOOTER = """
           <li><a href="services.html#alarms">Intruder alarms</a></li>
           <li><a href="services.html#access">Access control</a></li>
           <li><a href="services.html#gates">Gate automation</a></li>
-          <li><a href="security-services.html#manned">Manned guarding</a></li>
+          <li><a href="security-services.html#manned">Protective asset management</a></li>
           <li><a href="security-services.html#response">Alarm response</a></li>
           <li><a href="renewable-energy.html">Solar and backup power</a></li>
           <li><a href="signage.html">Site signage</a></li>
@@ -1501,7 +1501,7 @@ home = hero_block() + CLIENTS + """
         <h2 class="h-2">One group, one number to call</h2>
         <p class="lead">
           """+ autolink("An accredited Zimbabwean group covering electronic security, "
-                       "guarding operations and the technology that ties them "
+                       "manned security and the technology that ties them "
                        "together.", max_links=2) +"""
         </p>
         <p>
@@ -1567,7 +1567,7 @@ write("index.html",
 
 
 # ================================================================= ABOUT
-about = phero("About", "A decade of guarding, turned into a group",
+about = phero("About", "A decade of manned security, turned into a group",
   "Sentinel started in 2016 with officers on gates. The technology work grew out of that, "
   "and in 2026 it became a company of its own. Three businesses now, built on the same ten "
   "years of ground truth.",
@@ -1599,8 +1599,9 @@ about = phero("About", "A decade of guarding, turned into a group",
           government departments, factories and building sites.
         </p>
         <p>
-          Guarding came first. Covering those sites meant learning cameras, alarms and access
-          control properly, and that work outgrew the guarding business. So we gave it a
+          Manned security came first. Covering those sites meant learning cameras, alarms
+          and access control properly, and that work outgrew the manned security
+          business. So we gave it a
           company of its own.
         </p>
         <p>
@@ -2238,9 +2239,9 @@ def company_page(cid, hero_photo, hero_alt, title, desc):
 
 company_page("guarding", "officers-team",
   "A Sentinel team outside the branch",
-  "Sentinel Security Services: manned guarding, dog units and armed response | " + ORG,
-  "Manned guarding, event security, 24 hour alarm monitoring and armed response, dog "
-  "units, perimeter protection and investigations across all ten provinces of Zimbabwe.")
+  "Sentinel Security Services: manned security, dog units and armed response | " + ORG,
+  "Protective asset management, event security, 24 hour alarm monitoring and armed "
+  "response, dog units, perimeter protection and investigations across all ten provinces of Zimbabwe.")
 
 company_page("circuitron", "circuitron-bench",
   "Patch cabling in a Circuitron network cabinet",

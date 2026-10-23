@@ -44,7 +44,7 @@ Sentinel
 ├── Sentinel Integrated Technologies (PVT) Ltd    services.html
 │     CCTV · alarms · access control · gate automation · intercoms · fire
 ├── Sentinel Security Services                    security-services.html
-│     guarding · events · alarm response · dog units · perimeter · investigations
+│     manned security · events · alarm response · dog units · perimeter · investigations
 └── Circuitron Systems (Private) Limited          circuitron.html
       security systems · communications · automation · electronics
       ├── CircuitStore    retail and e-commerce
@@ -183,7 +183,8 @@ something it is not.
 **One thing to decide.** The uniforms, vehicles and buildings in the supplied
 photographs read "Sentinel Security Technology", which is the name the group
 traded under before this round. The site now says Sentinel Integrated
-Technologies, with Sentinel Security Services as the guarding company. Either
+Technologies, with Sentinel Security Services as the manned security company.
+Either
 the imagery or the naming needs to move.
 
 The October phone batch adds a second case of the same thing. The signs on
@@ -457,7 +458,7 @@ acknowledge to Unsplash, blocked by the demo key's hourly limit.
 
 **2. Sentinel Security Services has no logo of its own.** The supplied artwork
 covers Sentinel Integrated Technologies and Circuitron Systems. Where the
-guarding company needs a mark, the site uses the Sentinel shield with the
+manned security company needs a mark, the site uses the Sentinel shield with
 company name set beside it in Manrope (`company_logo()` in `tools/build.py`).
 That is a deliberate stand in, not a wordmark. Drop a real file into
 `assets/img/brand/` and change the company's `logo` value in `tools/group.py`.
@@ -519,7 +520,7 @@ server endpoint, and delete the `data-contact-form` handler at the bottom of
   2016 because the old site never named them. If you have the actual award
   names, put them in `about.html` and `index.html`.
 - **The photographs do not yet match the new structure.** The library was shot
-  for one company and now has to carry three. Guarding has usable frames; the
+  for one company and now has to carry three. Manned security has usable frames;
   technology and Circuitron pages are borrowing them. Replacing these is the
   next piece of work.
 - **The Circuitron profile names three sub brands,** CircuitStore and
