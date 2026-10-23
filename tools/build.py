@@ -797,8 +797,8 @@ def header(active):
 <header class="header">
   <div class="container header__inner">
     <a class="brand" href="index.html" aria-label="%s, home">
-      <img class="brand__light" src="assets/img/brand/sentinel-logo-compact-white.svg" alt="%s" width="328" height="140">
-      <img class="brand__dark" src="assets/img/brand/sentinel-logo-compact.svg" alt="" width="328" height="140" aria-hidden="true">
+      <img class="brand__light" src="assets/img/brand/sit-lockup-compact-white.png" alt="%s" width="555" height="214">
+      <img class="brand__dark" src="assets/img/brand/sit-lockup-compact.png" alt="" width="555" height="214" aria-hidden="true">
     </a>
 
     <nav class="nav" aria-label="Primary">
@@ -817,7 +817,7 @@ def header(active):
 <div class="drawer" id="drawer">
   <div class="drawer__top">
     <a class="drawer__brand" href="index.html" aria-label="%s home">
-      <img src="assets/img/brand/sentinel-logo-white.svg" alt="" width="150" height="40">
+      <img src="assets/img/brand/sit-lockup-white.png" alt="" width="555" height="214">
     </a>
     <button class="drawer__close" type="button" data-drawer-close aria-label="Close menu">
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -875,7 +875,7 @@ FOOTER = """
     <div class="footer__top">
       <div class="footer__brand">
         <a href="index.html" aria-label="%s, home">
-          <img src="assets/img/brand/sentinel-logo-white.svg" alt="%s" width="328" height="140" loading="lazy">
+          <img src="assets/img/brand/sit-lockup-white.png" alt="%s" width="555" height="214" loading="lazy">
         </a>
         <p class="script footer__tagline">towards a #secure world</p>
         <p>A Zimbabwean security group: electronic systems, manned security and technology, run as three companies under one standard.</p>
@@ -930,7 +930,7 @@ FOOTER = """
     </div>
 
     <div class="footer__bottom">
-      <p style="margin:0">&copy; <span data-year class="num">2026</span> Sentinel Integrated Technologies (PVT) Ltd</p>
+      <p style="margin:0">&copy; <span data-year class="num">2026</span> Sentinel Integrated Technologies (Private) Limited</p>
       <nav aria-label="Legal">
         <a href="privacy.html">Privacy policy</a>
         <a href="contact.html">Contact</a>

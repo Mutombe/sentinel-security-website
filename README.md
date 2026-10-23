@@ -41,7 +41,7 @@ with three operating companies, and two divisions under one of those.
 
 ```
 Sentinel
-├── Sentinel Integrated Technologies (PVT) Ltd    services.html
+├── Sentinel Integrated Technologies (Private) Limited   services.html
 │     CCTV · alarms · access control · gate automation · intercoms · fire
 ├── Sentinel Security Services                    security-services.html
 │     manned security · events · alarm response · dog units · perimeter · investigations
@@ -197,18 +197,43 @@ the site has the wrong head office.
 
 ## The logo
 
-`assets/img/brand/sentinel-logo.svg` is vector, not a trace of a screenshot.
-The shield is drawn from measured geometry and the wordmark is outlined from
-the supplied artwork. Rebuilt against the original it matches to within 0.03%
-of the inked pixels, all of it antialiasing on the edges.
+The house lockup is `assets/img/brand/sit-lockup.png`, built by
+`tools/sit_lockup.py` from artwork the client supplied in October 2026: a
+larger wordmark against the shield than the drawn version carried, and the
+entity line spelled out as "(Private) Limited" rather than "(PVT) Ltd".
 
 | file | use |
 |---|---|
-| `sentinel-logo.svg` | full lockup: shield, SENTINEL, Integrated Technologies, (PVT) Ltd |
-| `sentinel-logo-compact.svg` | without the entity line, for the header |
-| `mark.svg` | the shield alone |
-| `*-white.svg` | the same four for dark grounds |
+| `sit-lockup.png` | full lockup: shield, SENTINEL, Integrated Technologies, (Private) Limited |
+| `sit-lockup-compact.png` | without the entity line, for the header, the drawer and anything at 52px or under |
+| `mark.svg` | the shield alone, and the favicons rendered from it |
+| `*-white.png` | the same pair knocked out for dark grounds |
 | `circuitron-logo.png` | Circuitron's own mark, trimmed to its artwork |
+| `sentinel-logo*.svg` | the drawn lockup these replaced, kept and unreferenced |
+
+**These are raster, and the files they replaced were not.** The supplied art
+is a background removal off a white original, so there is no vector to outline
+this time. Two things follow. The generator does not treat the PNG as pixels
+to copy: in a background removal an edge pixel carries full alpha and a colour
+blended toward white, so reading that blend back out recovers a clean one
+channel coverage mask, which is then painted `#0C6934` for light grounds and
+white for dark. Both files are the same mask, so the green and the knockout
+cannot fall out of register. And the compact lockup is a re-layout rather than
+a crop: the shield keeps its height and the two remaining lines are re-centred
+against it, because cropping the entity line away would shrink the mark with
+it.
+
+The art is kept at the 555 x 214 it arrived at and its coverage held to 32
+steps. Nothing on the site renders it above 58px, a quarter of that, so the
+browser averages the steps away, and the flat runs that survive halve the file:
+each of the four is smaller than the SVG it replaces. Resampling it smaller
+does the opposite, inventing a distinct alpha per pixel, and a 456px wide
+version came out half again bigger than the 555px it was made from.
+
+If a vector original ever turns up, it should replace these. Nothing on the
+page needs more resolution than they have, but a logo that cannot be scaled is
+a logo with a ceiling, and the drawn files in the same folder are there to fall
+back to.
 
 The shield is 589 x 568 with a 41 stroke: an outer hexagon minus an inner one
 (even odd), then nine rectangles for the S. It is small enough to read in full

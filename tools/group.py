@@ -25,7 +25,7 @@ COMPANIES = [
         "name": "Sentinel Integrated Technologies",
         "short": "Integrated Technologies",
         "tab": ("Technologies", "Electronic security"),
-        "legal": "Sentinel Integrated Technologies (PVT) Ltd",
+        "legal": "Sentinel Integrated Technologies (Private) Limited",
         "role": "Electronic security technology",
         "headline": "The systems that watch the site",
         "chart_line": "Cameras, alarms, readers, gates and detectors, fitted as one system.",
@@ -46,11 +46,14 @@ COMPANIES = [
         "icon": "cam-dome",
         # Lockups are different shapes, so each carries the height that makes
         # its wordmark sit at the same optical size as the others.
-        "logo": "assets/img/brand/sentinel-logo.svg",
-        "logo_wh": (1328, 568),
-        "logo_white": "assets/img/brand/sentinel-logo-white.svg",
-        "logo_small": "assets/img/brand/sentinel-logo-compact.svg",
-        "logo_small_white": "assets/img/brand/sentinel-logo-compact-white.svg",
+        # The full lockup and the two line one trim to the same box, because the
+        # shield sets the height in both and "Integrated Technologies" sets the
+        # width, so one pair of dimensions serves all four files.
+        "logo": "assets/img/brand/sit-lockup.png",
+        "logo_wh": (555, 214),
+        "logo_white": "assets/img/brand/sit-lockup-white.png",
+        "logo_small": "assets/img/brand/sit-lockup-compact.png",
+        "logo_small_white": "assets/img/brand/sit-lockup-compact-white.png",
         "logo_h": 50,
         "strap": "towards a #secure world",
         "line": "Designs, installs and maintains the electronic systems that watch a "
