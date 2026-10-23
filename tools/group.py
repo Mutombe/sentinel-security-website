@@ -46,14 +46,17 @@ COMPANIES = [
         "icon": "cam-dome",
         # Lockups are different shapes, so each carries the height that makes
         # its wordmark sit at the same optical size as the others.
-        # The full lockup and the two line one trim to the same box, because the
-        # shield sets the height in both and "Integrated Technologies" sets the
-        # width, so one pair of dimensions serves all four files.
+        # No logo_small here, deliberately. The two line variant drops the
+        # entity line, and "(Private) Limited" is the part of this lockup the
+        # company wants read, so the full three line artwork is used at every
+        # size and company_logo falls through to it. The compact pair is still
+        # generated, and is what to reach for if the nav ever has to tighten.
+        # All four trim to the same box, because the shield sets the height and
+        # "Integrated Technologies" sets the width, so one pair of dimensions
+        # serves them all.
         "logo": "assets/img/brand/sit-lockup.png",
         "logo_wh": (555, 214),
         "logo_white": "assets/img/brand/sit-lockup-white.png",
-        "logo_small": "assets/img/brand/sit-lockup-compact.png",
-        "logo_small_white": "assets/img/brand/sit-lockup-compact-white.png",
         "logo_h": 50,
         "strap": "towards a #secure world",
         "line": "Designs, installs and maintains the electronic systems that watch a "

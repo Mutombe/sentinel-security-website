@@ -797,8 +797,8 @@ def header(active):
 <header class="header">
   <div class="container header__inner">
     <a class="brand" href="index.html" aria-label="%s, home">
-      <img class="brand__light" src="assets/img/brand/sit-lockup-compact-white.png" alt="%s" width="555" height="214">
-      <img class="brand__dark" src="assets/img/brand/sit-lockup-compact.png" alt="" width="555" height="214" aria-hidden="true">
+      <img class="brand__light" src="assets/img/brand/sit-lockup-white.png" alt="%s" width="555" height="214">
+      <img class="brand__dark" src="assets/img/brand/sit-lockup.png" alt="" width="555" height="214" aria-hidden="true">
     </a>
 
     <nav class="nav" aria-label="Primary">
