@@ -2161,17 +2161,11 @@ solar += """      </div>
   <section class="section section--cream">
     <div class="container">
 """ + shead("Renewable energy division", "Talk to the solar team directly") + """
-      <div class="grid g-2">
-        <div class="office" data-reveal>
-          <h3>Sunway City</h3>
-          <p>870 Marula Road, Sunway City, Harare</p>
-          <a href="tel:+263783248006" class="num">+263 783 248 006</a>
-          <a href="tel:+263242006157" class="num">+263 24 200 6157</a>
-          <a href="mailto:info@sentinel.co.zw">info@sentinel.co.zw</a>
-        </div>
+      <div class="grid grid--solo">
         <div class="office" data-reveal>
           <h3>Head office, Eastlea</h3>
           <p>29 Tweed Road, Eastlea, Harare</p>
+          <a href="tel:+263783248006" class="num">+263 783 248 006</a>
           <a href="tel:+263773589461" class="num">+263 77 358 9461</a>
           <a href="tel:+263772568361" class="num">+263 77 256 8361</a>
           <a href="mailto:info@sentinel.co.zw">info@sentinel.co.zw</a>
@@ -2627,18 +2621,12 @@ contact = phero("Contact", "Tell us about your site",
        FACEBOOK, OFFSITE, icon("facebook-logo", "i-sm", "ph-fill"),
        LINKEDIN, OFFSITE, icon("linkedin-logo", "i-sm", "ph-fill"),
        pbtn("Message us on WhatsApp", "https://wa.me/263773589461", attrs=' rel="noopener"'),
-       CHEV) + shead("Our locations", "Two addresses in Harare") + """
-      <div class="grid g-2">
+       CHEV) + shead("Our location", "One address in Harare") + """
+      <div class="grid grid--solo">
         <div class="office" data-reveal>
           <h3>Head office, Eastlea</h3>
           <p>29 Tweed Road, Eastlea, Harare</p>
           <a href="tel:+263242006157" class="num">+263 24 200 6157</a>
-          <a href="mailto:info@sentinel.co.zw">info@sentinel.co.zw</a>
-        </div>
-        <div class="office" data-reveal>
-          <h3>Renewable energy, Sunway City</h3>
-          <p>870 Marula Road, Sunway City, Harare</p>
-          <a href="tel:+263783248006" class="num">+263 783 248 006</a>
           <a href="mailto:info@sentinel.co.zw">info@sentinel.co.zw</a>
         </div>
       </div>

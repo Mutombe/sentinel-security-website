@@ -539,6 +539,11 @@ p:last-child { margin-bottom: 0; }
 
 .grid { display: grid; gap: clamp(1rem, 1.6vw, 1.4rem); }
 .g-2 { grid-template-columns: repeat(2, 1fr); }
+/* One card where there used to be a pair. Left to fill the container it
+   stretches to about 1185px, and four short lines in a box that wide read as
+   something missing rather than as one office; this holds the measure the
+   card already had as half of a g-2. */
+.grid--solo { grid-template-columns: minmax(0, 36rem); }
 .g-3 { grid-template-columns: repeat(3, 1fr); }
 .g-4 { grid-template-columns: repeat(4, 1fr); }
 
