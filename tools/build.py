@@ -1348,9 +1348,9 @@ THEMES = {
 # The address bar on a phone, which is chrome we do not draw ourselves. It
 # takes the theme's darkest ground, the same colour the footer lands on.
 THEME_COLOR = {
-    "circuitron": "#0A1F47",
-    "guarding": "#231A10",
-    "technologies": "#042A2B",
+    "circuitron": "#051229",
+    "guarding": "#180809",
+    "technologies": "#021A1A",
 }
 
 
