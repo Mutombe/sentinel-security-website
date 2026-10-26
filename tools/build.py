@@ -1242,18 +1242,41 @@ PAT_START = {
     "privacy.html": 5,
 }
 
+# A company page draws its grain from its own run rather than from the whole
+# pool, so the texture changes with the palette instead of being the one
+# thing the three worlds still share. There are only eight textures and the
+# sets overlap, but no two companies open on the same one and each set leans
+# the way that company's work looks: scanlines and wiring for the systems
+# business, a woven, patrolled grain for the officers, board traces for
+# Circuitron.
+PAT_SETS = {
+    "technologies": ["scan", "grid", "trace", "cross"],
+    "guarding":     ["hatch", "weave", "cross", "graph"],
+    "circuitron":   ["trace", "rings", "grid", "graph"],
+}
+
 SECTION_TAG = re.compile(r'<section class="(section[^"]*)"')
 
 
 def patterns(html, name):
     """One texture per band, in sequence, no two neighbours alike."""
-    at = [PAT_START.get(name, 0)]
+    pool = PAT_SETS.get(THEMES.get(name), PATTERNS)
+    at = [PAT_START.get(name, 0) % len(pool)]
+    themed = THEMES.get(name) in PAT_SETS
+
+    def pick(default, i):
+        """The components below choose a texture by hand rather than taking
+        the next one in the run. On a group page those hand picks stand; on
+        a company page they are pulled back into that company's four, so the
+        whole page speaks one grain instead of the bands speaking one and
+        the cards another."""
+        return pool[i % len(pool)] if themed else default
 
     def one(m):
         cls = m.group(1)
         if "section--photo" in cls or "pat-" in cls:
             return m.group(0)          # a photograph is texture enough
-        p = PATTERNS[at[0] % len(PATTERNS)]
+        p = pool[at[0] % len(pool)]
         at[0] += 1
         return '<section class="%s pat pat-%s"' % (cls, p)
 
@@ -1262,19 +1285,21 @@ def patterns(html, name):
     # The notched card takes its texture on the article rather than on the
     # body, because it is two surfaces - the body and the filler beside the
     # tab - and the property has to inherit to both or they meet at a seam.
-    for cls, pat in (("ncard ncard--white", "graph"),
-                     ("ncard ncard--lime", "hatch"),
-                     ("ncard ncard--dark", "grid"),
-                     ("ncard ncard--green", "trace")):
-        html = html.replace('class="%s"' % cls, 'class="%s pat-%s"' % (cls, pat))
+    for i, (cls, pat) in enumerate((("ncard ncard--white", "graph"),
+                                    ("ncard ncard--lime", "hatch"),
+                                    ("ncard ncard--dark", "grid"),
+                                    ("ncard ncard--green", "trace"))):
+        html = html.replace('class="%s"' % cls,
+                            'class="%s pat-%s"' % (cls, pick(pat, i)))
 
     # The components that paint their own. The four process steps read left
     # to right through four textures, which is the one place on the site
     # where a sequence of patterns means something: it is a sequence of
     # stages.
-    for cls, pats in (("step", ["scan", "cross", "trace", "weave"]),
-                      ("unit", ["trace", "rings"]),
-                      ("bento__stat", ["hatch"])):
+    for cls, pats in (("step", [pick("scan", 0), pick("cross", 1),
+                                pick("trace", 2), pick("weave", 3)]),
+                      ("unit", [pick("trace", 2), pick("rings", 3)]),
+                      ("bento__stat", [pick("hatch", 1)])):
         k = [0]
 
         def one(m, pats=pats, k=k):
@@ -1287,11 +1312,12 @@ def patterns(html, name):
 
     # The two bands that are not .section but are still bands.
     html = html.replace('<section class="cta"',
-                        '<section class="cta pat pat-trace"', 1)
+                        '<section class="cta pat pat-%s"' % pick("trace", 2), 1)
     html = html.replace('<footer class="footer"',
-                        '<footer class="footer pat pat-rings"', 1)
+                        '<footer class="footer pat pat-%s"' % pick("rings", 3), 1)
     html = html.replace('<section class="clients section--white"',
-                        '<section class="clients section--white pat pat-scan"', 1)
+                        '<section class="clients section--white pat pat-%s"'
+                        % pick("scan", 0), 1)
     return html
 
 
@@ -1308,14 +1334,92 @@ def streaming(html):
 
 # A page may carry its own company's colours. The class goes on <main>, so the
 # group's header and footer keep the group's green.
-THEMES = {"circuitron.html": "theme-circuitron"}
+# A company page is that company's world, so the theme rides on <html> and
+# not on <main>. The utility bar, the header, the drawer and the footer are
+# all emitted outside <main>; scoped there the palette stopped at the content
+# and the chrome stayed in group green, which read as the group site wearing
+# a different logo rather than as the company's own place.
+THEMES = {
+    "circuitron.html": "circuitron",
+    "security-services.html": "guarding",
+    "services.html": "technologies",
+}
+
+# The address bar on a phone, which is chrome we do not draw ourselves. It
+# takes the theme's darkest ground, the same colour the footer lands on.
+THEME_COLOR = {
+    "circuitron": "#0A1F47",
+    "guarding": "#231A10",
+    "technologies": "#042A2B",
+}
 
 
 def theme(html, name):
-    cls = THEMES.get(name)
-    if not cls:
+    slug = THEMES.get(name)
+    if not slug:
         return html
-    return html.replace('<main id="main">', '<main id="main" class="%s">' % cls, 1)
+    html = html.replace(
+        '<html lang="en-ZW">',
+        '<html lang="en-ZW" class="theme-%s" data-company="%s">' % (slug, slug), 1)
+    return html.replace(
+        '<meta name="theme-color" content="#06291B">',
+        '<meta name="theme-color" content="%s">' % THEME_COLOR[slug], 1)
+
+
+ATTR = re.compile(' (src|alt|width|height)="([^"]*)"')
+
+
+def _retag(tag, src, alt, w, h):
+    """Rewrite one <img>'s source, alt and box, leaving its other attributes
+    (the class, aria-hidden, loading) exactly as they were."""
+    vals = {"src": src, "alt": alt, "width": str(w), "height": str(h)}
+
+    def one(m):
+        key = m.group(1)
+        # An alt that was deliberately empty stays empty: that image is
+        # aria-hidden and the one beside it already carries the name.
+        if key == "alt" and m.group(2) == "":
+            return m.group(0)
+        return ' %s="%s"' % (key, vals[key])
+    return ATTR.sub(one, tag)
+
+
+IMG = re.compile(r'<img [^>]*>')
+
+
+def company_brand(html, name):
+    """On a company page the chrome wears that company's own mark.
+
+    Only the chrome: the lockup also appears inside the content of these
+    pages, in the mega menu, the hero, the group column and the facts card,
+    and those are the parent group's mark doing a different job. So this
+    walks the four places the shell emits a brand and leaves every other
+    image alone. Sentinel Integrated Technologies already shows its own
+    lockup there, so it is a no-op for that page.
+    """
+    slug = THEMES.get(name)
+    if not slug:
+        return html
+    c = by_id(slug)
+    w, h = c["logo_wh"]
+
+    # The header pair: a white mark over the transparent bar, the full colour
+    # one once the bar goes solid.
+    for cls, src in (("brand__light", c["logo_white"]), ("brand__dark", c["logo"])):
+        m = re.search(r'<img class="%s" [^>]*>' % cls, html)
+        if m:
+            html = html[:m.start()] + _retag(m.group(0), src, c["name"], w, h)                 + html[m.end():]
+
+    # The drawer and the footer: one mark each, the next <img> after the
+    # wrapper, both knocked out white because both sit on a dark ground.
+    for wrapper in ("drawer__brand", "footer__brand"):
+        a = re.search(r'class="%s"' % wrapper, html)
+        if not a:
+            continue
+        m = IMG.search(html, a.end())
+        if m:
+            html = html[:m.start()]                 + _retag(m.group(0), c["logo_white"], c["name"], w, h)                 + html[m.end():]
+    return html
 
 
 def write(name, title, desc, body, cta=True):
@@ -1326,6 +1430,7 @@ def write(name, title, desc, body, cta=True):
     html = streaming(html)
     html = bullet_icons(html)
     html = theme(html, name)
+    html = company_brand(html, name)
     html = gestures(html)
     html = drop_self_links(html, name)
     html = size_images(html)

@@ -260,6 +260,52 @@ the TLS certificate automatically once DNS resolves.
 
 Everything is driven by CSS custom properties at the top of `style.css`.
 
+### The three worlds
+
+Each company owns a palette, a mark and a set of textures, and a reader who
+opens a company page should land somewhere that belongs to that company
+rather than on the group site wearing a different logo.
+
+| | accent | ground | textures |
+|---|---|---|---|
+| The group | `#35DE7E` green | `#03140E` | all eight |
+| Sentinel Integrated Technologies | `#1FD6B4` teal | `#021A1A` | scan, grid, trace, cross |
+| Sentinel Security Services | `#E05252` crimson | `#180809` | hatch, weave, cross, graph |
+| Circuitron Systems | `#5F95F2` blue | `#051229` | trace, rings, grid, graph |
+
+Three things make a world, and all three are driven from `THEMES` in
+`build.py`, which maps a page to a company:
+
+- **The palette.** `.theme-<company>` in `style.css` redeclares the ramp, the
+  accent and the aliases. It rides on `<html>`, not on `<main>`: the utility
+  bar, the header, the drawer and the footer are all emitted outside `<main>`,
+  so scoped there the palette stopped at the content and the chrome stayed
+  group green. That is the whole reason a themed page used to look untouched
+  above the fold and below the last section.
+- **The mark.** `company_brand()` swaps the header pair, the drawer mark and
+  the footer mark for that company's own logo. Only those four: the group
+  lockup also appears *inside* the content of these pages, in the mega menu,
+  the hero, the group column and the facts card, and there it is the parent
+  doing a different job. The nav links stay the group's, because they are how
+  you get back out.
+- **The grain.** `PAT_SETS` gives each company four of the eight textures,
+  and the components that choose a texture by hand are pulled back into that
+  same four, so a company page speaks one grain throughout instead of the
+  bands speaking one and the cards another. Group pages keep all eight.
+
+Every accent clears AA against its own ground and against ink set on top of
+it. The crimson ramp sits a step darker than the other two on purpose: at the
+lighter ramp dark type on the accent measured 4.29:1, and dropping the ink to
+`#2B1114` buys 4.61:1 without touching the accent itself.
+
+A colour wanted at an alpha has to come from a channel token, never a
+literal. `--shade-rgb`, `--accent-rgb` and `--mid-rgb` exist for this; a
+literal cannot follow a theme, which is how `rgba(12, 105, 52, …)` kept
+painting group green onto blue pages in three rules.
+
+Adding a fourth company means a row in `THEMES`, a `.theme-<id>` block, and
+a row in `PAT_SETS`. Nothing else knows the difference.
+
 ### Type
 
 Three roles, all self hosted. Nothing is fetched from Google.
