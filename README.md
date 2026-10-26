@@ -266,12 +266,21 @@ Each company owns a palette, a mark and a set of textures, and a reader who
 opens a company page should land somewhere that belongs to that company
 rather than on the group site wearing a different logo.
 
-| | accent | ground | textures |
-|---|---|---|---|
-| The group | `#35DE7E` green | `#03140E` | all eight |
-| Sentinel Integrated Technologies | `#1FD6B4` teal | `#021A1A` | scan, grid, trace, cross |
-| Sentinel Security Services | `#E05252` crimson | `#180809` | hatch, weave, cross, graph |
-| Circuitron Systems | `#5F95F2` blue | `#051229` | trace, rings, grid, graph |
+| | accent | hue | ground | textures |
+|---|---|---|---|---|
+| The group | `#35DE7E` | 146° | `#03140E` | all eight |
+| Sentinel Integrated Technologies | `#1FD6A2` | 163° | `#021611` | scan, grid, trace, cross |
+| Sentinel Security Services | `#7ED24B` | 97° | `#0A1605` | hatch, weave, cross, graph |
+| Circuitron Systems | `#5F95F2` | 218° | `#051229` | trace, rings, grid, graph |
+
+Both Sentinel companies carry the same green mark, so neither theme can leave
+the green family without the page fighting its own logo. Only Circuitron,
+which has a mark of its own, goes to another hue. The three greens are set
+apart by temperature rather than by distance: 163° runs cool, toward the
+screen, for the systems business; 97° runs warm, toward the field, for the
+officers; the group sits between them at 146°. A whole page of one of them
+reads as its own room, and the grounds and the cream tints carry that warmth
+or coolness too, which is where a long page shows it most.
 
 Three things make a world, and all three are driven from `THEMES` in
 `build.py`, which maps a page to a company:
@@ -294,9 +303,9 @@ Three things make a world, and all three are driven from `THEMES` in
   bands speaking one and the cards another. Group pages keep all eight.
 
 Every accent clears AA against its own ground and against ink set on top of
-it. The crimson ramp sits a step darker than the other two on purpose: at the
-lighter ramp dark type on the accent measured 4.29:1, and dropping the ink to
-`#2B1114` buys 4.61:1 without touching the accent itself.
+it, and `tools/` has no checker for this: the ratios in the comments beside
+each theme were measured when it was written, so a palette edited by eye has
+to be measured again or the comment becomes a lie.
 
 A colour wanted at an alpha has to come from a channel token, never a
 literal. `--shade-rgb`, `--accent-rgb` and `--mid-rgb` exist for this; a

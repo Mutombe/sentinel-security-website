@@ -1962,43 +1962,46 @@ a.clink:focus-visible {
    without the logo fighting the page it sits on; hue 172 is far enough to
    read as a different room and near enough that the mark still belongs. */
 .theme-technologies {
-  --shade-rgb:  2 26 26;
-  --accent-rgb: 31 214 180;
-  --mid-rgb:    10 122 114;
+  /* Both Sentinel companies carry the same green mark, so neither theme can
+     leave the green family without the page fighting its own logo. The three
+     greens are set apart by temperature instead: this one runs cool, at hue
+     163, against the group's 146 and the officers' 97. Electronic systems,
+     so it is the one that leans toward the screen. */
+  --shade-rgb:  2 22 17;
+  --accent-rgb: 31 214 162;
+  --mid-rgb:    10 115 89;
 
-  /* 9.7:1 on the dark ground, 7.8:1 for ink set on top of it. The teal
-     carries more luminance than the blue or the green accents do, so it is
-     the one accent that can hold small type on its own surface. */
-  --accent:   #1FD6B4;
-  --accent-2: #16C2A2;
-  --accent-3: #8FEBDD;
-  --accent-4: #DCF8F3;
+  /* 10.0:1 on the dark ground, 8.2:1 for ink set on top of it. */
+  --accent:   #1FD6A2;
+  --accent-2: #16C290;
+  --accent-3: #8FEBD2;
+  --accent-4: #DCF8F0;
 
-  --g-950: #021A1A;
-  --g-900: #032423;
-  --g-850: #042F2E;
-  --g-800: #053B39;
-  --g-750: #064A47;
-  --g-700: #075955;
-  --g-650: #086762;
-  --g-mid: #0A7A72;
-  --g-light: #3FC9B8;
+  --g-950: #021611;
+  --g-900: #03201A;
+  --g-850: #042B22;
+  --g-800: #05362B;
+  --g-750: #064436;
+  --g-700: #075241;
+  --g-650: #08604C;
+  --g-mid: #0A7359;
+  --g-light: #3FC79F;
 
-  --ink:   #042F2E;
-  --ink-2: #053B39;
-  --ink-3: #075955;
-  --body:   #4A6360;
-  --body-2: #5A7370;
+  --ink:   #042B22;
+  --ink-2: #05362B;
+  --ink-3: #075241;
+  --body:   #4A635B;
+  --body-2: #5A7369;
 
-  /* 5.6:1 at rest, 7.9:1 hovered over the wash. */
-  --link:      #0A6E67;
-  --link-hi:   #07544F;
+  /* 6.0:1 at rest, 8.2:1 hovered over the wash. */
+  --link:      #0A6B53;
+  --link-hi:   #07523F;
   --link-wash: var(--accent-4);
-  --line:  rgba(4, 47, 46, .14);
-  --cream: #F0F7F6;
+  --line:  rgba(4, 43, 34, .14);
+  --cream: #F0F7F5;
 
   --green:   var(--g-mid);
-  --green-2: #0D8F85;
+  --green-2: #0D8A6B;
   --green-3: var(--g-light);
 
   --lime:    var(--accent);
@@ -2019,41 +2022,45 @@ a.clink:focus-visible {
    (4.29:1), and dropping the ink to #2B1114 buys 4.61:1 without touching
    the accent itself. */
 .theme-guarding {
-  --shade-rgb:  24 8 9;
-  --accent-rgb: 224 82 82;
-  --mid-rgb:    142 52 60;
+  /* The warm end of the family, hue 97: the green of a field rather than of
+     a screen. Officers, dogs and response work outdoors, and this is the one
+     theme whose ground carries more red than blue, which is what keeps it
+     from reading as a darker copy of the group. */
+  --shade-rgb:  10 22 5;
+  --accent-rgb: 126 210 75;
+  --mid-rgb:    64 118 46;
 
-  /* 5.1:1 on the dark ground, 4.6:1 for ink set on top of it. */
-  --accent:   #E05252;
-  --accent-2: #CF4444;
-  --accent-3: #F0A3A3;
-  --accent-4: #FBE4E4;
+  /* 9.9:1 on the dark ground, 8.1:1 for ink set on top of it. */
+  --accent:   #7ED24B;
+  --accent-2: #6CBF3C;
+  --accent-3: #BCE89B;
+  --accent-4: #ECF8E0;
 
-  --g-950: #180809;
-  --g-900: #1E0B0E;
-  --g-850: #2B1114;
-  --g-800: #351619;
-  --g-750: #421B1F;
-  --g-700: #552227;
-  --g-650: #68292F;
-  --g-mid: #8E343C;
-  --g-light: #D97A80;
+  --g-950: #0A1605;
+  --g-900: #10200A;
+  --g-850: #162B0F;
+  --g-800: #1C3614;
+  --g-750: #24451A;
+  --g-700: #2C5420;
+  --g-650: #346226;
+  --g-mid: #40762E;
+  --g-light: #8FC96B;
 
-  --ink:   #2B1114;
-  --ink-2: #351619;
-  --ink-3: #552227;
-  --body:   #6B5355;
-  --body-2: #7D6265;
+  --ink:   #162B0F;
+  --ink-2: #1C3614;
+  --ink-3: #2C5420;
+  --body:   #56654D;
+  --body-2: #66755D;
 
-  /* 6.0:1 at rest, 7.4:1 hovered over the wash. */
-  --link:      #A6333C;
-  --link-hi:   #86262E;
+  /* 5.9:1 at rest, 8.2:1 hovered over the wash. */
+  --link:      #3B6B2A;
+  --link-hi:   #2C5220;
   --link-wash: var(--accent-4);
-  --line:  rgba(43, 17, 20, .14);
-  --cream: #FAF2F2;
+  --line:  rgba(22, 43, 15, .14);
+  --cream: #F4F8EF;
 
   --green:   var(--g-mid);
-  --green-2: #A93C45;
+  --green-2: #4B8A37;
   --green-3: var(--g-light);
 
   --lime:    var(--accent);

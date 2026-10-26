@@ -1349,8 +1349,8 @@ THEMES = {
 # takes the theme's darkest ground, the same colour the footer lands on.
 THEME_COLOR = {
     "circuitron": "#051229",
-    "guarding": "#180809",
-    "technologies": "#021A1A",
+    "guarding": "#0A1605",
+    "technologies": "#021611",
 }
 
 
